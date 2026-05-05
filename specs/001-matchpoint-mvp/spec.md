@@ -13,7 +13,7 @@
 - Q: Como o sistema valida o placar de um set? → A: Set válido = vencedor com ao menos 6 games; tiebreak permite placar até 7 games (7–5 ou 7–6). Scores inválidos devem ser rejeitados.
 - Q: Qual é a origem do nome exibido do jogador? → A: Nome de exibição personalizado (nickname) inserido pelo jogador no momento do cadastro — não precisa ser nome real.
 - Q: Partidas registradas podem ser corrigidas ou excluídas? → A: Criador pode excluir a partida nos primeiros 5 minutos após o registro; o sistema reverte a pontuação de todos os jogadores envolvidos. Após 5 minutos, a partida é permanente.
-- Q: Como é feito o desempate no ranking quando dois jogadores têm a mesma pontuação? → A: Número de partidas jogadas (quem jogou mais ocupa posição melhor). Incentiva engajamento.
+- Q: Como é feito o desempate no ranking quando dois jogadores têm a mesma pontuação? → A: Vitórias em ordem decrescente, depois derrotas em ordem crescente.
 
 ## User Scenarios & Testing *(mandatory)*
 
@@ -125,10 +125,9 @@ corretos de vitórias, derrotas e pontuação atual.
 
 ### Edge Cases
 
-- Partida com placar inválido deve ser rejeitada com mensagem de erro clara.
-  Placares inválidos incluem: sem 4 jogadores, sem ao menos um set preenchido,
-  set com vencedor < 6 games, set 6–5 (sem resolução), ou set com placar
-  impossível (ex: 8–2).
+- Partida com placar inválido deve ser rejeitada com a mensagem de erro
+  correspondente (ver FR-016). Placares inválidos: nenhum score informado,
+  vencedor com < 6 games (ex: 5–4, 3–3), ou placar impossível (ex: 8–2, 6–5).
 - Pontuação de qualquer jogador não pode ficar abaixo de 0 — o piso é 0.
 - Jogador novo (sem partidas registradas) deve aparecer no ranking com pontuação
   inicial de 1000 pontos.
@@ -149,21 +148,27 @@ corretos de vitórias, derrotas e pontuação atual.
 - **FR-002**: Sistema MUST permitir login e logout.
 - **FR-003**: Sistema MUST criar o perfil do jogador automaticamente após
   cadastro, com pontuação inicial de 1000 pontos, vitórias = 0 e derrotas = 0.
-  O nível inicial é "Amador" (1000 pontos situa-se na faixa 800–1299).
+  O nível inicial é "Amador" (1000 pontos situa-se na faixa 800–1299). Sistema
+  MUST garantir um único profile por usuário autenticado.
 - **FR-003a**: Sistema MUST calcular e exibir o nível do jogador automaticamente
   com base na pontuação atual: 0–799 = Iniciante, 800–1299 = Amador, 1300+ = Avançado.
   O nível MUST ser recalculado sempre que a pontuação do jogador for atualizada.
 - **FR-004**: Usuário autenticado MUST conseguir registrar uma partida 2x2 com
-  exatamente 4 jogadores (2 por time).
-- **FR-005**: Sistema MUST exigir ao menos um set com placar válido para aceitar
-  o registro da partida. Um set é válido quando:
+  exatamente 4 jogadores (2 por time). Um jogador MUST NOT aparecer mais de uma
+  vez na mesma partida.
+- **FR-005**: No MVP, uma partida consiste em exatamente 1 set — não há set 2.
+  O cliente envia apenas os games de cada time (ex: 6 e 4). O sistema MUST
+  aceitar o registro somente quando o placar do set for válido:
   - **FR-005a**: O vencedor do set tem 6 ou 7 games.
   - **FR-005b**: Se o vencedor tem 6 games, o perdedor tem no máximo 4 (ex: 6–4, 6–0).
   - **FR-005c**: Se o vencedor tem 7 games (tiebreak), o perdedor tem 5 ou 6 (ex: 7–5, 7–6).
-  - Qualquer outro placar MUST ser rejeitado com mensagem de erro específica.
+  - **FR-005d**: O `winner_team` MUST ser derivado server-side comparando os
+    games dos dois times — o time com mais games vence. O cliente MUST NOT
+    enviar `winner_team` diretamente.
 - **FR-006**: Sistema MUST atualizar a pontuação dos jogadores usando um sistema
   de rating dinâmico inspirado no modelo Elo, considerando a diferença de
-  pontuação média entre as duplas antes da partida:
+  pontuação média entre as duplas antes da partida. O K-factor MUST ser 32 no
+  MVP:
   - **FR-006a**: Sistema MUST calcular a pontuação média de cada dupla antes da
     partida.
   - **FR-006b**: Sistema MUST conceder mais pontos à dupla vencedora quando ela
@@ -183,8 +188,8 @@ corretos de vitórias, derrotas e pontuação atual.
 - **FR-008**: Sistema MUST atualizar os contadores de vitórias e derrotas de
   cada jogador após cada partida registrada.
 - **FR-009**: Ranking MUST ser ordenado por pontuação de forma decrescente. Em
-  caso de empate na pontuação, o desempate MUST ser feito pelo número total de
-  partidas jogadas (mais partidas = posição melhor).
+  caso de empate de pontos, o desempate MUST ser por wins DESC, depois losses
+  ASC.
 - **FR-010**: Home MUST exibir pontuação atual do usuário, posição no ranking e
   progresso em relação ao próximo jogador acima.
 - **FR-011**: Tela de matchmaking MUST excluir o usuário atual e ordenar
@@ -198,6 +203,19 @@ corretos de vitórias, derrotas e pontuação atual.
   anteriores à partida.
 - **FR-014**: Após 5 minutos do registro, a partida MUST ser permanente —
   nenhum jogador pode excluí-la ou editá-la.
+- **FR-015**: O registro de partida MUST executar em uma transação atômica
+  única. Em caso de qualquer falha — validação, inserção ou cálculo de Elo —
+  o sistema MUST fazer rollback completo. Nenhuma alteração parcial deve
+  persistir em `matches`, `match_players` ou `profiles`.
+- **FR-016**: O sistema MUST exibir as seguintes mensagens de erro ao usuário
+  no fluxo de registro de partida:
+  - Menos de 4 jogadores selecionados: "Selecione 4 jogadores para continuar"
+  - Placar não preenchido: "Informe o placar do set"
+  - Placar impossível (ex: 3–3, 5–4): "Placar inválido — um time deve atingir 6 games"
+  - Erro ao salvar (falha no servidor): "Não foi possível salvar a partida. Tente novamente."
+  - Tentativa de exclusão por jogador que não é o criador: código
+    `MATCH_DELETE_FORBIDDEN`, status 403, mensagem "Apenas o criador da partida
+    pode excluir este registro."
 
 ### Key Entities *(include if feature involves data)*
 
@@ -205,8 +223,9 @@ corretos de vitórias, derrotas e pontuação atual.
   (nome de exibição, obrigatório), email, pontuação atual, total de vitórias,
   total de derrotas. Nível é derivado automaticamente da pontuação
   (Iniciante / Amador / Avançado) — não é armazenado como campo editável.
-- **Partida (Match)**: Registro de uma partida 2x2. Atributos: criador, data,
-  placar por set, time vencedor (A ou B).
+- **Partida (Match)**: Registro de uma partida 2x2. Atributos: criador,
+  games do time A, games do time B (1 set único no MVP), time vencedor (A ou B —
+  derivado server-side), data/hora gerada pelo servidor.
 - **Participação (MatchPlayer)**: Relaciona um jogador a uma partida. Atributos:
   time (A ou B), resultado (vitória/derrota), pontuação antes da partida,
   variação de pontuação aplicada, pontuação após a partida.
@@ -235,6 +254,9 @@ corretos de vitórias, derrotas e pontuação atual.
   dinâmico.
 - A força de uma dupla é calculada pela média de pontos dos dois jogadores antes
   da partida.
+- `played_at` é gerado pelo servidor via `DEFAULT now()` — o cliente não envia
+  esse valor.
+- No MVP há exatamente 1 set por partida — campos de set 2 não existem.
 
 ## Out of Scope (MVP)
 

@@ -1,0 +1,15 @@
+{
+  "permissions": {
+    "allow": [
+      "PowerShell(powershell -ExecutionPolicy Bypass -File \".specify\\\\scripts\\\\powershell\\\\check-prerequisites.ps1\" -Json -PathsOnly)",
+      "PowerShell(powershell -ExecutionPolicy Bypass -File \".specify\\\\extensions\\\\git\\\\scripts\\\\powershell\\\\auto-commit.ps1\" after_clarify)",
+      "Bash(git add *)",
+      "Bash(git config *)",
+      "Bash(git commit -m ' *)",
+      "PowerShell(powershell -ExecutionPolicy Bypass -File \".specify\\\\scripts\\\\powershell\\\\setup-plan.ps1\" -Json)",
+      "PowerShell(powershell -ExecutionPolicy Bypass -File \".specify\\\\scripts\\\\powershell\\\\check-prerequisites.ps1\" -Json)",
+      "Bash(powershell -ExecutionPolicy Bypass -File \".specify/scripts/powershell/setup-tasks.ps1\" -Json)",
+      "Bash(powershell -ExecutionPolicy Bypass -Command \"if \\(Test-Path '.specify/extensions.yml'\\) { Get-Content '.specify/extensions.yml' } else { Write-Output 'NOT_FOUND' }\")"
+    ]
+  }
+}
