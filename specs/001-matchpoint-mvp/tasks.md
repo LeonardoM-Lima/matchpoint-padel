@@ -81,20 +81,20 @@ e na home.
 
 > Escreva os testes PRIMEIRO. Confirme que falham antes de implementar T025, T026, T027, T028a, T028b, T029, T030a, T030b e T031.
 
-- [ ] T023 [P] [US1] Escrever testes de integração Elo em `tests/integration/elo.test.ts`: equilibrado 1000×1000 → vencedores +16/perdedores −16; azarão 800 vence 1200 → +27/−27; favorito 1200 vence 800 → +5/−5; piso 0 (jogador com 30 pts perde → `points_after` = 0)
-- [ ] T024 [P] [US1] Escrever testes de integração de partida em `tests/integration/match.test.ts`: partida válida com 4 jogadores persiste e atualiza wins/losses; rejeita ≠4 jogadores; rejeita times desbalanceados (≠2 por time); rejeita placar inválido (5–4, 6–5, 8–2, 6–6)
+- [X] T023 [P] [US1] Escrever testes de integração Elo em `tests/integration/elo.test.ts`: equilibrado 1000×1000 → vencedores +16/perdedores −16; azarão 800 vence 1200 → +27/−27; favorito 1200 vence 800 → +5/−5; piso 0 (jogador com 30 pts perde → `points_after` = 0)
+- [X] T024 [P] [US1] Escrever testes de integração de partida em `tests/integration/match.test.ts`: partida válida com 4 jogadores persiste e atualiza wins/losses; rejeita ≠4 jogadores; rejeita times desbalanceados (≠2 por time); rejeita placar inválido (5–4, 6–5, 8–2, 6–6)
 
 ### Implementação — US1
 
-- [ ] T025 [P] [US1] Criar match service: `registerMatch(payload: RegisterMatchPayload)` via `supabase.rpc('register_match')` usando adapter `toRegisterMatchRPC` de `contracts/rpc.ts`; `deleteMatch(matchId: string)` via `supabase.rpc('delete_match')` em `src/services/match.service.ts` (depende de T014)
-- [ ] T026 [P] [US1] Criar componente `ScoreInput`: dois inputs numéricos controlados (time A / time B), hint de formato inline em `src/components/ScoreInput.tsx`
-- [ ] T027 [US1] Criar hook `useProfile`: busca perfil do usuário atual, expõe `profile` e método `refresh()` em `src/hooks/useProfile.ts` (depende de T018)
-- [ ] T028a [P] [US1] Criar componente de seleção de 4 jogadores com busca por nome em `src/components/PlayerSelector.tsx` (depende de T027)
-- [ ] T028b [US1] Integrar atribuição de times A/B, `ScoreInput` e submit com loading em `src/screens/RegisterMatchScreen.tsx` (depende de T025, T026, T028a)
-- [ ] T029 [US1] Adicionar validação local de placar em `RegisterMatchScreen` com mensagens FR-016: "Selecione 4 jogadores para continuar", "Informe o placar do set", "Placar inválido — um time deve atingir 6 games", "Não foi possível salvar a partida. Tente novamente." em `src/screens/RegisterMatchScreen.tsx` (depende de T028b)
-- [ ] T030a [US1] Adicionar estado de sucesso pós-registro com pontos atualizados em `src/screens/RegisterMatchScreen.tsx` (depende de T025, T028b)
-- [ ] T030b [US1] Implementar countdown de 5 minutos e fluxo de undo/exclusão em `src/services/match.service.ts` (depende de T025, T030a)
-- [ ] T031 [US1] Criar `HomeScreen` shell: exibe nome e pontos atuais do usuário (via `useProfile`), links de navegação para Ranking, Registrar Partida e Matchmaking em `src/screens/HomeScreen.tsx` (depende de T027)
+- [X] T025 [P] [US1] Criar match service: `registerMatch(payload: RegisterMatchPayload)` via `supabase.rpc('register_match')` usando adapter `toRegisterMatchRPC` de `contracts/rpc.ts`; `deleteMatch(matchId: string)` via `supabase.rpc('delete_match')` em `src/services/match.service.ts` (depende de T014)
+- [X] T026 [P] [US1] Criar componente `ScoreInput`: dois inputs numéricos controlados (time A / time B), hint de formato inline em `src/components/ScoreInput.tsx`
+- [X] T027 [US1] Criar hook `useProfile`: busca perfil do usuário atual, expõe `profile` e método `refresh()` em `src/hooks/useProfile.ts` (depende de T018)
+- [X] T028a [P] [US1] Criar componente de seleção de 4 jogadores com busca por nome em `src/components/PlayerSelector.tsx` (depende de T027)
+- [X] T028b [US1] Integrar atribuição de times A/B, `ScoreInput` e submit com loading em `src/screens/RegisterMatchScreen.tsx` (depende de T025, T026, T028a)
+- [X] T029 [US1] Adicionar validação local de placar em `RegisterMatchScreen` com mensagens FR-016: "Selecione 4 jogadores para continuar", "Informe o placar do set", "Placar inválido — um time deve atingir 6 games", "Não foi possível salvar a partida. Tente novamente." em `src/screens/RegisterMatchScreen.tsx` (depende de T028b)
+- [X] T030a [US1] Adicionar estado de sucesso pós-registro com pontos atualizados em `src/screens/RegisterMatchScreen.tsx` (depende de T025, T028b)
+- [X] T030b [US1] Implementar countdown de 5 minutos e fluxo de undo/exclusão em `src/services/match.service.ts` (depende de T025, T030a)
+- [X] T031 [US1] Criar `HomeScreen` shell: exibe nome e pontos atuais do usuário (via `useProfile`), links de navegação para Ranking, Registrar Partida e Matchmaking em `src/screens/HomeScreen.tsx` (depende de T027)
 
 **Checkpoint**: Usuário registra partida via formulário → pontos dos 4 jogadores atualizam no banco → botão "Desfazer" aparece com countdown de 5 min.
 
@@ -111,15 +111,15 @@ jogador acima e abaixo estão corretos.
 
 ### Testes críticos — US2 ⚠️
 
-- [ ] T032 [P] [US2] Escrever teste de integração de ranking em `tests/integration/ranking.test.ts`: 3 perfis seedados → ordenados por `points DESC`; desempate por `wins DESC`, depois `losses ASC`; `pointDiffToAbove` e `pointDiffToBelow` corretos para o usuário do meio
+- [X] T032 [P] [US2] Escrever teste de integração de ranking em `tests/integration/ranking.test.ts`: 3 perfis seedados → ordenados por `points DESC`; desempate por `wins DESC`, depois `losses ASC`; `pointDiffToAbove` e `pointDiffToBelow` corretos para o usuário do meio
 
 ### Implementação — US2
 
-- [ ] T033 [P] [US2] Criar ranking service: `getRanking()` retorna `RankingEntry[]` ordenado por `points DESC, wins DESC, losses ASC`, com `position` (RANK OVER), `level` (CASE WHEN), `pointDiffToAbove`, `pointDiffToBelow` em `src/services/ranking.service.ts` (depende de T014)
-- [ ] T034 [P] [US2] Criar componente `RankingRow`: posição, nome, badge de nível (colorido por tier), pontos, delta para vizinhos, destaque visual quando `isCurrentUser` em `src/components/RankingRow.tsx`
-- [ ] T035 [US2] Criar hook `useRanking`: busca `getRanking()`, identifica entrada do usuário atual por `profile.id`, calcula `pointDiffToAbove/Below` em `src/hooks/useRanking.ts` (depende de T033, T018)
-- [ ] T036 [US2] Criar `RankingScreen`: lista completa com `RankingRow`, auto-scroll até linha do usuário atual, delta de pontos visível na linha destacada em `src/screens/RankingScreen.tsx` (depende de T034, T035)
-- [ ] T037 [US2] Expandir `HomeScreen`: adicionar posição no ranking, `pointDiffToAbove`, barra de progresso até próxima posição; substituir shell do T031 em `src/screens/HomeScreen.tsx` (depende de T035)
+- [X] T033 [P] [US2] Criar ranking service: `getRanking()` retorna `RankingEntry[]` ordenado por `points DESC, wins DESC, losses ASC`, com `position` (RANK OVER), `level` (CASE WHEN), `pointDiffToAbove`, `pointDiffToBelow` em `src/services/ranking.service.ts` (depende de T014)
+- [X] T034 [P] [US2] Criar componente `RankingRow`: posição, nome, badge de nível (colorido por tier), pontos, delta para vizinhos, destaque visual quando `isCurrentUser` em `src/components/RankingRow.tsx`
+- [X] T035 [US2] Criar hook `useRanking`: busca `getRanking()`, identifica entrada do usuário atual por `profile.id`, calcula `pointDiffToAbove/Below` em `src/hooks/useRanking.ts` (depende de T033, T018)
+- [X] T036 [US2] Criar `RankingScreen`: lista completa com `RankingRow`, auto-scroll até linha do usuário atual, delta de pontos visível na linha destacada em `src/screens/RankingScreen.tsx` (depende de T034, T035)
+- [X] T037 [US2] Expandir `HomeScreen`: adicionar posição no ranking, `pointDiffToAbove`, barra de progresso até próxima posição; substituir shell do T031 em `src/screens/HomeScreen.tsx` (depende de T035)
 
 **Checkpoint**: Ranking reflete pontuações atualizadas após registros de US1; home mostra posição e delta corretamente.
 
@@ -136,14 +136,14 @@ logado e ordena os demais por `|pontos_usuário − pontos_candidato| ASC`.
 
 ### Testes críticos — US3 ⚠️
 
-- [ ] T038 [P] [US3] Escrever teste de integração de matchmaking em `tests/integration/matchmaking.test.ts`: usuário atual excluído dos resultados; ordenação por `ABS(points - currentUserPoints) ASC`; campos `name`, `level`, `position`, `pointDiff` presentes
+- [X] T038 [P] [US3] Escrever teste de integração de matchmaking em `tests/integration/matchmaking.test.ts`: usuário atual excluído dos resultados; ordenação por `ABS(points - currentUserPoints) ASC`; campos `name`, `level`, `position`, `pointDiff` presentes
 
 ### Implementação — US3
 
-- [ ] T039 [P] [US3] Adicionar `getMatchmakingSuggestions(currentUserPoints: number)` ao `src/services/ranking.service.ts`: query `profiles WHERE user_id != auth.uid()` ORDER BY `ABS(points - currentUserPoints) ASC`, inclui `level` e `position` via RANK OVER (depende de T033)
-- [ ] T040 [P] [US3] Criar componente `PlayerCard` informativo: nome, badge de nível, posição no ranking, pontos e diferença de pontos para o usuário atual, sem CTA, em `src/components/PlayerCard.tsx`
-- [ ] T041 [US3] Criar hook `useMatchmaking` em `src/hooks/useMatchmaking.ts` (depende de T039, T018)
-- [ ] T042 [US3] Criar `MatchmakingScreen`: lista de `PlayerCard` ordenada por proximidade; estado vazio quando não há outros usuários em `src/screens/MatchmakingScreen.tsx` (depende de T040, T041)
+- [X] T039 [P] [US3] Adicionar `getMatchmakingSuggestions(currentUserPoints: number)` ao `src/services/ranking.service.ts`: query `profiles WHERE user_id != auth.uid()` ORDER BY `ABS(points - currentUserPoints) ASC`, inclui `level` e `position` via RANK OVER (depende de T033)
+- [X] T040 [P] [US3] Criar componente `PlayerCard` informativo: nome, badge de nível, posição no ranking, pontos e diferença de pontos para o usuário atual, sem CTA, em `src/components/PlayerCard.tsx`
+- [X] T041 [US3] Criar hook `useMatchmaking` em `src/hooks/useMatchmaking.ts` (depende de T039, T018)
+- [X] T042 [US3] Criar `MatchmakingScreen`: lista de `PlayerCard` ordenada por proximidade; estado vazio quando não há outros usuários em `src/screens/MatchmakingScreen.tsx` (depende de T040, T041)
 
 **Checkpoint**: Matchmaking lista jogadores próximos corretamente; perfil do usuário logado ausente da lista.
 
@@ -159,7 +159,7 @@ nome, nível, pontuação atual, vitórias e derrotas do jogador.
 
 ### Implementação — US4
 
-- [ ] T045 [US4] Criar `ProfileScreen`: exibir nome, badge de nível, pontos atuais, vitórias e derrotas em `src/screens/ProfileScreen.tsx` (depende de T027)
+- [X] T045 [US4] Criar `ProfileScreen`: exibir nome, badge de nível, pontos atuais, vitórias e derrotas em `src/screens/ProfileScreen.tsx` (depende de T027)
 
 **Checkpoint**: Perfil reflete corretamente nome, nível, pontuação, vitórias e derrotas do jogador.
 
