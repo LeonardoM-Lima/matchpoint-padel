@@ -61,7 +61,7 @@ function sqlString(value: string) {
   return `'${value.replaceAll("'", "''")}'`;
 }
 
-function runSql(sql: string) {
+export function runSql(sql: string) {
   const dir = mkdtempSync(join(tmpdir(), 'matchpoint-sql-'));
   const file = join(dir, 'query.sql');
 
@@ -179,6 +179,61 @@ export function insertTestPlayers(players: TestPlayer[]) {
   `);
 }
 
+export function insertAuthUserWithNickname(userId: string, email: string, nickname: string) {
+  runSql(`
+    insert into auth.users (
+      instance_id,
+      id,
+      aud,
+      role,
+      email,
+      encrypted_password,
+      email_confirmed_at,
+      raw_app_meta_data,
+      raw_user_meta_data,
+      created_at,
+      updated_at
+    )
+    values (
+      '00000000-0000-0000-0000-000000000000',
+      ${sqlString(userId)}::uuid,
+      'authenticated',
+      'authenticated',
+      ${sqlString(email)},
+      crypt(${sqlString(password)}, gen_salt('bf')),
+      now(),
+      '{"provider":"email","providers":["email"]}'::jsonb,
+      jsonb_build_object('name', ${sqlString(nickname)}),
+      now(),
+      now()
+    )
+    on conflict (id) do nothing;
+
+    insert into auth.identities (
+      id,
+      user_id,
+      provider_id,
+      identity_data,
+      provider,
+      last_sign_in_at,
+      created_at,
+      updated_at
+    )
+    select
+      id,
+      id,
+      id::text,
+      jsonb_build_object('sub', id::text, 'email', email),
+      'email',
+      now(),
+      now(),
+      now()
+    from auth.users
+    where id = ${sqlString(userId)}::uuid
+    on conflict (provider, provider_id) do nothing;
+  `);
+}
+
 export function deleteTestPlayers(players: TestPlayer[]) {
   const idList = players.map((player) => sqlString(player.id)).join(',');
 
@@ -277,5 +332,62 @@ export function fetchProfilesByIds(profileIds: string[]) {
     select id, user_id, name, email, points, wins, losses
     from public.profiles
     where id in (${profileIds.map(sqlString).join(',')});
+  `);
+}
+
+export function deleteMatchWithSql(userId: string, matchId: string) {
+  runSql(`
+    select set_config('request.jwt.claim.sub', ${sqlString(userId)}, false);
+    select public.delete_match(${sqlString(matchId)}::uuid);
+  `);
+}
+
+export function expireMatchWithSql(matchId: string) {
+  runSql(`
+    update public.matches
+    set created_at = now() - interval '6 minutes'
+    where id = ${sqlString(matchId)}::uuid;
+  `);
+}
+
+export function countMatchesForProfiles(profileIds: string[]) {
+  const rows = queryRows<{ count: string }>(`
+    select count(*)::text
+    from public.matches m
+    where m.created_by in (${profileIds.map(sqlString).join(',')})
+       or m.id in (
+        select match_id from public.match_players
+        where profile_id in (${profileIds.map(sqlString).join(',')})
+       );
+  `);
+
+  return Number(rows[0]?.count ?? 0);
+}
+
+export function countMatchPlayersForProfiles(profileIds: string[]) {
+  const rows = queryRows<{ count: string }>(`
+    select count(*)::text
+    from public.match_players
+    where profile_id in (${profileIds.map(sqlString).join(',')});
+  `);
+
+  return Number(rows[0]?.count ?? 0);
+}
+
+export function deleteAuthUsersByEmail(emails: string[]) {
+  if (emails.length === 0) return;
+
+  runSql(`
+    delete from auth.users
+    where email in (${emails.map(sqlString).join(',')});
+  `);
+}
+
+export function updateProfilePointsAsAuthenticatedUser(userId: string, profileId: string, points: number) {
+  runSql(`
+    select set_config('request.jwt.claim.sub', ${sqlString(userId)}, false);
+    update public.profiles
+    set points = ${points}
+    where id = ${sqlString(profileId)}::uuid;
   `);
 }

@@ -1,4 +1,7 @@
 import { Link } from 'react-router-dom';
+import { EmptyState } from '../components/EmptyState';
+import { ErrorBanner } from '../components/ErrorBanner';
+import { ScreenSkeleton } from '../components/ScreenSkeleton';
 import { useProfile } from '../hooks/useProfile';
 
 function getLevelClass(level: string) {
@@ -13,7 +16,7 @@ export function ProfileScreen() {
   const winRate = totalMatches > 0 && profile ? Math.round((profile.wins / totalMatches) * 100) : 0;
 
   return (
-    <main className="min-h-screen bg-slate-950 px-4 py-6 text-slate-50">
+    <main className="min-h-screen bg-slate-950 px-4 pb-28 pt-6 text-slate-50">
       <section className="mx-auto grid max-w-md gap-6">
         <header className="grid gap-3">
           <Link className="text-sm font-semibold text-emerald-300" to="/">
@@ -27,12 +30,10 @@ export function ProfileScreen() {
           </div>
         </header>
 
-        {loading ? <p className="text-slate-300">Carregando perfil...</p> : null}
+        {loading ? <ScreenSkeleton rows={3} /> : null}
 
         {!loading && !profile ? (
-          <section className="rounded-lg border border-red-400/40 bg-red-950/60 p-4">
-            <p className="text-sm text-red-100">Perfil indisponivel.</p>
-          </section>
+          <ErrorBanner message="Nao conseguimos carregar seu perfil. Tente sair e entrar novamente." />
         ) : null}
 
         {profile ? (
@@ -69,6 +70,13 @@ export function ProfileScreen() {
                 <strong className="text-2xl text-slate-50">{winRate}%</strong>
               </div>
             </section>
+
+            {totalMatches === 0 ? (
+              <EmptyState
+                title="Nenhuma partida registrada"
+                description="Depois da primeira partida, suas vitorias, derrotas e aproveitamento aparecem aqui."
+              />
+            ) : null}
 
             <button
               className="min-h-[44px] rounded-lg bg-slate-800 px-4 py-3 font-semibold text-slate-100"

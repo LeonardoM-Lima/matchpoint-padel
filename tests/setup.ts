@@ -1,7 +1,7 @@
 import { createClient } from '@supabase/supabase-js';
 
-const supabaseUrl = process.env.VITE_SUPABASE_URL ?? 'http://localhost:54321';
-const supabaseAnonKey = process.env.VITE_SUPABASE_ANON_KEY ?? '';
+export const supabaseUrl = process.env.VITE_SUPABASE_URL ?? 'http://localhost:54321';
+export const supabaseAnonKey = process.env.VITE_SUPABASE_ANON_KEY ?? '';
 const supabaseServiceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY ?? supabaseAnonKey;
 
 export const supabaseTestClient = createClient(supabaseUrl, supabaseAnonKey);

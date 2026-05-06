@@ -170,16 +170,16 @@ nome, nível, pontuação atual, vitórias e derrotas do jogador.
 **Purpose**: Estados de loading, mensagens de erro, testes de auth/RLS,
 ajustes de layout mobile e validação em dispositivo real.
 
-- [ ] T046 [P] Escrever testes de integração auth/RLS em `tests/integration/auth.test.ts`: cliente não autenticado é bloqueado em SELECT de `matches`; cliente autenticado não consegue `UPDATE profiles SET points = 9999` diretamente (rejeita com erro RLS)
-- [ ] T047 [P] Adicionar skeleton loading (shimmer placeholders) em `RankingScreen`, `MatchmakingScreen`, `ProfileScreen` e `HomeScreen` em `src/screens/`
-- [ ] T048 [P] Criar componente `ErrorBanner` para erros de RPC (exibe mensagem FR-016 "Não foi possível salvar"); integrar em `RegisterMatchScreen` e `HomeScreen` em `src/components/ErrorBanner.tsx`
-- [ ] T049 [P] Criar componente `EmptyState` para: matchmaking sem outros usuários, ranking com 1 usuário, perfil sem partidas em `src/components/EmptyState.tsx`
-- [ ] T050 Criar `NavBar` de navegação inferior (Home, Ranking, Registrar, Matchmaking, Perfil) em `src/components/NavBar.tsx`; integrar em `src/router/index.tsx` no layout das rotas protegidas (depende de T020)
-- [ ] T051 Aplicar ajustes de layout mobile: `<meta name="viewport">` em `index.html`; container `max-w-md mx-auto` em layout compartilhado; touch targets `min-h-[44px]` em todos os botões em `index.html` + `src/index.css`
+- [X] T046 [P] Escrever testes de integração auth/RLS em `tests/integration/auth.test.ts`: cliente não autenticado é bloqueado em SELECT de `matches`; cliente autenticado não consegue `UPDATE profiles SET points = 9999` diretamente (rejeita com erro RLS)
+- [X] T047 [P] Adicionar skeleton loading (shimmer placeholders) em `RankingScreen`, `MatchmakingScreen`, `ProfileScreen` e `HomeScreen` em `src/screens/`
+- [X] T048 [P] Criar componente `ErrorBanner` para erros de RPC (exibe mensagem FR-016 "Não foi possível salvar"); integrar em `RegisterMatchScreen` e `HomeScreen` em `src/components/ErrorBanner.tsx`
+- [X] T049 [P] Criar componente `EmptyState` para: matchmaking sem outros usuários, ranking com 1 usuário, perfil sem partidas em `src/components/EmptyState.tsx`
+- [X] T050 Criar `NavBar` de navegação inferior (Home, Ranking, Registrar, Matchmaking, Perfil) em `src/components/NavBar.tsx`; integrar em `src/router/index.tsx` no layout das rotas protegidas (depende de T020)
+- [X] T051 Aplicar ajustes de layout mobile: `<meta name="viewport">` em `index.html`; container `max-w-md mx-auto` em layout compartilhado; touch targets `min-h-[44px]` em todos os botões em `index.html` + `src/index.css`
 - [ ] T052 Validar fluxo completo de US1 em Chrome DevTools mobile (viewport 390px): signup → registrar partida → ver ranking atualizado; medir tempo total (SC-001 < 3 min) e latência pós-submissão (SC-002 < 2 s) conforme `quickstart.md §6`
-- [ ] T053 Expandir testes de integração auth/RLS em `tests/integration/auth.test.ts`: signup com nickname cria `profiles` automaticamente com 1000 pontos, wins = 0, losses = 0 e level derivado "Amador"
-- [ ] T054 Expandir testes de integração de partida em `tests/integration/match.test.ts`: `delete_match` permite exclusão pelo criador dentro de 5 min, bloqueia não-criador, bloqueia prazo expirado e reverte points/wins/losses
-- [ ] T055 Expandir testes de integração de partida em `tests/integration/match.test.ts`: falha durante `register_match` faz rollback completo sem persistir alteração parcial em `matches`, `match_players` ou `profiles`
+- [X] T053 Expandir testes de integração auth/RLS em `tests/integration/auth.test.ts`: signup com nickname cria `profiles` automaticamente com 1000 pontos, wins = 0, losses = 0 e level derivado "Amador"
+- [X] T054 Expandir testes de integração de partida em `tests/integration/match.test.ts`: `delete_match` permite exclusão pelo criador dentro de 5 min, bloqueia não-criador, bloqueia prazo expirado e reverte points/wins/losses
+- [X] T055 Expandir testes de integração de partida em `tests/integration/match.test.ts`: falha durante `register_match` faz rollback completo sem persistir alteração parcial em `matches`, `match_players` ou `profiles`
 - [ ] T057 Validar aplicação de migrations e seed em `supabase/seed.sql`: executar `supabase db push`, `supabase db seed` e conferir 5-6 perfis cobrindo Iniciante, Amador e Avançado conforme `quickstart.md`
 - [ ] T058 Validar fluxo completo com 5 jogadores reais em `specs/001-matchpoint-mvp/quickstart.md`: cadastro → registrar partida → ver ranking sem ajuda externa (SC-004)
 

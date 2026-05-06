@@ -1,4 +1,6 @@
 import { Link } from 'react-router-dom';
+import { ErrorBanner } from '../components/ErrorBanner';
+import { ScreenSkeleton } from '../components/ScreenSkeleton';
 import { useAuth } from '../contexts/AuthContext';
 import { useProfile } from '../hooks/useProfile';
 import { useRanking } from '../hooks/useRanking';
@@ -29,7 +31,7 @@ export function HomeScreen() {
     : 0;
 
   return (
-    <main className="min-h-screen bg-slate-950 px-4 py-6 text-slate-50">
+    <main className="min-h-screen bg-slate-950 px-4 pb-28 pt-6 text-slate-50">
       <section className="mx-auto flex min-h-[calc(100vh-3rem)] max-w-md flex-col gap-6">
         <header className="space-y-2">
           <p className="text-sm font-semibold uppercase tracking-wide text-emerald-300">
@@ -37,17 +39,23 @@ export function HomeScreen() {
           </p>
           <h1 className="text-3xl font-bold">Home</h1>
           {loading ? (
-            <p className="text-slate-300">Carregando perfil...</p>
+            <p className="text-slate-300">Carregando seu perfil...</p>
           ) : profile ? (
             <p className="text-slate-300">
               {profile.name} - {profile.points} pontos
             </p>
           ) : (
-            <p className="text-slate-300">Perfil indisponivel.</p>
+            <p className="text-slate-300">Nao conseguimos carregar seu perfil.</p>
           )}
         </header>
 
-        {profile ? (
+        {loading || rankingLoading ? <ScreenSkeleton rows={2} /> : null}
+
+        {!loading && !rankingLoading && !profile ? (
+          <ErrorBanner message="Nao conseguimos carregar seu perfil. Tente sair e entrar novamente." />
+        ) : null}
+
+        {!loading && !rankingLoading && profile ? (
           <section className="grid gap-4 rounded-lg border border-slate-800 bg-slate-900/60 p-4">
             <div className="grid grid-cols-2 gap-3">
               <div>
@@ -92,7 +100,7 @@ export function HomeScreen() {
               ) : null}
             </div>
 
-            {rankingError ? <p className="text-sm text-red-200">{rankingError}</p> : null}
+            {rankingError ? <ErrorBanner message={rankingError} /> : null}
           </section>
         ) : null}
 

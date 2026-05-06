@@ -1,5 +1,5 @@
 import { supabase } from '../lib/supabase';
-import { AuthApiError } from '@supabase/supabase-js';
+import { AuthApiError, type Session } from '@supabase/supabase-js';
 
 export type PlayerLevel = 'Iniciante' | 'Amador' | 'Avançado';
 
@@ -14,6 +14,11 @@ export interface Profile {
   level: PlayerLevel;
   createdAt: string;
   updatedAt: string;
+}
+
+export interface SignUpResult {
+  session: Session | null;
+  needsEmailConfirmation: boolean;
 }
 
 interface ProfileRow {
@@ -50,26 +55,33 @@ function mapProfile(row: ProfileRow): Profile {
 }
 
 export const authService = {
-  async signUp(email: string, password: string, nickname: string) {
+  async signUp(email: string, password: string, nickname: string): Promise<SignUpResult> {
     const normalizedEmail = email.trim().toLowerCase();
+    const trimmedNickname = nickname.trim();
+    const emailRedirectTo =
+      typeof window !== 'undefined' ? `${window.location.origin}/login` : undefined;
 
     const { data, error } = await supabase.auth.signUp({
       email: normalizedEmail,
       password,
       options: {
         data: {
-          name: nickname.trim(),
+          name: trimmedNickname,
         },
+        emailRedirectTo,
       },
     });
 
     if (error) throw error;
-    return data;
+    return {
+      session: data.session,
+      needsEmailConfirmation: !data.session,
+    };
   },
 
   async signIn(email: string, password: string) {
     const { data, error } = await supabase.auth.signInWithPassword({
-      email,
+      email: email.trim().toLowerCase(),
       password,
     });
 
@@ -109,7 +121,7 @@ export function getAuthErrorMessage(error: unknown) {
     }
 
     if (error.status === 429) {
-      return 'Muitas tentativas de cadastro em pouco tempo. Aguarde alguns minutos e tente novamente.';
+      return 'O Supabase bloqueou novos emails de cadastro neste projeto. No provedor nativo deles, o limite padrao e 2 emails por hora por projeto. Se isso continuar, revise Auth > Rate Limits e configure SMTP proprio ou desative a confirmacao de email para o MVP.';
     }
   }
 

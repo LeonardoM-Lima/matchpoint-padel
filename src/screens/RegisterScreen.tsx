@@ -1,5 +1,6 @@
 import { FormEvent, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import { ErrorBanner } from '../components/ErrorBanner';
 import { useAuth } from '../contexts/AuthContext';
 import { getAuthErrorMessage } from '../services/auth.service';
 
@@ -10,15 +11,24 @@ export function RegisterScreen() {
   const [password, setPassword] = useState('');
   const [nickname, setNickname] = useState('');
   const [error, setError] = useState<string | null>(null);
+  const [notice, setNotice] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     setSubmitting(true);
     setError(null);
+    setNotice(null);
 
     try {
-      await signUp(email, password, nickname);
+      const result = await signUp(email, password, nickname);
+
+      if (result.needsEmailConfirmation) {
+        setNotice('Conta criada. Confira seu email para confirmar o cadastro antes de entrar.');
+        setPassword('');
+        return;
+      }
+
       navigate('/', { replace: true });
     } catch (error) {
       setError(getAuthErrorMessage(error));
@@ -72,11 +82,13 @@ export function RegisterScreen() {
             />
           </label>
 
-          {error ? (
-            <p className="rounded-lg border border-red-400/40 bg-red-950/60 px-3 py-2 text-sm text-red-100">
-              {error}
+          {notice ? (
+            <p className="rounded-lg border border-emerald-300/40 bg-emerald-950/40 px-3 py-2 text-sm text-emerald-100">
+              {notice}
             </p>
           ) : null}
+
+          {error ? <ErrorBanner message={error} /> : null}
 
           <button
             className="min-h-[44px] rounded-lg bg-emerald-400 px-4 py-3 font-semibold text-slate-950 disabled:opacity-60"

@@ -1,4 +1,5 @@
 import { createBrowserRouter } from 'react-router-dom';
+import { ProtectedLayout } from '../components/ProtectedLayout';
 import { ProtectedRoute } from '../components/ProtectedRoute';
 import { HomeScreen } from '../screens/HomeScreen';
 import { LoginScreen } from '../screens/LoginScreen';
@@ -21,24 +22,29 @@ export const router = createBrowserRouter([
     element: <ProtectedRoute />,
     children: [
       {
-        path: '/',
-        element: <HomeScreen />,
-      },
-      {
-        path: '/match/new',
-        element: <RegisterMatchScreen />,
-      },
-      {
-        path: '/ranking',
-        element: <RankingScreen />,
-      },
-      {
-        path: '/matchmaking',
-        element: <MatchmakingScreen />,
-      },
-      {
-        path: '/profile',
-        element: <ProfileScreen />,
+        element: <ProtectedLayout />,
+        children: [
+          {
+            path: '/',
+            element: <HomeScreen />,
+          },
+          {
+            path: '/match/new',
+            element: <RegisterMatchScreen />,
+          },
+          {
+            path: '/ranking',
+            element: <RankingScreen />,
+          },
+          {
+            path: '/matchmaking',
+            element: <MatchmakingScreen />,
+          },
+          {
+            path: '/profile',
+            element: <ProfileScreen />,
+          },
+        ],
       },
     ],
   },

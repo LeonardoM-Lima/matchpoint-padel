@@ -9,7 +9,7 @@ import {
 } from 'react';
 import type { Session, User } from '@supabase/supabase-js';
 import { supabase } from '../lib/supabase';
-import { authService, type Profile } from '../services/auth.service';
+import { authService, type Profile, type SignUpResult } from '../services/auth.service';
 
 interface AuthContextValue {
   session: Session | null;
@@ -17,7 +17,7 @@ interface AuthContextValue {
   profile: Profile | null;
   loading: boolean;
   signIn: (email: string, password: string) => Promise<void>;
-  signUp: (email: string, password: string, nickname: string) => Promise<void>;
+  signUp: (email: string, password: string, nickname: string) => Promise<SignUpResult>;
   signOut: () => Promise<void>;
   refreshProfile: () => Promise<void>;
 }
@@ -84,9 +84,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const signUp = useCallback(
     async (email: string, password: string, nickname: string) => {
-      const { session: nextSession } = await authService.signUp(email, password, nickname);
+      const result = await authService.signUp(email, password, nickname);
+      const nextSession = result.session;
       setSession(nextSession);
       await loadProfile(nextSession);
+      return result;
     },
     [loadProfile],
   );

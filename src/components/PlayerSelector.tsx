@@ -1,4 +1,7 @@
 import { useEffect, useMemo, useState } from 'react';
+import { EmptyState } from './EmptyState';
+import { ErrorBanner } from './ErrorBanner';
+import { ScreenSkeleton } from './ScreenSkeleton';
 import { supabase } from '../lib/supabase';
 
 export interface SelectablePlayer {
@@ -129,13 +132,11 @@ export function PlayerSelector({
         {loading ? <span>Carregando...</span> : null}
       </div>
 
-      {error ? (
-        <p className="rounded-lg border border-red-400/40 bg-red-950/60 px-3 py-2 text-sm text-red-100">
-          {error}
-        </p>
-      ) : null}
+      {error ? <ErrorBanner message={error} /> : null}
 
       <div className="grid max-h-72 gap-2 overflow-y-auto pr-1">
+        {loading ? <ScreenSkeleton rows={2} /> : null}
+
         {players.map((player) => {
           const selected = selectedIds.has(player.id);
           const blocked = !selected && selectedPlayers.length >= maxPlayers;
@@ -166,9 +167,10 @@ export function PlayerSelector({
         })}
 
         {!loading && players.length === 0 ? (
-          <p className="rounded-lg border border-slate-800 bg-slate-900 px-3 py-4 text-center text-sm text-slate-400">
-            Nenhum jogador encontrado.
-          </p>
+          <EmptyState
+            title="Nenhum jogador encontrado"
+            description="Revise a busca ou cadastre novos jogadores."
+          />
         ) : null}
       </div>
     </section>

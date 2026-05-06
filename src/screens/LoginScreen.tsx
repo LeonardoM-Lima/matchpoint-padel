@@ -1,5 +1,6 @@
 import { FormEvent, useState } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
+import { ErrorBanner } from '../components/ErrorBanner';
 import { useAuth } from '../contexts/AuthContext';
 
 interface LocationState {
@@ -66,11 +67,7 @@ export function LoginScreen() {
             />
           </label>
 
-          {error ? (
-            <p className="rounded-lg border border-red-400/40 bg-red-950/60 px-3 py-2 text-sm text-red-100">
-              {error}
-            </p>
-          ) : null}
+          {error ? <ErrorBanner message={error} /> : null}
 
           <button
             className="min-h-[44px] rounded-lg bg-emerald-400 px-4 py-3 font-semibold text-slate-950 disabled:opacity-60"

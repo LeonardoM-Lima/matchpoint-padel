@@ -1,7 +1,9 @@
 import { FormEvent, useEffect, useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
+import { ErrorBanner } from '../components/ErrorBanner';
 import { PlayerSelector, type SelectablePlayer } from '../components/PlayerSelector';
 import { ScoreInput } from '../components/ScoreInput';
+import { ScreenSkeleton } from '../components/ScreenSkeleton';
 import { useProfile } from '../hooks/useProfile';
 import { matchService, type RegisteredMatch } from '../services/match.service';
 import type { Team } from '../../specs/001-matchpoint-mvp/contracts/types';
@@ -24,7 +26,7 @@ function formatDelta(delta: number) {
 }
 
 export function RegisterMatchScreen() {
-  const { profile, refresh } = useProfile();
+  const { profile, loading: profileLoading, refresh } = useProfile();
   const [selectedPlayers, setSelectedPlayers] = useState<SelectablePlayer[]>([]);
   const [teams, setTeams] = useState<Record<string, Team>>({});
   const [teamAScore, setTeamAScore] = useState('');
@@ -104,7 +106,7 @@ export function RegisterMatchScreen() {
     }
 
     if (selectedPlayers.length !== 3) {
-      return 'Selecione mais 3 jogadores para continuar';
+      return 'Selecione 4 jogadores para continuar';
     }
 
     if (teamCounts.A !== 2 || teamCounts.B !== 2) {
@@ -188,7 +190,7 @@ export function RegisterMatchScreen() {
   }
 
   return (
-    <main className="min-h-screen bg-slate-950 px-4 py-6 text-slate-50">
+    <main className="min-h-screen bg-slate-950 px-4 pb-28 pt-6 text-slate-50">
       <section className="mx-auto grid max-w-md gap-6">
         <header className="grid gap-3">
           <Link className="text-sm font-semibold text-emerald-300" to="/">
@@ -250,10 +252,12 @@ export function RegisterMatchScreen() {
           </p>
         ) : null}
 
+        {profileLoading ? <ScreenSkeleton rows={2} /> : null}
+
         <form className="grid gap-5" onSubmit={handleSubmit}>
           <PlayerSelector
             selectedPlayers={selectedPlayers}
-            disabled={submitting}
+            disabled={submitting || profileLoading}
             excludePlayerId={currentPlayer?.id}
             maxPlayers={3}
             onChange={setSelectedPlayers}
@@ -313,21 +317,17 @@ export function RegisterMatchScreen() {
           <ScoreInput
             teamAScore={teamAScore}
             teamBScore={teamBScore}
-            disabled={submitting}
+            disabled={submitting || profileLoading}
             onTeamAScoreChange={setTeamAScore}
             onTeamBScoreChange={setTeamBScore}
           />
 
-          {error ? (
-            <p className="rounded-lg border border-red-400/40 bg-red-950/60 px-3 py-2 text-sm text-red-100">
-              {error}
-            </p>
-          ) : null}
+          {error ? <ErrorBanner message={error} /> : null}
 
           <button
             className="min-h-[44px] rounded-lg bg-emerald-400 px-4 py-3 font-semibold text-slate-950 disabled:opacity-60"
             type="submit"
-            disabled={submitting}
+            disabled={submitting || profileLoading}
           >
             {submitting ? 'Salvando...' : 'Salvar partida'}
           </button>
