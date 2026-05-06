@@ -1,6 +1,8 @@
 import { FormEvent, useEffect, useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
+import { Avatar } from '../components/Avatar';
 import { ErrorBanner } from '../components/ErrorBanner';
+import { Icon } from '../components/Icon';
 import { PlayerSelector, type SelectablePlayer } from '../components/PlayerSelector';
 import { ScoreInput } from '../components/ScoreInput';
 import { ScreenSkeleton } from '../components/ScreenSkeleton';
@@ -102,7 +104,7 @@ export function RegisterMatchScreen() {
 
   function validateForm() {
     if (!currentPlayer) {
-      return 'Nao foi possivel carregar seu perfil.';
+      return 'Não foi possível carregar seu perfil.';
     }
 
     if (selectedPlayers.length !== 3) {
@@ -127,7 +129,7 @@ export function RegisterMatchScreen() {
       parsedTeamBScore < 0 ||
       !isValidScore(parsedTeamAScore, parsedTeamBScore)
     ) {
-      return 'Placar invalido - um time deve atingir 6 games';
+      return 'Placar inválido — um time deve atingir 6 games';
     }
 
     return null;
@@ -163,7 +165,7 @@ export function RegisterMatchScreen() {
       setTeamBScore('');
       await refresh();
     } catch {
-      setError('Nao foi possivel salvar a partida. Tente novamente.');
+      setError('Não foi possível salvar a partida. Tente novamente.');
     } finally {
       setSubmitting(false);
     }
@@ -183,78 +185,127 @@ export function RegisterMatchScreen() {
       setNotice('Partida desfeita.');
       await refresh();
     } catch {
-      setError('Nao foi possivel desfazer a partida. Tente novamente.');
+      setError('Não foi possível desfazer a partida. Tente novamente.');
     } finally {
       setUndoing(false);
     }
   }
 
   return (
-    <main className="min-h-screen bg-slate-950 px-4 pb-28 pt-6 text-slate-50">
-      <section className="mx-auto grid max-w-md gap-6">
+    <main className="min-h-screen px-4 pb-28 pt-5 text-slate-50">
+      <section className="mx-auto grid max-w-md gap-4 animate-fade-in">
         <header className="grid gap-3">
-          <Link className="text-sm font-semibold text-emerald-300" to="/">
+          <Link
+            className="inline-flex items-center gap-1.5 text-sm font-semibold text-emerald-300 hover:text-emerald-200"
+            to="/"
+          >
+            <Icon name="arrowLeft" size={16} />
             Voltar
           </Link>
-          <div>
-            <p className="text-sm font-semibold uppercase tracking-wide text-emerald-300">
-              MatchPoint Padel
-            </p>
-            <h1 className="text-3xl font-bold">Registrar partida</h1>
+          <div className="flex items-center gap-3">
+            <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-gradient-emerald shadow-glow">
+              <Icon name="plusCircle" size={20} className="text-emerald-950" strokeWidth={2.4} />
+            </div>
+            <div>
+              <p className="text-[10px] font-bold uppercase tracking-[0.25em] text-emerald-300">
+                MatchPoint Padel
+              </p>
+              <h1 className="font-display text-2xl font-extrabold text-slate-50">
+                Registrar partida
+              </h1>
+            </div>
           </div>
         </header>
 
         {success ? (
-          <section className="grid gap-4 rounded-lg border border-emerald-300/40 bg-emerald-950/30 p-4">
-            <div>
-              <h2 className="text-xl font-bold text-emerald-100">Partida registrada</h2>
-              <p className="text-sm text-emerald-100/80">Pontos atualizados para os 4 jogadores.</p>
+          <section className="relative overflow-hidden rounded-3xl border border-emerald-300/40 bg-gradient-to-br from-emerald-500/20 via-emerald-950/40 to-slate-950 p-5 shadow-glow animate-slide-up">
+            <div className="pointer-events-none absolute -right-12 -top-12 h-40 w-40 rounded-full bg-emerald-300/20 blur-3xl" />
+            <div className="relative flex items-center gap-3">
+              <span className="flex h-12 w-12 items-center justify-center rounded-2xl bg-emerald-300 text-emerald-950 shadow-glow">
+                <Icon name="checkCircle" size={26} strokeWidth={2.4} />
+              </span>
+              <div>
+                <h2 className="text-lg font-extrabold text-emerald-100">Partida registrada!</h2>
+                <p className="text-xs text-emerald-200/80">
+                  Pontos atualizados para os 4 jogadores
+                </p>
+              </div>
             </div>
 
-            <div className="grid gap-2">
+            <div className="relative mt-4 grid gap-2">
               {success.players.map((player) => (
                 <div
                   key={player.profileId}
-                  className="flex items-center justify-between rounded-lg bg-slate-950/70 px-3 py-2"
+                  className="flex items-center gap-3 rounded-xl bg-slate-950/60 p-3 ring-1 ring-emerald-300/10"
                 >
-                  <span>
-                    <span className="block font-semibold">{player.name}</span>
-                    <span className="text-xs text-slate-400">
-                      Time {player.team} - {player.result === 'W' ? 'Vitoria' : 'Derrota'}
+                  <Avatar name={player.name} size={36} />
+                  <div className="min-w-0 flex-1">
+                    <span className="block truncate text-sm font-semibold text-slate-50">
+                      {player.name}
                     </span>
-                  </span>
-                  <span className="text-right">
-                    <span className="block font-semibold">{player.pointsAfter}</span>
-                    <span className={player.pointsDelta >= 0 ? 'text-emerald-300' : 'text-red-300'}>
+                    <span className="flex items-center gap-1.5 text-[11px] text-slate-400">
+                      <span
+                        className={`rounded px-1.5 py-0.5 font-bold ${
+                          player.team === 'A'
+                            ? 'bg-sky-300/15 text-sky-200'
+                            : 'bg-fuchsia-300/15 text-fuchsia-200'
+                        }`}
+                      >
+                        Time {player.team}
+                      </span>
+                      <span
+                        className={`flex items-center gap-1 font-semibold ${
+                          player.result === 'W' ? 'text-emerald-300' : 'text-rose-300'
+                        }`}
+                      >
+                        <Icon
+                          name={player.result === 'W' ? 'trophy' : 'xCircle'}
+                          size={11}
+                        />
+                        {player.result === 'W' ? 'Vitória' : 'Derrota'}
+                      </span>
+                    </span>
+                  </div>
+                  <div className="text-right">
+                    <strong className="block text-sm font-bold text-slate-50">
+                      {player.pointsAfter}
+                    </strong>
+                    <span
+                      className={`text-xs font-bold ${
+                        player.pointsDelta >= 0 ? 'text-emerald-300' : 'text-rose-300'
+                      }`}
+                    >
                       {formatDelta(player.pointsDelta)}
                     </span>
-                  </span>
+                  </div>
                 </div>
               ))}
             </div>
 
             <button
-              className="min-h-[44px] rounded-lg bg-slate-50 px-4 py-3 font-semibold text-slate-950 disabled:opacity-60"
+              className="relative mt-4 inline-flex min-h-[48px] w-full items-center justify-center gap-2 rounded-xl bg-slate-50 px-4 font-bold text-slate-950 transition hover:bg-white disabled:opacity-60"
               type="button"
               disabled={undoing || remainingSeconds <= 0}
               onClick={() => {
                 void handleUndo();
               }}
             >
+              <Icon name="undo" size={18} />
               {undoing ? 'Desfazendo...' : `Desfazer (${remainingSeconds}s)`}
             </button>
           </section>
         ) : null}
 
         {notice ? (
-          <p className="rounded-lg border border-emerald-300/40 bg-emerald-950/40 px-3 py-2 text-sm text-emerald-100">
+          <p className="flex items-center gap-2 rounded-xl border border-emerald-300/40 bg-emerald-950/40 px-3 py-3 text-sm text-emerald-100">
+            <Icon name="checkCircle" size={18} className="text-emerald-300" />
             {notice}
           </p>
         ) : null}
 
         {profileLoading ? <ScreenSkeleton rows={2} /> : null}
 
-        <form className="grid gap-5" onSubmit={handleSubmit}>
+        <form className="grid gap-4" onSubmit={handleSubmit}>
           <PlayerSelector
             selectedPlayers={selectedPlayers}
             disabled={submitting || profileLoading}
@@ -264,15 +315,35 @@ export function RegisterMatchScreen() {
           />
 
           {matchPlayers.length > 0 ? (
-            <section className="grid gap-3 rounded-lg border border-slate-800 bg-slate-900/60 p-4">
+            <section className="grid gap-2 rounded-xl border border-slate-800/80 bg-slate-900/40 p-3">
               <div className="flex items-center justify-between">
-                <h2 className="font-semibold text-slate-100">Times</h2>
-                <span className="text-sm text-slate-400">
-                  A: {teamCounts.A} - B: {teamCounts.B}
-                </span>
+                <h2 className="flex items-center gap-1.5 text-xs font-bold uppercase tracking-wide text-emerald-300">
+                  <Icon name="users" size={14} />
+                  Times
+                </h2>
+                <div className="flex gap-1.5 text-[11px]">
+                  <span
+                    className={`rounded-full px-2 py-0.5 font-bold ${
+                      teamCounts.A === 2
+                        ? 'bg-sky-300/15 text-sky-200 ring-1 ring-sky-300/30'
+                        : 'bg-slate-800 text-slate-400'
+                    }`}
+                  >
+                    A: {teamCounts.A}
+                  </span>
+                  <span
+                    className={`rounded-full px-2 py-0.5 font-bold ${
+                      teamCounts.B === 2
+                        ? 'bg-fuchsia-300/15 text-fuchsia-200 ring-1 ring-fuchsia-300/30'
+                        : 'bg-slate-800 text-slate-400'
+                    }`}
+                  >
+                    B: {teamCounts.B}
+                  </span>
+                </div>
               </div>
 
-              <div className="grid gap-2">
+              <div className="grid gap-1.5">
                 {matchPlayers.map((player, index) => {
                   const activeTeam = teams[player.id] ?? defaultTeamForIndex(index);
                   const isCurrentPlayer = currentPlayer?.id === player.id;
@@ -280,24 +351,32 @@ export function RegisterMatchScreen() {
                   return (
                     <div
                       key={player.id}
-                      className="grid grid-cols-[1fr_auto] items-center gap-3 rounded-lg bg-slate-950 px-3 py-2"
+                      className="flex items-center gap-2 rounded-lg bg-slate-950 p-2 ring-1 ring-slate-800/60"
                     >
-                      <span>
-                        <span className="block font-semibold">{player.name}</span>
-                        <span className="text-sm text-slate-400">
-                          {player.points} pontos{isCurrentPlayer ? ' - voce' : ''}
+                      <Avatar name={player.name} size={30} />
+                      <span className="min-w-0 flex-1">
+                        <span className="block truncate text-xs font-semibold text-slate-50">
+                          {player.name}
+                          {isCurrentPlayer ? (
+                            <span className="ml-1 rounded bg-emerald-300/20 px-1 py-0.5 text-[9px] font-bold uppercase text-emerald-200">
+                              Você
+                            </span>
+                          ) : null}
                         </span>
+                        <span className="text-[10px] text-slate-400">{player.points} pts</span>
                       </span>
 
-                      <span className="grid grid-cols-2 gap-1 rounded-lg bg-slate-900 p-1">
+                      <span className="grid grid-cols-2 gap-1 rounded-lg bg-slate-900 p-0.5 ring-1 ring-slate-800/60">
                         {(['A', 'B'] as Team[]).map((team) => (
                           <button
                             key={team}
                             className={[
-                              'min-h-[36px] rounded-md px-3 text-sm font-semibold',
+                              'min-h-[28px] rounded-md px-2.5 text-xs font-bold transition',
                               activeTeam === team
-                                ? 'bg-emerald-300 text-slate-950'
-                                : 'text-slate-300',
+                                ? team === 'A'
+                                  ? 'bg-sky-300 text-sky-950'
+                                  : 'bg-fuchsia-300 text-fuchsia-950'
+                                : 'text-slate-400 hover:text-slate-200',
                             ].join(' ')}
                             type="button"
                             disabled={submitting}
@@ -325,11 +404,18 @@ export function RegisterMatchScreen() {
           {error ? <ErrorBanner message={error} /> : null}
 
           <button
-            className="min-h-[44px] rounded-lg bg-emerald-400 px-4 py-3 font-semibold text-slate-950 disabled:opacity-60"
+            className="btn-primary inline-flex min-h-[56px] items-center justify-center gap-2 rounded-xl px-4 disabled:opacity-60"
             type="submit"
             disabled={submitting || profileLoading}
           >
-            {submitting ? 'Salvando...' : 'Salvar partida'}
+            {submitting ? (
+              'Salvando...'
+            ) : (
+              <>
+                <Icon name="check" size={20} strokeWidth={2.6} />
+                Salvar partida
+              </>
+            )}
           </button>
         </form>
       </section>

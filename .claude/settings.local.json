@@ -9,7 +9,14 @@
       "PowerShell(powershell -ExecutionPolicy Bypass -File \".specify\\\\scripts\\\\powershell\\\\setup-plan.ps1\" -Json)",
       "PowerShell(powershell -ExecutionPolicy Bypass -File \".specify\\\\scripts\\\\powershell\\\\check-prerequisites.ps1\" -Json)",
       "Bash(powershell -ExecutionPolicy Bypass -File \".specify/scripts/powershell/setup-tasks.ps1\" -Json)",
-      "Bash(powershell -ExecutionPolicy Bypass -Command \"if \\(Test-Path '.specify/extensions.yml'\\) { Get-Content '.specify/extensions.yml' } else { Write-Output 'NOT_FOUND' }\")"
+      "Bash(powershell -ExecutionPolicy Bypass -Command \"if \\(Test-Path '.specify/extensions.yml'\\) { Get-Content '.specify/extensions.yml' } else { Write-Output 'NOT_FOUND' }\")",
+      "Bash(Get-ChildItem -Path \"c:\\\\Users\\\\leona\\\\matchpoint-padel\\\\matchpoint-padel\" -Recurse -Force)",
+      "Bash(Select-Object -First 100)",
+      "Bash(Format-Table FullName)",
+      "Bash(npx tsc *)",
+      "Bash(npx vite *)",
+      "Bash(npx vitest *)",
+      "Bash(npx supabase *)"
     ]
   }
 }

@@ -2,6 +2,7 @@ import { useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { EmptyState } from '../components/EmptyState';
 import { ErrorBanner } from '../components/ErrorBanner';
+import { Icon } from '../components/Icon';
 import { RankingRow } from '../components/RankingRow';
 import { ScreenSkeleton } from '../components/ScreenSkeleton';
 import { useRanking } from '../hooks/useRanking';
@@ -21,17 +22,26 @@ export function RankingScreen() {
   }, [currentEntry, loading]);
 
   return (
-    <main className="min-h-screen bg-slate-950 px-4 pb-28 pt-6 text-slate-50">
-      <section className="mx-auto grid max-w-md gap-6">
+    <main className="min-h-screen px-4 pb-32 pt-6 text-slate-50">
+      <section className="mx-auto grid max-w-md gap-5 animate-fade-in">
         <header className="grid gap-3">
-          <Link className="text-sm font-semibold text-emerald-300" to="/">
+          <Link
+            className="inline-flex items-center gap-1.5 text-sm font-semibold text-emerald-300 hover:text-emerald-200"
+            to="/"
+          >
+            <Icon name="arrowLeft" size={16} />
             Voltar
           </Link>
-          <div>
-            <p className="text-sm font-semibold uppercase tracking-wide text-emerald-300">
-              MatchPoint Padel
-            </p>
-            <h1 className="text-3xl font-bold">Ranking</h1>
+          <div className="flex items-center gap-3">
+            <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-gradient-gold shadow-gold">
+              <Icon name="trophy" size={24} className="text-amber-950" strokeWidth={2.4} />
+            </div>
+            <div>
+              <p className="text-xs font-bold uppercase tracking-[0.25em] text-emerald-300">
+                MatchPoint Padel
+              </p>
+              <h1 className="font-display text-3xl font-extrabold text-gradient-gold">Ranking</h1>
+            </div>
           </div>
         </header>
 
@@ -49,12 +59,13 @@ export function RankingScreen() {
 
         {!loading && !error && ranking.length === 1 ? (
           <EmptyState
-            title="So existe um jogador no ranking"
-            description="Cadastre mais jogadores para comparar pontos e ver a disputa por posicoes."
+            icon="users"
+            title="Só existe um jogador no ranking"
+            description="Cadastre mais jogadores para comparar pontos e ver a disputa por posições."
           />
         ) : null}
 
-        {!loading && !error ? (
+        {!loading && !error && ranking.length > 0 ? (
           <div className="grid gap-3">
             {ranking.map((entry) => (
               <RankingRow

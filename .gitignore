@@ -149,3 +149,5 @@ Thumbs.db
 *.swp
 .vscode/
 .idea/
+.vercel
+.env*.local

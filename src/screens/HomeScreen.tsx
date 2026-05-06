@@ -1,5 +1,7 @@
 import { Link } from 'react-router-dom';
+import { Avatar } from '../components/Avatar';
 import { ErrorBanner } from '../components/ErrorBanner';
+import { Icon } from '../components/Icon';
 import { ScreenSkeleton } from '../components/ScreenSkeleton';
 import { useAuth } from '../contexts/AuthContext';
 import { useProfile } from '../hooks/useProfile';
@@ -13,6 +15,12 @@ function getProgressPercent(points: number, abovePoints?: number, belowPoints?: 
   if (range <= 0) return 0;
 
   return Math.max(0, Math.min(100, Math.round(((points - floor) / range) * 100)));
+}
+
+function levelBadge(level: string) {
+  if (level === 'Iniciante') return 'bg-sky-400/15 text-sky-200 ring-sky-300/30';
+  if (level === 'Amador') return 'bg-emerald-400/15 text-emerald-200 ring-emerald-300/30';
+  return 'bg-amber-400/15 text-amber-200 ring-amber-300/30';
 }
 
 export function HomeScreen() {
@@ -30,116 +38,194 @@ export function HomeScreen() {
     ? getProgressPercent(currentEntry.points, aboveEntry?.points, belowEntry?.points)
     : 0;
 
+  const totalMatches = profile ? profile.wins + profile.losses : 0;
+  const winRate = totalMatches > 0 && profile ? Math.round((profile.wins / totalMatches) * 100) : 0;
+
   return (
-    <main className="min-h-screen bg-slate-950 px-4 pb-28 pt-6 text-slate-50">
-      <section className="mx-auto flex min-h-[calc(100vh-3rem)] max-w-md flex-col gap-6">
-        <header className="space-y-2">
-          <p className="text-sm font-semibold uppercase tracking-wide text-emerald-300">
-            MatchPoint Padel
-          </p>
-          <h1 className="text-3xl font-bold">Home</h1>
-          {loading ? (
-            <p className="text-slate-300">Carregando seu perfil...</p>
-          ) : profile ? (
-            <p className="text-slate-300">
-              {profile.name} - {profile.points} pontos
+    <main className="min-h-screen px-4 pb-32 pt-6 text-slate-50">
+      <section className="mx-auto flex min-h-[calc(100vh-3rem)] max-w-md flex-col gap-5 animate-fade-in">
+        <header className="flex items-center justify-between">
+          <div>
+            <p className="text-xs font-bold uppercase tracking-[0.25em] text-emerald-300">
+              MatchPoint
             </p>
-          ) : (
-            <p className="text-slate-300">Nao conseguimos carregar seu perfil.</p>
-          )}
+            <h1 className="font-display text-3xl font-extrabold text-slate-50">
+              Olá{profile ? `, ${profile.name.split(' ')[0]}` : ''} 👋
+            </h1>
+          </div>
+          <button
+            type="button"
+            onClick={() => {
+              void signOut();
+            }}
+            className="flex h-11 w-11 items-center justify-center rounded-full border border-slate-800 bg-slate-900/60 text-slate-300 transition hover:border-rose-300/40 hover:text-rose-300"
+            aria-label="Sair"
+          >
+            <Icon name="logout" size={20} />
+          </button>
         </header>
 
         {loading || rankingLoading ? <ScreenSkeleton rows={2} /> : null}
 
         {!loading && !rankingLoading && !profile ? (
-          <ErrorBanner message="Nao conseguimos carregar seu perfil. Tente sair e entrar novamente." />
+          <ErrorBanner message="Não conseguimos carregar seu perfil. Tente sair e entrar novamente." />
         ) : null}
 
         {!loading && !rankingLoading && profile ? (
-          <section className="grid gap-4 rounded-lg border border-slate-800 bg-slate-900/60 p-4">
-            <div className="grid grid-cols-2 gap-3">
-              <div>
-                <span className="text-sm text-slate-400">Pontos</span>
-                <strong className="block text-2xl text-emerald-300">{profile.points}</strong>
-              </div>
-              <div>
-                <span className="text-sm text-slate-400">Ranking</span>
-                <strong className="block text-2xl text-slate-50">
-                  {rankingLoading ? '...' : currentEntry ? `#${currentEntry.position}` : '-'}
-                </strong>
-              </div>
-            </div>
+          <>
+            <section className="relative overflow-hidden rounded-3xl border border-emerald-300/20 bg-gradient-to-br from-emerald-500/15 via-slate-900/80 to-slate-950 p-5 shadow-glow">
+              <div className="pointer-events-none absolute -right-12 -top-12 h-44 w-44 rounded-full bg-emerald-400/20 blur-3xl" />
+              <div className="pointer-events-none absolute -bottom-16 -left-12 h-40 w-40 rounded-full bg-fuchsia-500/10 blur-3xl" />
 
-            <div>
-              <span className="text-sm text-slate-400">Seu nivel</span>
-              <strong className="block text-xl text-emerald-300">{profile.level}</strong>
-              <span className="text-sm text-slate-300">
-                {profile.wins} vitorias - {profile.losses} derrotas
-              </span>
-            </div>
+              <div className="relative flex items-center gap-3">
+                <Avatar name={profile.name} size={56} ring />
+                <div className="min-w-0 flex-1">
+                  <h2 className="truncate text-lg font-bold text-slate-50">{profile.name}</h2>
+                  <span
+                    className={`mt-1 inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[11px] font-semibold ring-1 ${levelBadge(profile.level)}`}
+                  >
+                    <Icon name="star" size={11} strokeWidth={2.5} />
+                    {profile.level}
+                  </span>
+                </div>
+                {currentEntry ? (
+                  <div className="flex flex-col items-center rounded-2xl bg-slate-950/60 px-3 py-2 ring-1 ring-emerald-300/20">
+                    <span className="text-[9px] font-bold uppercase tracking-wider text-slate-500">
+                      Posição
+                    </span>
+                    <strong className="text-xl font-extrabold text-gradient-emerald">
+                      #{currentEntry.position}
+                    </strong>
+                  </div>
+                ) : null}
+              </div>
 
-            <div className="grid gap-2">
-              <div className="flex items-center justify-between gap-3 text-sm">
-                <span className="font-medium text-slate-200">Proxima posicao</span>
-                <span className="text-right text-slate-300">
-                  {aboveEntry
-                    ? `${currentEntry?.pointDiffToAbove ?? 0} pts ate ${aboveEntry.name}`
-                    : 'Voce esta no topo'}
-                </span>
+              <div className="relative mt-5 grid grid-cols-3 gap-2">
+                <div className="rounded-2xl bg-slate-950/60 p-3 ring-1 ring-emerald-300/10">
+                  <span className="flex items-center gap-1 text-[10px] uppercase tracking-wide text-slate-400">
+                    <Icon name="lightning" size={10} className="text-emerald-300" />
+                    Pontos
+                  </span>
+                  <strong className="block text-2xl font-extrabold text-emerald-300">
+                    {profile.points}
+                  </strong>
+                </div>
+                <div className="rounded-2xl bg-slate-950/60 p-3 ring-1 ring-emerald-300/10">
+                  <span className="flex items-center gap-1 text-[10px] uppercase tracking-wide text-slate-400">
+                    <Icon name="trophy" size={10} className="text-amber-300" />
+                    Vitórias
+                  </span>
+                  <strong className="block text-2xl font-extrabold text-slate-50">
+                    {profile.wins}
+                  </strong>
+                </div>
+                <div className="rounded-2xl bg-slate-950/60 p-3 ring-1 ring-emerald-300/10">
+                  <span className="flex items-center gap-1 text-[10px] uppercase tracking-wide text-slate-400">
+                    <Icon name="target" size={10} className="text-fuchsia-300" />
+                    Aprov.
+                  </span>
+                  <strong className="block text-2xl font-extrabold text-slate-50">
+                    {totalMatches > 0 ? `${winRate}%` : '—'}
+                  </strong>
+                </div>
               </div>
-              <div className="h-2 overflow-hidden rounded-full bg-slate-800">
-                <div
-                  className="h-full rounded-full bg-emerald-300"
-                  style={{ width: `${progressPercent}%` }}
-                />
+
+              <div className="relative mt-5 grid gap-2">
+                <div className="flex items-center justify-between gap-3 text-xs">
+                  <span className="font-semibold uppercase tracking-wide text-slate-400">
+                    Progresso até o próximo
+                  </span>
+                  <span className="text-right text-slate-300">
+                    {aboveEntry
+                      ? `${currentEntry?.pointDiffToAbove ?? 0} pts → ${aboveEntry.name}`
+                      : 'Você está no topo!'}
+                  </span>
+                </div>
+                <div className="h-2.5 overflow-hidden rounded-full bg-slate-800/60">
+                  <div
+                    className="h-full rounded-full bg-gradient-to-r from-emerald-300 via-emerald-400 to-teal-400 transition-all"
+                    style={{ width: `${progressPercent}%` }}
+                  />
+                </div>
+                {belowEntry ? (
+                  <span className="text-[11px] text-slate-500">
+                    +{currentEntry?.pointDiffToBelow ?? 0} pts à frente de {belowEntry.name}
+                  </span>
+                ) : null}
               </div>
-              {belowEntry ? (
-                <span className="text-xs text-slate-400">
-                  {currentEntry?.pointDiffToBelow ?? 0} pts acima de {belowEntry.name}
-                </span>
+
+              {rankingError ? (
+                <div className="relative mt-3">
+                  <ErrorBanner message={rankingError} />
+                </div>
               ) : null}
-            </div>
+            </section>
 
-            {rankingError ? <ErrorBanner message={rankingError} /> : null}
-          </section>
+            <nav className="grid gap-3">
+              <Link
+                className="group relative inline-flex min-h-[64px] items-center justify-between overflow-hidden rounded-2xl bg-gradient-to-r from-emerald-400 to-teal-500 px-5 py-3 text-left font-bold text-emerald-950 shadow-glow transition hover:scale-[1.01]"
+                to="/match/new"
+              >
+                <span className="flex items-center gap-3">
+                  <span className="flex h-11 w-11 items-center justify-center rounded-xl bg-white/30">
+                    <Icon name="plusCircle" size={24} strokeWidth={2.4} />
+                  </span>
+                  <span>
+                    <span className="block text-base">Registrar partida</span>
+                    <span className="block text-xs font-medium opacity-80">
+                      Atualize seus pontos
+                    </span>
+                  </span>
+                </span>
+                <Icon name="arrowRight" size={20} strokeWidth={2.5} />
+              </Link>
+
+              <div className="grid grid-cols-2 gap-3">
+                <Link
+                  className="group flex flex-col gap-2 rounded-2xl border border-slate-800/80 bg-slate-900/60 p-4 transition hover:border-amber-300/40"
+                  to="/ranking"
+                >
+                  <span className="flex h-11 w-11 items-center justify-center rounded-xl bg-amber-300/15 text-amber-300 ring-1 ring-amber-300/20">
+                    <Icon name="trophy" size={22} />
+                  </span>
+                  <span>
+                    <span className="block font-bold text-slate-50">Ranking</span>
+                    <span className="block text-xs text-slate-400">Top jogadores</span>
+                  </span>
+                </Link>
+
+                <Link
+                  className="group flex flex-col gap-2 rounded-2xl border border-slate-800/80 bg-slate-900/60 p-4 transition hover:border-sky-300/40"
+                  to="/matchmaking"
+                >
+                  <span className="flex h-11 w-11 items-center justify-center rounded-xl bg-sky-300/15 text-sky-300 ring-1 ring-sky-300/20">
+                    <Icon name="users" size={22} />
+                  </span>
+                  <span>
+                    <span className="block font-bold text-slate-50">Matchmaking</span>
+                    <span className="block text-xs text-slate-400">Por nível</span>
+                  </span>
+                </Link>
+
+                <Link
+                  className="group col-span-2 flex items-center gap-3 rounded-2xl border border-slate-800/80 bg-slate-900/60 p-4 transition hover:border-fuchsia-300/40"
+                  to="/profile"
+                >
+                  <span className="flex h-11 w-11 items-center justify-center rounded-xl bg-fuchsia-300/15 text-fuchsia-300 ring-1 ring-fuchsia-300/20">
+                    <Icon name="user" size={22} />
+                  </span>
+                  <span className="flex-1">
+                    <span className="block font-bold text-slate-50">Meu perfil</span>
+                    <span className="block text-xs text-slate-400">
+                      Histórico, estatísticas e nível
+                    </span>
+                  </span>
+                  <Icon name="arrowRight" size={18} className="text-slate-500" />
+                </Link>
+              </div>
+            </nav>
+          </>
         ) : null}
-
-        <nav className="grid gap-3">
-          <Link
-            className="min-h-[44px] rounded-lg bg-emerald-400 px-4 py-3 text-center font-semibold text-slate-950"
-            to="/match/new"
-          >
-            Registrar partida
-          </Link>
-          <Link
-            className="min-h-[44px] rounded-lg bg-emerald-300/15 px-4 py-3 text-center font-semibold text-emerald-100 ring-1 ring-emerald-300/30"
-            to="/matchmaking"
-          >
-            Matchmaking
-          </Link>
-          <Link
-            className="min-h-[44px] rounded-lg bg-slate-800 px-4 py-3 text-center font-semibold"
-            to="/ranking"
-          >
-            Ranking
-          </Link>
-          <Link
-            className="min-h-[44px] rounded-lg bg-slate-800 px-4 py-3 text-center font-semibold"
-            to="/profile"
-          >
-            Perfil
-          </Link>
-        </nav>
-
-        <button
-          className="mt-auto min-h-[44px] rounded-lg border border-slate-700 px-4 py-3 font-semibold text-slate-100"
-          type="button"
-          onClick={() => {
-            void signOut();
-          }}
-        >
-          Sair
-        </button>
       </section>
     </main>
   );

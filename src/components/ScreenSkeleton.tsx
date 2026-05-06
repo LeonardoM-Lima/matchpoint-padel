@@ -8,11 +8,16 @@ export function ScreenSkeleton({ rows = 3 }: ScreenSkeletonProps) {
       {Array.from({ length: rows }).map((_, index) => (
         <div
           key={index}
-          className="animate-pulse rounded-lg border border-slate-800 bg-slate-900/70 p-4"
+          className="relative animate-pulse overflow-hidden rounded-2xl border border-slate-800/60 bg-slate-900/50 p-4"
         >
-          <div className="h-4 w-2/3 rounded bg-slate-800" />
-          <div className="mt-3 h-3 w-full rounded bg-slate-800" />
-          <div className="mt-2 h-3 w-1/2 rounded bg-slate-800" />
+          <div className="flex items-center gap-3">
+            <div className="h-11 w-11 rounded-full bg-slate-800/80" />
+            <div className="flex-1 space-y-2">
+              <div className="h-3 w-2/3 rounded-full bg-slate-800/80" />
+              <div className="h-2.5 w-1/2 rounded-full bg-slate-800/60" />
+            </div>
+            <div className="h-8 w-12 rounded-lg bg-slate-800/80" />
+          </div>
         </div>
       ))}
     </div>

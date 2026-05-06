@@ -1,6 +1,8 @@
 import { useEffect, useMemo, useState } from 'react';
+import { Avatar } from './Avatar';
 import { EmptyState } from './EmptyState';
 import { ErrorBanner } from './ErrorBanner';
+import { Icon } from './Icon';
 import { ScreenSkeleton } from './ScreenSkeleton';
 import { supabase } from '../lib/supabase';
 
@@ -111,25 +113,39 @@ export function PlayerSelector({
   }
 
   return (
-    <section className="grid gap-3">
+    <section className="grid gap-2.5 rounded-xl border border-slate-800/80 bg-slate-900/40 p-3">
       <div className="grid gap-2">
-        <label className="text-sm font-semibold text-slate-200" htmlFor="player-search">
-          Jogadores
+        <label
+          className="flex items-center gap-1.5 text-xs font-bold uppercase tracking-wide text-emerald-300"
+          htmlFor="player-search"
+        >
+          <Icon name="users" size={14} />
+          Adversários e parceiros
         </label>
-        <input
-          id="player-search"
-          className="min-h-[44px] rounded-lg border border-slate-700 bg-slate-950 px-3 text-slate-50 outline-none focus:border-emerald-300 disabled:opacity-60"
-          placeholder="Buscar por nome"
-          type="search"
-          value={search}
-          disabled={disabled}
-          onChange={(event) => setSearch(event.target.value)}
-        />
+        <div className="relative">
+          <Icon
+            name="search"
+            size={18}
+            className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-slate-500"
+          />
+          <input
+            id="player-search"
+            className="min-h-[44px] w-full rounded-xl border border-slate-700 bg-slate-950 pl-10 pr-3 text-slate-50 outline-none transition focus:border-emerald-300 disabled:opacity-60"
+            placeholder="Buscar por nome"
+            type="search"
+            value={search}
+            disabled={disabled}
+            onChange={(event) => setSearch(event.target.value)}
+          />
+        </div>
       </div>
 
-      <div className="flex items-center justify-between text-sm text-slate-400">
-        <span>{selectedPlayers.length}/{maxPlayers} selecionados</span>
-        {loading ? <span>Carregando...</span> : null}
+      <div className="flex items-center justify-between text-xs">
+        <span className="inline-flex items-center gap-1.5 rounded-full bg-emerald-300/10 px-2.5 py-1 font-semibold text-emerald-200 ring-1 ring-emerald-300/20">
+          <Icon name="checkCircle" size={12} />
+          {selectedPlayers.length}/{maxPlayers} selecionados
+        </span>
+        {loading ? <span className="text-slate-400">Carregando...</span> : null}
       </div>
 
       {error ? <ErrorBanner message={error} /> : null}
@@ -145,29 +161,40 @@ export function PlayerSelector({
             <button
               key={player.id}
               className={[
-                'flex min-h-[56px] items-center justify-between rounded-lg border px-3 py-2 text-left transition',
+                'flex min-h-[48px] items-center gap-2.5 rounded-lg border px-2.5 py-1.5 text-left transition',
                 selected
-                  ? 'border-emerald-300 bg-emerald-300 text-slate-950'
-                  : 'border-slate-800 bg-slate-900 text-slate-100',
+                  ? 'border-emerald-300 bg-emerald-300/15 shadow-glow'
+                  : 'border-slate-800 bg-slate-950 hover:border-emerald-300/40',
                 blocked || disabled ? 'opacity-60' : '',
               ].join(' ')}
               type="button"
               disabled={disabled || blocked}
               onClick={() => togglePlayer(player)}
             >
-              <span>
-                <span className="block font-semibold">{player.name}</span>
-                <span className={selected ? 'text-slate-800' : 'text-slate-400'}>
-                  {player.points} pontos
+              <Avatar name={player.name} size={34} />
+              <span className="min-w-0 flex-1">
+                <span className="block truncate text-sm font-semibold text-slate-50">{player.name}</span>
+                <span className="text-[11px] text-slate-400">
+                  {player.points} pts · {player.wins}V / {player.losses}D
                 </span>
               </span>
-              <span className="text-sm font-semibold">{selected ? 'Selecionado' : 'Adicionar'}</span>
+              <span
+                className={[
+                  'flex h-7 w-7 shrink-0 items-center justify-center rounded-full',
+                  selected
+                    ? 'bg-emerald-300 text-emerald-950'
+                    : 'bg-slate-800 text-slate-400',
+                ].join(' ')}
+              >
+                <Icon name={selected ? 'check' : 'plus'} size={14} strokeWidth={2.6} />
+              </span>
             </button>
           );
         })}
 
         {!loading && players.length === 0 ? (
           <EmptyState
+            icon="search"
             title="Nenhum jogador encontrado"
             description="Revise a busca ou cadastre novos jogadores."
           />

@@ -1,6 +1,7 @@
 import { Link } from 'react-router-dom';
 import { EmptyState } from '../components/EmptyState';
 import { ErrorBanner } from '../components/ErrorBanner';
+import { Icon } from '../components/Icon';
 import { PlayerCard } from '../components/PlayerCard';
 import { ScreenSkeleton } from '../components/ScreenSkeleton';
 import { useMatchmaking } from '../hooks/useMatchmaking';
@@ -11,23 +12,34 @@ export function MatchmakingScreen() {
   const { suggestions, loading, error, refresh } = useMatchmaking();
 
   return (
-    <main className="min-h-screen bg-slate-950 px-4 pb-28 pt-6 text-slate-50">
-      <section className="mx-auto grid max-w-md gap-6">
+    <main className="min-h-screen px-4 pb-32 pt-6 text-slate-50">
+      <section className="mx-auto grid max-w-md gap-5 animate-fade-in">
         <header className="grid gap-3">
-          <Link className="text-sm font-semibold text-emerald-300" to="/">
+          <Link
+            className="inline-flex items-center gap-1.5 text-sm font-semibold text-emerald-300 hover:text-emerald-200"
+            to="/"
+          >
+            <Icon name="arrowLeft" size={16} />
             Voltar
           </Link>
-          <div>
-            <p className="text-sm font-semibold uppercase tracking-wide text-emerald-300">
-              MatchPoint Padel
-            </p>
-            <h1 className="text-3xl font-bold">Matchmaking</h1>
-            {profile ? (
-              <p className="mt-2 text-slate-300">
-                Sugestoes baseadas nos seus {profile.points} pontos.
+          <div className="flex items-center gap-3">
+            <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-gradient-to-br from-sky-400 to-indigo-500 shadow-soft">
+              <Icon name="users" size={24} strokeWidth={2.2} />
+            </div>
+            <div>
+              <p className="text-xs font-bold uppercase tracking-[0.25em] text-emerald-300">
+                MatchPoint Padel
               </p>
-            ) : null}
+              <h1 className="font-display text-3xl font-extrabold text-slate-50">Matchmaking</h1>
+            </div>
           </div>
+          {profile ? (
+            <p className="flex items-center gap-2 rounded-2xl border border-slate-800/80 bg-slate-900/50 px-4 py-3 text-sm text-slate-300">
+              <Icon name="sparkles" size={16} className="text-emerald-300" />
+              Sugestões baseadas nos seus{' '}
+              <span className="font-bold text-emerald-300">{profile.points}</span> pontos.
+            </p>
+          ) : null}
         </header>
 
         {loading ? <ScreenSkeleton rows={4} /> : null}
@@ -44,6 +56,7 @@ export function MatchmakingScreen() {
 
         {!loading && !error && suggestions.length === 0 ? (
           <EmptyState
+            icon="users"
             title="Nenhum jogador encontrado"
             description="Quando houver outros jogadores cadastrados, eles aparecem aqui por proximidade de pontos."
           />
