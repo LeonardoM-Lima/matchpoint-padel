@@ -79,26 +79,42 @@ exibe o delta de pontos para os vizinhos imediatos.
 
 ---
 
-### User Story 3 - Encontrar Jogadores de Nível Parecido (Priority: P3)
+### User Story 3 - Encontrar Jogadores para Jogar (Prioridade: P3)
 
-Como jogador autenticado, quero ver sugestões de jogadores com pontuação
-próxima à minha para visualizar potenciais adversários.
+Como jogador autenticado, quero ver sugestões de jogadores com indicadores
+claros de equilíbrio da partida para decidir quem desafiar.
 
 **Why this priority**: Amplia uso recorrente e o valor social do app, mas não
 bloqueia o primeiro registro de partida.
 
 **Independent Test**: A tela de matchmaking mostra cards com nome, nível,
-posição no ranking e pontos, ordenados por proximidade de pontuação, excluindo
-o usuário atual.
+posição no ranking, diferença de pontos, indicador de equilíbrio e botão de
+convite via WhatsApp.
 
 **Acceptance Scenarios**:
 
 1. **Given** o usuário está autenticado, **When** acessa a tela de matchmaking,
-   **Then** vê uma lista de outros jogadores ordenados por proximidade de
-   pontuação (mais próximos primeiro), cada card exibindo nome, nível, posição
-   no ranking e pontos.
+   **Then** vê uma lista de outros jogadores ordenados por menor diferença de
+   pontos, cada card exibindo nome, avatar com iniciais, nível, posição no
+   ranking, diferença de pontos e indicador de equilíbrio da partida.
 2. **Given** o usuário acessa matchmaking, **When** a lista é exibida, **Then**
    seu próprio perfil não aparece entre os resultados.
+3. **Given** um card exibido, **When** a diferença de pontos é ≤ 99, **Then**
+   o indicador mostra "Match Perfeito" em verde.
+4. **Given** um card exibido, **When** a diferença de pontos é 100–200, **Then**
+   o indicador mostra "Partida Equilibrada" em verde.
+5. **Given** um card exibido, **When** a diferença é 201–300 e o usuário tem
+   mais pontos, **Then** mostra "Você é Favorito" em amarelo; quando tem menos,
+   mostra "Desafio Difícil" em amarelo.
+6. **Given** um card exibido, **When** a diferença é > 300 e o usuário tem
+   mais pontos, **Then** mostra "Grande Favorito" em vermelho; quando tem menos,
+   mostra "Grande Desafio" em vermelho.
+7. **Given** um card exibido, **When** o usuário já jogou com aquele jogador,
+   **Then** o card mostra "Já jogaram Nx"; quando nunca jogaram, mostra
+   "Nunca jogaram".
+8. **Given** um card exibido, **When** o usuário toca em "Desafiar no WhatsApp",
+   **Then** abre o WhatsApp com mensagem: "Oi [nome]! Te desafio para uma
+   partida de padel pelo MatchPoint. Topa?"
 
 ---
 
@@ -123,10 +139,32 @@ corretos de vitórias, derrotas e pontuação atual.
 
 ---
 
+### User Story 5 - Visualizar Histórico de Partidas (Prioridade: P3)
+
+Como jogador, quero ver todas as minhas partidas registradas em ordem cronológica
+reversa para acompanhar minha evolução.
+
+**Why this priority**: Complementa a visão de progresso individual já oferecida
+pelo perfil (US4), mas não é necessário para o fluxo principal do MVP.
+
+**Independent Test**: Após registrar partidas, o histórico exibe todas elas com
+parceiro, adversários, placar, resultado e variação de pontos.
+
+**Acceptance Scenarios**:
+
+1. **Given** um jogador que registrou partidas, **When** acessa o histórico pelo
+   perfil, **Then** vê todas as partidas em ordem cronológica reversa, cada uma
+   exibindo data, parceiro, adversários, placar, resultado (V/D) e variação de
+   pontos.
+2. **Given** um jogador novo sem partidas, **When** acessa o histórico, **Then**
+   vê estado vazio indicando que nenhuma partida foi registrada ainda.
+
+---
+
 ### Edge Cases
 
 - Partida com placar inválido deve ser rejeitada com a mensagem de erro
-  correspondente (ver FR-016). Placares inválidos: nenhum score informado,
+  correspondente (ver FR-022). Placares inválidos: nenhum score informado,
   vencedor com < 6 games (ex: 5–4, 3–3), ou placar impossível (ex: 8–2, 6–5).
 - Pontuação de qualquer jogador não pode ficar abaixo de 0 — o piso é 0.
 - Jogador novo (sem partidas registradas) deve aparecer no ranking com pontuação
@@ -193,21 +231,53 @@ corretos de vitórias, derrotas e pontuação atual.
 - **FR-010**: Home MUST exibir pontuação atual do usuário, posição no ranking e
   progresso em relação ao próximo jogador acima.
 - **FR-011**: Tela de matchmaking MUST excluir o usuário atual e ordenar
-  resultados por proximidade de pontuação.
+  resultados por menor diferença de pontos em relação ao usuário atual.
+- **FR-011a**: Cada card de matchmaking MUST exibir: nome, avatar com iniciais,
+  nível, posição no ranking e diferença de pontos em relação ao usuário atual.
+- **FR-011b**: Cada card MUST exibir um indicador de equilíbrio baseado na
+  diferença absoluta de pontos entre os dois jogadores:
+  - 0–99 pts → "Match Perfeito" (verde)
+  - 100–200 pts → "Partida Equilibrada" (verde)
+  - 201–300 pts → "Você é Favorito" ou "Desafio Difícil" (amarelo)
+  - 301+ pts → "Grande Favorito" ou "Grande Desafio" (vermelho)
+- **FR-011c**: O indicador MUST usar a variante favorável ("Você é Favorito",
+  "Grande Favorito") quando o usuário atual tiver mais pontos que o sugerido,
+  e a variante desfavorável ("Desafio Difícil", "Grande Desafio") quando tiver
+  menos pontos.
+- **FR-011d**: Cada card MUST exibir o histórico de confrontos diretos entre o
+  usuário atual e o jogador sugerido: "Já jogaram Nx" (ex: "Já jogaram 3x") ou
+  "Nunca jogaram" quando não há partidas em comum.
+- **FR-011e**: Cada card MUST exibir botão "Desafiar no WhatsApp" que abre o
+  WhatsApp com mensagem pré-preenchida: "Oi [nome]! Te desafio para uma partida
+  de padel pelo MatchPoint. Topa?" — [nome] é o nickname do jogador sugerido.
+- **FR-011f**: Cards de matchmaking MUST NOT exibir aproveitamento geral
+  (win rate) do jogador sugerido — esse dado não é relevante para a decisão de
+  quem desafiar.
 - **FR-012**: Usuário MUST NOT conseguir alterar diretamente a pontuação de
   outros jogadores — variações de pontuação ocorrem exclusivamente via lógica
   centralizada de cálculo de rating após o registro de uma partida.
-- **FR-013**: O criador de uma partida MUST conseguir excluí-la dentro de 5
+- **FR-013**: Perfil MUST exibir botão "Ver histórico de partidas" abaixo dos
+  stats (vitórias, derrotas, aproveitamento).
+- **FR-014**: Ao clicar no botão, MUST abrir tela de histórico com scroll
+  mostrando todas as partidas do jogador.
+- **FR-015**: Cada partida MUST exibir: data, parceiro de dupla, adversários,
+  placar, resultado (V/D) e variação de pontos (ex: +27 ou -10).
+- **FR-016**: Formato de exibição MUST ser:
+  "Com [parceiro] contra [adversário1] e [adversário2]".
+- **FR-017**: Partidas MUST ser ordenadas da mais recente para a mais antiga.
+- **FR-018**: Botão "Atualizar perfil" MUST ser removido da tela de perfil no
+  MVP — edição de perfil é pós-MVP.
+- **FR-019**: O criador de uma partida MUST conseguir excluí-la dentro de 5
   minutos após o registro. Ao excluir, o sistema MUST reverter a pontuação,
   vitórias e derrotas de todos os jogadores envolvidos para os valores
   anteriores à partida.
-- **FR-014**: Após 5 minutos do registro, a partida MUST ser permanente —
+- **FR-020**: Após 5 minutos do registro, a partida MUST ser permanente —
   nenhum jogador pode excluí-la ou editá-la.
-- **FR-015**: O registro de partida MUST executar em uma transação atômica
+- **FR-021**: O registro de partida MUST executar em uma transação atômica
   única. Em caso de qualquer falha — validação, inserção ou cálculo de Elo —
   o sistema MUST fazer rollback completo. Nenhuma alteração parcial deve
   persistir em `matches`, `match_players` ou `profiles`.
-- **FR-016**: O sistema MUST exibir as seguintes mensagens de erro ao usuário
+- **FR-022**: O sistema MUST exibir as seguintes mensagens de erro ao usuário
   no fluxo de registro de partida:
   - Menos de 4 jogadores selecionados: "Selecione 4 jogadores para continuar"
   - Placar não preenchido: "Informe o placar do set"

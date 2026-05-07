@@ -2,7 +2,7 @@ import { Link } from 'react-router-dom';
 import { EmptyState } from '../components/EmptyState';
 import { ErrorBanner } from '../components/ErrorBanner';
 import { Icon } from '../components/Icon';
-import { PlayerCard } from '../components/PlayerCard';
+import { MatchmakingCard } from '../components/MatchmakingCard';
 import { ScreenSkeleton } from '../components/ScreenSkeleton';
 import { useMatchmaking } from '../hooks/useMatchmaking';
 import { useProfile } from '../hooks/useProfile';
@@ -65,7 +65,11 @@ export function MatchmakingScreen() {
         {!loading && !error && suggestions.length > 0 ? (
           <div className="grid gap-3">
             {suggestions.map((suggestion) => (
-              <PlayerCard key={suggestion.id} player={suggestion} />
+              <MatchmakingCard
+                key={suggestion.id}
+                suggestion={suggestion}
+                currentUserPoints={profile?.points ?? 0}
+              />
             ))}
           </div>
         ) : null}

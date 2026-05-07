@@ -125,14 +125,14 @@ jogador acima e abaixo estão corretos.
 
 ---
 
-## Phase 5: User Story 3 — Encontrar Jogadores de Nível Parecido (P3)
+## Phase 5: User Story 3 — Encontrar Jogadores para Jogar (P3)
 
-**Goal**: Tela de matchmaking lista outros jogadores ordenados por proximidade
-de pontuação, excluindo o usuário atual; cada card exibe nome, nível, posição
-e pontos.
+**Goal**: Tela de matchmaking lista outros jogadores com indicadores claros de
+equilíbrio, histórico de confrontos e botão de desafio via WhatsApp.
 
-**Independent Test**: Tela de matchmaking carrega sem erro, exclui o usuário
-logado e ordena os demais por `|pontos_usuário − pontos_candidato| ASC`.
+**Independent Test**: Card mostra diferença de pontos clara, indicador de
+equilíbrio colorido e botão funcional de WhatsApp; usuário atual excluído da
+lista; ordenação por menor `points_diff` ASC.
 
 ### Testes críticos — US3 ⚠️
 
@@ -145,7 +145,14 @@ logado e ordena os demais por `|pontos_usuário − pontos_candidato| ASC`.
 - [X] T041 [US3] Criar hook `useMatchmaking` em `src/hooks/useMatchmaking.ts` (depende de T039, T018)
 - [X] T042 [US3] Criar `MatchmakingScreen`: lista de `PlayerCard` ordenada por proximidade; estado vazio quando não há outros usuários em `src/screens/MatchmakingScreen.tsx` (depende de T040, T041)
 
-**Checkpoint**: Matchmaking lista jogadores próximos corretamente; perfil do usuário logado ausente da lista.
+### Reformulação — US3 (cards com equilíbrio e WhatsApp)
+
+- [X] T065 [US3] Atualizar query `getMatchmakingSuggestions` em `src/services/ranking.service.ts` para retornar `points_diff` (ABS da diferença) e `games_together` (partidas já jogadas juntos, calculado no client cruzando `match_id` do usuário com os do candidato) por jogador (depende de T039, T041)
+- [X] T066 [P] [US3] Criar função `getMatchLabel` em `src/utils/matchmaking.ts` que recebe `pointsDiff` e `isFavorite` e retorna `{ label, color }`: 0–99 → "Match Perfeito"/verde; 100–200 → "Partida Equilibrada"/verde; 201–300 → "Você é Favorito"/"Desafio Difícil"/amarelo; 301+ → "Grande Favorito"/"Grande Desafio"/vermelho (FR-011b, FR-011c)
+- [X] T067 [US3] Atualizar componente `MatchmakingCard` em `src/components/MatchmakingCard.tsx`: avatar com iniciais, nome, nível, posição no ranking, "Diferença: X pts", badge colorido com `match_label`, "Já jogaram Xx"/"Nunca jogaram" (FR-011d), botão "Desafiar no WhatsApp" com link `https://wa.me/?text=…` (FR-011e); remover aproveitamento geral (FR-011f) (depende de T065, T066)
+- [X] T068 [US3] Atualizar `MatchmakingScreen` em `src/screens/MatchmakingScreen.tsx` para usar o novo `MatchmakingCard` no lugar de `PlayerCard` (depende de T067, T041)
+
+**Checkpoint**: Card mostra diferença de pontos clara, indicador de equilíbrio colorido e botão funcional de WhatsApp; perfil do usuário logado ausente da lista.
 
 ---
 
@@ -162,6 +169,28 @@ nome, nível, pontuação atual, vitórias e derrotas do jogador.
 - [X] T045 [US4] Criar `ProfileScreen`: exibir nome, badge de nível, pontos atuais, vitórias e derrotas em `src/screens/ProfileScreen.tsx` (depende de T027)
 
 **Checkpoint**: Perfil reflete corretamente nome, nível, pontuação, vitórias e derrotas do jogador.
+
+---
+
+## Phase 6.5: User Story 5 — Histórico de Partidas (P3)
+
+**Goal**: Usuário acessa o histórico completo de suas partidas a partir do
+perfil, com parceiro, adversários, placar, resultado e variação de pontos.
+
+**Independent Test**: Após registrar partidas, o histórico exibe todas elas com
+parceiro e adversários identificados, variação de pontos e resultado (V/D),
+ordenadas da mais recente para a mais antiga.
+
+### Implementação — US5
+
+- [X] T059 [US5] Criar `getMatchHistory(userId: string)` em `src/services/match.service.ts` — busca todas as partidas do usuário via `match_players` com parceiro (mesmo time, profile_id diferente), adversários (time oposto) e dados do match (played_at, placar, winner_team, points_before, points_delta, points_after), ordenadas por `played_at DESC` (depende de T025)
+- [X] T060 [US5] Criar hook `useMatchHistory` em `src/hooks/useMatchHistory.ts` — chama `getMatchHistory` com o userId do perfil atual e retorna `{ loading, error, matches }` (depende de T059, T018)
+- [X] T061 [P] [US5] Criar componente `MatchHistoryCard` em `src/components/MatchHistoryCard.tsx` — exibe uma partida no formato "Com [parceiro] contra [adversário1] e [adversário2]", data, placar, resultado (V/D) e variação de pontos (+27 / -10) (FR-015, FR-016)
+- [X] T062 [US5] Criar tela `MatchHistoryScreen` em `src/screens/MatchHistoryScreen.tsx` — lista todas as partidas com scroll usando `MatchHistoryCard`; exibe `EmptyState` quando não há partidas (depende de T060, T061)
+- [X] T063 [US5] Adicionar rota `/profile/history` em `src/router/index.tsx` apontando para `MatchHistoryScreen` protegida (depende de T062, T020)
+- [X] T064 [US5] Atualizar `ProfileScreen` em `src/screens/ProfileScreen.tsx`: remover botão "Atualizar perfil" (FR-018); adicionar botão "Ver histórico de partidas" abaixo dos stats navegando para `/profile/history` (FR-013) (depende de T045, T063)
+
+**Checkpoint**: Usuário clica em "Ver histórico", vê todas as partidas com parceiro e adversários identificados, variação de pontos e resultado.
 
 ---
 
@@ -196,7 +225,8 @@ Phase 1 (Setup)
             ├── Phase 4 (US2 — P2) [pode iniciar após Phase 2; integra com US1]
             ├── Phase 5 (US3 — P3) [pode iniciar após Phase 2; usa ranking.service]
             └── Phase 6 (US4 — P3) [pode iniciar após Phase 2]
-                            └── Phase 7 (Polish) [após todas as US desejadas]
+                            └── Phase 6.5 (US5 — P3) [depende de Phase 6 (T045)]
+                                            └── Phase 7 (Polish) [após todas as US desejadas]
 ```
 
 ### User Story Dependencies
@@ -207,6 +237,7 @@ Phase 1 (Setup)
 | US2 (P2) | Phase 2 completa | T022; integra com useProfile de US1 |
 | US3 (P3) | Phase 2 + ranking.service (T033) | T033 de US2 |
 | US4 (P3) | Phase 2 completa | T022 |
+| US5 (P3) | Phase 6 completa (T045) | T045 de US4 |
 
 ### Dentro de cada User Story
 
@@ -222,8 +253,9 @@ Phase 1 (Setup)
 - **Foundational infra** (T013–T016): paralelizáveis entre si
 - **US1** (T023–T028a): testes e componentes atômicos paralelizáveis; T028b depende de T025, T026 e T028a
 - **US2** (T033–T034): service e componente paralelizáveis; T035–T037 dependem dos dois
-- **US3** (T039–T040): service e componente paralelizáveis; T041–T042 dependem dos dois
+- **US3** (T039–T040): service e componente paralelizáveis; T041–T042 dependem dos dois; T065 depende de T039/T041; T066 é paralelizável ([P]); T067 depende de T065 e T066; T068 depende de T067
 - **US4**: T045 depende de T027
+- **US5** (T059–T064): T059 depende de T025; T060 depende de T059 e T018; T061 é paralelizável ([P]); T062 depende de T060 e T061; T063 depende de T062; T064 depende de T045 e T063
 - **Polish** (T046–T058): T047–T049 paralelizáveis entre si; T053–T055 e T057–T058 devem rodar após as migrations/testes base correspondentes
 
 ---
@@ -265,7 +297,8 @@ T030b — Countdown + undo/delete flow em match.service.ts
 2. Phase 3 (US1) → registrar partida funciona → **MVP!** deploy/demo
 3. Phase 4 (US2) → ranking + home completos → deploy/demo
 4. Phase 5 (US3) → matchmaking → deploy/demo
-5. Phase 6 (US4) → perfil + histórico → deploy/demo
+5. Phase 6 (US4) → perfil → deploy/demo
+5.5. Phase 6.5 (US5) → histórico de partidas → deploy/demo
 6. Phase 7 → polish → release
 
 ### Parallel Team Strategy
@@ -293,4 +326,4 @@ Com dois ou mais desenvolvedores:
 
 ---
 
-**Total**: 59 tasks · **US1**: 11 tasks (T023–T027, T028a–T030b, T031) · **US2**: 6 tasks (T032–T037) · **US3**: 5 tasks (T038–T042) · **US4**: 1 task (T045) · **Setup**: 5 · **Foundational**: 19 · **Polish**: 12
+**Total**: 69 tasks · **US1**: 11 tasks (T023–T027, T028a–T030b, T031) · **US2**: 6 tasks (T032–T037) · **US3**: 9 tasks (T038–T042, T065–T068) · **US4**: 1 task (T045) · **US5**: 6 tasks (T059–T064) · **Setup**: 5 · **Foundational**: 19 · **Polish**: 12

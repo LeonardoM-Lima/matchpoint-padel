@@ -44,9 +44,8 @@ export interface MatchmakingSuggestion {
   points: number;
   level: PlayerLevel;
   position: number;
-  pointDiff: number; // |current_user_points − suggestion_points|
-  wins: number;
-  losses: number;
+  pointDiff: number;    // |current_user_points − suggestion_points|
+  gamesTogether: number; // partidas jogadas juntos (0 = nunca jogaram)
 }
 
 // ─── Match ───────────────────────────────────────────────────────────────────

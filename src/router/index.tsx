@@ -3,6 +3,7 @@ import { ProtectedLayout } from '../components/ProtectedLayout';
 import { ProtectedRoute } from '../components/ProtectedRoute';
 import { HomeScreen } from '../screens/HomeScreen';
 import { LoginScreen } from '../screens/LoginScreen';
+import { MatchHistoryScreen } from '../screens/MatchHistoryScreen';
 import { MatchmakingScreen } from '../screens/MatchmakingScreen';
 import { ProfileScreen } from '../screens/ProfileScreen';
 import { RankingScreen } from '../screens/RankingScreen';
@@ -43,6 +44,10 @@ export const router = createBrowserRouter([
           {
             path: '/profile',
             element: <ProfileScreen />,
+          },
+          {
+            path: '/profile/history',
+            element: <MatchHistoryScreen />,
           },
         ],
       },

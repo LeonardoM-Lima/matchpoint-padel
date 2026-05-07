@@ -68,19 +68,27 @@ export function buildMatchmakingSuggestions(
   rows: ProfileRankingRow[],
   currentProfileId: string,
   currentUserPoints: number,
+  myMatchIds: Set<string>,
+  candidateMatchIds: Map<string, Set<string>>,
 ): MatchmakingSuggestion[] {
   return buildRankingEntries(rows)
     .filter((entry) => entry.id !== currentProfileId)
-    .map((entry) => ({
-      id: entry.id,
-      name: entry.name,
-      points: entry.points,
-      wins: entry.wins,
-      losses: entry.losses,
-      level: entry.level,
-      position: entry.position,
-      pointDiff: Math.abs(entry.points - currentUserPoints),
-    }))
+    .map((entry) => {
+      const theirMatchIds = candidateMatchIds.get(entry.id) ?? new Set<string>();
+      let gamesTogether = 0;
+      for (const id of theirMatchIds) {
+        if (myMatchIds.has(id)) gamesTogether++;
+      }
+      return {
+        id: entry.id,
+        name: entry.name,
+        points: entry.points,
+        level: entry.level,
+        position: entry.position,
+        pointDiff: Math.abs(entry.points - currentUserPoints),
+        gamesTogether,
+      };
+    })
     .sort((a, b) => {
       if (a.pointDiff !== b.pointDiff) return a.pointDiff - b.pointDiff;
       if (b.points !== a.points) return b.points - a.points;
@@ -124,17 +132,35 @@ export const rankingService = {
 
     if (!currentProfile) return [];
 
-    const { data: suggestionData, error: suggestionError } = await supabase
-      .from('profiles')
-      .select('id')
-      .neq('user_id', user.id);
+    // Buscar todos os match_ids do usuário atual para calcular games_together
+    const { data: myMatchData, error: myMatchError } = await supabase
+      .from('match_players')
+      .select('match_id,profile_id')
+      .in('profile_id', [currentProfile.id, ...rows.filter(r => r.user_id !== user.id).map(r => r.id)]);
 
-    if (suggestionError) throw suggestionError;
+    if (myMatchError) throw myMatchError;
 
-    const suggestionIds = new Set((suggestionData ?? []).map((row) => row.id as string));
+    const allMatchRows = (myMatchData ?? []) as { match_id: string; profile_id: string }[];
 
-    return buildMatchmakingSuggestions(rows, currentProfile.id, currentUserPoints).filter((suggestion) =>
-      suggestionIds.has(suggestion.id),
+    const myMatchIds = new Set<string>(
+      allMatchRows.filter((r) => r.profile_id === currentProfile.id).map((r) => r.match_id),
+    );
+
+    const candidateMatchIds = new Map<string, Set<string>>();
+    for (const row of allMatchRows) {
+      if (row.profile_id === currentProfile.id) continue;
+      if (!candidateMatchIds.has(row.profile_id)) {
+        candidateMatchIds.set(row.profile_id, new Set());
+      }
+      candidateMatchIds.get(row.profile_id)!.add(row.match_id);
+    }
+
+    return buildMatchmakingSuggestions(
+      rows,
+      currentProfile.id,
+      currentUserPoints,
+      myMatchIds,
+      candidateMatchIds,
     );
   },
 };

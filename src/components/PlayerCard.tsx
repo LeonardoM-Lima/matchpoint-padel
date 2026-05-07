@@ -13,9 +13,6 @@ interface PlayerCardProps {
 }
 
 export function PlayerCard({ player }: PlayerCardProps) {
-  const totalGames = player.wins + player.losses;
-  const winRate = totalGames > 0 ? Math.round((player.wins / totalGames) * 100) : 0;
-
   return (
     <article className="relative overflow-hidden rounded-2xl border border-slate-800/80 bg-slate-900/60 p-4 transition hover:border-emerald-300/40 animate-slide-up">
       <div className="pointer-events-none absolute -right-12 -top-12 h-32 w-32 rounded-full bg-emerald-400/10 blur-3xl" />
@@ -38,7 +35,7 @@ export function PlayerCard({ player }: PlayerCardProps) {
         </span>
       </div>
 
-      <div className="relative mt-4 grid grid-cols-3 gap-2 text-sm">
+      <div className="relative mt-4 grid grid-cols-2 gap-2 text-sm">
         <div className="rounded-xl bg-slate-950/70 p-3 ring-1 ring-slate-800/60">
           <span className="flex items-center gap-1 text-[10px] uppercase tracking-wide text-slate-500">
             <Icon name="lightning" size={10} className="text-emerald-300" />
@@ -49,18 +46,9 @@ export function PlayerCard({ player }: PlayerCardProps) {
         <div className="rounded-xl bg-slate-950/70 p-3 ring-1 ring-slate-800/60">
           <span className="flex items-center gap-1 text-[10px] uppercase tracking-wide text-slate-500">
             <Icon name="target" size={10} className="text-sky-300" />
-            Δ
+            Diferença
           </span>
-          <strong className="text-base text-emerald-300">{player.pointDiff}</strong>
-        </div>
-        <div className="rounded-xl bg-slate-950/70 p-3 ring-1 ring-slate-800/60">
-          <span className="flex items-center gap-1 text-[10px] uppercase tracking-wide text-slate-500">
-            <Icon name="chartBar" size={10} className="text-fuchsia-300" />
-            {totalGames > 0 ? 'Aprov.' : 'Jogos'}
-          </span>
-          <strong className="text-base text-slate-50">
-            {totalGames > 0 ? `${winRate}%` : totalGames}
-          </strong>
+          <strong className="text-base text-emerald-300">{player.pointDiff} pts</strong>
         </div>
       </div>
     </article>

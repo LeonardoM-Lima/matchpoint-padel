@@ -13,7 +13,7 @@ function getLevelClass(level: string) {
 }
 
 export function ProfileScreen() {
-  const { profile, loading, refresh } = useProfile();
+  const { profile, loading } = useProfile();
   const totalMatches = profile ? profile.wins + profile.losses : 0;
   const winRate = totalMatches > 0 && profile ? Math.round((profile.wins / totalMatches) * 100) : 0;
 
@@ -115,16 +115,14 @@ export function ProfileScreen() {
               />
             ) : null}
 
-            <button
-              className="inline-flex min-h-[48px] items-center justify-center gap-2 rounded-xl border border-slate-800 bg-slate-900/60 px-4 font-semibold text-slate-200 transition hover:border-emerald-300/40 hover:text-emerald-200"
-              type="button"
-              onClick={() => {
-                void refresh();
-              }}
+            <Link
+              className="inline-flex min-h-[48px] items-center justify-center gap-2 rounded-xl border border-emerald-300/40 bg-emerald-400/10 px-4 font-semibold text-emerald-200 transition hover:bg-emerald-400/20 hover:text-emerald-100"
+              to="/profile/history"
             >
-              <Icon name="refresh" size={18} />
-              Atualizar perfil
-            </button>
+              <Icon name="chartBar" size={18} />
+              Ver histórico de partidas
+              <Icon name="arrowRight" size={16} />
+            </Link>
           </>
         ) : null}
       </section>

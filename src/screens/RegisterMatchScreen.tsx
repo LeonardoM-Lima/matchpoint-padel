@@ -95,6 +95,22 @@ export function RegisterMatchScreen() {
     [matchPlayers, teams],
   );
 
+  const pointsPreview = useMemo(() => {
+    if (selectedPlayers.length !== 3 || teamCounts.A !== 2 || teamCounts.B !== 2) return null;
+
+    const teamA = matchPlayers.filter((p) => teams[p.id] === 'A');
+    const teamB = matchPlayers.filter((p) => teams[p.id] === 'B');
+    const avgA = teamA.reduce((s, p) => s + p.points, 0) / teamA.length;
+    const avgB = teamB.reduce((s, p) => s + p.points, 0) / teamB.length;
+
+    const expectedIfAWins = 1.0 / (1.0 + Math.pow(10, (avgB - avgA) / 400));
+    const expectedIfBWins = 1.0 / (1.0 + Math.pow(10, (avgA - avgB) / 400));
+    const deltaIfAWins = Math.round(32 * (1.0 - expectedIfAWins));
+    const deltaIfBWins = Math.round(32 * (1.0 - expectedIfBWins));
+
+    return { deltaIfAWins, deltaIfBWins };
+  }, [matchPlayers, teams, teamCounts, selectedPlayers.length]);
+
   function assignTeam(playerId: string, team: Team) {
     setTeams((current) => ({
       ...current,
@@ -389,6 +405,21 @@ export function RegisterMatchScreen() {
                     </div>
                   );
                 })}
+              </div>
+            </section>
+          ) : null}
+
+          {pointsPreview ? (
+            <section className="grid grid-cols-2 gap-2 rounded-xl border border-slate-800/80 bg-slate-900/40 p-3">
+              <div className="flex flex-col items-center gap-0.5 rounded-lg bg-slate-950 py-2.5 ring-1 ring-sky-300/20">
+                <span className="text-[10px] font-bold uppercase tracking-wide text-sky-300">Time A vence</span>
+                <span className="text-base font-extrabold text-emerald-300">+{pointsPreview.deltaIfAWins}</span>
+                <span className="text-[10px] text-rose-300">Time B: −{pointsPreview.deltaIfAWins}</span>
+              </div>
+              <div className="flex flex-col items-center gap-0.5 rounded-lg bg-slate-950 py-2.5 ring-1 ring-fuchsia-300/20">
+                <span className="text-[10px] font-bold uppercase tracking-wide text-fuchsia-300">Time B vence</span>
+                <span className="text-base font-extrabold text-emerald-300">+{pointsPreview.deltaIfBWins}</span>
+                <span className="text-[10px] text-rose-300">Time A: −{pointsPreview.deltaIfBWins}</span>
               </div>
             </section>
           ) : null}
