@@ -5,6 +5,7 @@ import { ErrorBanner } from '../components/ErrorBanner';
 import { Icon } from '../components/Icon';
 import { ScreenSkeleton } from '../components/ScreenSkeleton';
 import { useProfile } from '../hooks/useProfile';
+import { useRanking } from '../hooks/useRanking';
 
 function getLevelClass(level: string) {
   if (level === 'Iniciante') return 'bg-sky-400/15 text-sky-200 ring-sky-300/30';
@@ -14,6 +15,7 @@ function getLevelClass(level: string) {
 
 export function ProfileScreen() {
   const { profile, loading } = useProfile();
+  const { currentEntry } = useRanking();
   const totalMatches = profile ? profile.wins + profile.losses : 0;
   const winRate = totalMatches > 0 && profile ? Math.round((profile.wins / totalMatches) * 100) : 0;
 
@@ -77,6 +79,12 @@ export function ProfileScreen() {
                 <strong className="text-5xl font-extrabold text-gradient-emerald">
                   {profile.points}
                 </strong>
+                {currentEntry ? (
+                  <span className="mt-1 flex items-center gap-1 text-xs font-semibold text-slate-400">
+                    <Icon name="chartBar" size={12} className="text-emerald-300" />
+                    {currentEntry.position}º no ranking
+                  </span>
+                ) : null}
               </div>
             </section>
 
