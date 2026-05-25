@@ -6,6 +6,7 @@ const items = [
   { to: '/ranking', label: 'Ranking', icon: 'trophy' as const },
   { to: '/match/new', label: 'Registrar', icon: 'plusCircle' as const, primary: true },
   { to: '/matchmaking', label: 'Jogadores', icon: 'users' as const },
+  { to: '/leagues', label: 'Ligas', icon: 'medal' as const },
   { to: '/profile', label: 'Perfil', icon: 'user' as const },
 ];
 

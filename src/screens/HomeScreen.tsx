@@ -78,7 +78,7 @@ export function HomeScreen() {
               <div className="pointer-events-none absolute -bottom-16 -left-12 h-40 w-40 rounded-full bg-fuchsia-500/10 blur-3xl" />
 
               <div className="relative flex items-center gap-3">
-                <Avatar name={profile.name} size={56} ring />
+                <Avatar name={profile.name} avatarUrl={profile.avatarUrl} size={56} ring />
                 <div className="min-w-0 flex-1">
                   <h2 className="truncate text-lg font-bold text-slate-50">{profile.name}</h2>
                   <span
@@ -208,19 +208,29 @@ export function HomeScreen() {
                 </Link>
 
                 <Link
-                  className="group col-span-2 flex items-center gap-3 rounded-2xl border border-slate-800/80 bg-slate-900/60 p-4 transition hover:border-fuchsia-300/40"
+                  className="group flex flex-col gap-2 rounded-2xl border border-slate-800/80 bg-slate-900/60 p-4 transition hover:border-emerald-300/40"
+                  to="/leagues"
+                >
+                  <span className="flex h-11 w-11 items-center justify-center rounded-xl bg-emerald-300/15 text-emerald-300 ring-1 ring-emerald-300/20">
+                    <Icon name="medal" size={22} />
+                  </span>
+                  <span>
+                    <span className="block font-bold text-slate-50">Ligas privadas</span>
+                    <span className="block text-xs text-slate-400">Ranking do grupo</span>
+                  </span>
+                </Link>
+
+                <Link
+                  className="group flex flex-col gap-2 rounded-2xl border border-slate-800/80 bg-slate-900/60 p-4 transition hover:border-fuchsia-300/40"
                   to="/profile"
                 >
                   <span className="flex h-11 w-11 items-center justify-center rounded-xl bg-fuchsia-300/15 text-fuchsia-300 ring-1 ring-fuchsia-300/20">
                     <Icon name="user" size={22} />
                   </span>
-                  <span className="flex-1">
+                  <span>
                     <span className="block font-bold text-slate-50">Meu perfil</span>
-                    <span className="block text-xs text-slate-400">
-                      Histórico, estatísticas e nível
-                    </span>
+                    <span className="block text-xs text-slate-400">Estatísticas</span>
                   </span>
-                  <Icon name="arrowRight" size={18} className="text-slate-500" />
                 </Link>
               </div>
             </nav>

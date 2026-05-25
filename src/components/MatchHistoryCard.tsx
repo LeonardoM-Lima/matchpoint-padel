@@ -26,9 +26,16 @@ export function MatchHistoryCard({ match }: MatchHistoryCardProps) {
   return (
     <article className="grid gap-3 rounded-2xl border border-slate-800/80 bg-slate-900/60 p-4">
       <header className="flex items-center justify-between gap-2">
-        <span className="text-[11px] font-semibold uppercase tracking-wide text-slate-400">
-          {formatDate(match.playedAt)}
-        </span>
+        <div className="flex flex-wrap items-center gap-2">
+          <span className="text-[11px] font-semibold uppercase tracking-wide text-slate-400">
+            {formatDate(match.playedAt)}
+          </span>
+          {match.leagueName ? (
+            <span className="rounded-full bg-sky-300/15 px-2 py-0.5 text-[10px] font-bold text-sky-200 ring-1 ring-sky-300/30">
+              Liga: {match.leagueName}
+            </span>
+          ) : null}
+        </div>
         <span
           className={`inline-flex h-6 min-w-[24px] items-center justify-center rounded-full px-2 text-xs font-extrabold ring-1 ${
             isWin

@@ -9,6 +9,8 @@ interface ProfileRankingRow {
   id: string;
   user_id?: string;
   name: string;
+  avatar_url?: string | null;
+  category?: RankingEntry['category'];
   points: number;
   wins: number;
   losses: number;
@@ -50,6 +52,8 @@ export function buildRankingEntries(rows: ProfileRankingRow[]): RankingEntry[] {
     return {
       id: row.id,
       name: row.name,
+      avatarUrl: row.avatar_url,
+      category: row.category,
       points: row.points,
       wins: row.wins,
       losses: row.losses,
@@ -68,8 +72,8 @@ export function buildMatchmakingSuggestions(
   rows: ProfileRankingRow[],
   currentProfileId: string,
   currentUserPoints: number,
-  myMatchIds: Set<string>,
-  candidateMatchIds: Map<string, Set<string>>,
+  myMatchIds: Set<string> = new Set(),
+  candidateMatchIds: Map<string, Set<string>> = new Map(),
 ): MatchmakingSuggestion[] {
   return buildRankingEntries(rows)
     .filter((entry) => entry.id !== currentProfileId)
@@ -82,6 +86,8 @@ export function buildMatchmakingSuggestions(
       return {
         id: entry.id,
         name: entry.name,
+        avatarUrl: entry.avatarUrl,
+        category: entry.category,
         points: entry.points,
         level: entry.level,
         position: entry.position,
@@ -100,7 +106,7 @@ export const rankingService = {
   async getRanking(): Promise<RankingEntry[]> {
     const { data, error } = await supabase
       .from('profiles')
-      .select('id,name,points,wins,losses,created_at,updated_at')
+      .select('id,name,avatar_url,category,points,wins,losses,created_at,updated_at')
       .order('points', { ascending: false })
       .order('wins', { ascending: false })
       .order('losses', { ascending: true });
@@ -120,7 +126,7 @@ export const rankingService = {
 
     const { data, error } = await supabase
       .from('profiles')
-      .select('id,user_id,name,points,wins,losses,created_at,updated_at')
+      .select('id,user_id,name,avatar_url,category,points,wins,losses,created_at,updated_at')
       .order('points', { ascending: false })
       .order('wins', { ascending: false })
       .order('losses', { ascending: true });

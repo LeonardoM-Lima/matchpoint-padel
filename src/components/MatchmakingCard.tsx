@@ -1,6 +1,7 @@
 import type { MatchmakingSuggestion } from '../../specs/001-matchpoint-mvp/contracts/types';
 import { getMatchLabel } from '../utils/matchmaking';
 import { Avatar } from './Avatar';
+import { CategoryBadge } from './CategoryBadge';
 import { Icon } from './Icon';
 
 interface MatchmakingCardProps {
@@ -47,11 +48,12 @@ export function MatchmakingCard({ suggestion, currentUserPoints }: MatchmakingCa
   return (
     <article className="grid gap-3 rounded-2xl border border-slate-800/80 bg-slate-900/60 p-4">
       <div className="flex items-center gap-3">
-        <Avatar name={suggestion.name} size={44} />
+        <Avatar name={suggestion.name} avatarUrl={suggestion.avatarUrl} size={44} />
 
         <div className="min-w-0 flex-1">
           <div className="flex items-center gap-2">
             <span className="truncate text-sm font-bold text-slate-50">{suggestion.name}</span>
+            <CategoryBadge category={suggestion.category} />
             <span
               className={`shrink-0 rounded-full px-2 py-0.5 text-[10px] font-bold ring-1 ${levelBadge[suggestion.level] ?? ''}`}
             >

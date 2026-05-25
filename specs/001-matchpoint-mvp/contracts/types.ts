@@ -4,6 +4,7 @@
 // and serve as the source of truth for data shape across layers.
 
 export type PlayerLevel = 'Iniciante' | 'Amador' | 'Avançado';
+export type PlayerCategory = '1a' | '2a' | '3a' | '4a' | '5a' | '6a' | 'Open' | 'Iniciante';
 
 export type Team = 'A' | 'B';
 
@@ -17,6 +18,8 @@ export interface ProfileDTO {
   userId: string;
   name: string;      // nickname (exibição pública)
   email?: string;
+  avatarUrl?: string | null;
+  category?: PlayerCategory | null;
   points: number;    // pontuação atual (≥ 0)
   wins: number;
   losses: number;
@@ -41,6 +44,8 @@ export interface RankingEntry extends Omit<ProfileDTO, 'userId' | 'email'> {
 export interface MatchmakingSuggestion {
   id: string;
   name: string;
+  avatarUrl?: string | null;
+  category?: PlayerCategory | null;
   points: number;
   level: PlayerLevel;
   position: number;

@@ -1,5 +1,9 @@
+import { useEffect, useMemo, useState } from 'react';
+import { supabase } from '../lib/supabase';
+
 interface AvatarProps {
   name: string;
+  avatarUrl?: string | null;
   size?: number;
   ring?: boolean;
   className?: string;
@@ -35,10 +39,38 @@ function getInitials(name: string) {
   return (parts[0]![0]! + parts[parts.length - 1]![0]!).toUpperCase();
 }
 
-export function Avatar({ name, size = 44, ring = false, className = '' }: AvatarProps) {
+export function Avatar({ name, avatarUrl, size = 44, ring = false, className = '' }: AvatarProps) {
+  const [imageFailed, setImageFailed] = useState(false);
   const palette = palettes[hashName(name) % palettes.length];
   const initials = getInitials(name);
   const fontSize = Math.max(12, Math.round(size * 0.38));
+
+  useEffect(() => {
+    setImageFailed(false);
+  }, [avatarUrl]);
+
+  const publicUrl = useMemo(() => {
+    if (!avatarUrl) return null;
+
+    const { data } = supabase.storage.from('avatars').getPublicUrl(avatarUrl);
+    return data.publicUrl;
+  }, [avatarUrl]);
+
+  if (publicUrl && !imageFailed) {
+    return (
+      <img
+        className={[
+          'shrink-0 rounded-full object-cover shadow-soft',
+          ring ? 'ring-2 ring-emerald-300/60 ring-offset-2 ring-offset-slate-950' : '',
+          className,
+        ].join(' ')}
+        src={publicUrl}
+        alt={name}
+        onError={() => setImageFailed(true)}
+        style={{ width: size, height: size }}
+      />
+    );
+  }
 
   return (
     <div

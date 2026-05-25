@@ -1,5 +1,6 @@
 import { Link } from 'react-router-dom';
 import { Avatar } from '../components/Avatar';
+import { CategoryBadge } from '../components/CategoryBadge';
 import { EmptyState } from '../components/EmptyState';
 import { ErrorBanner } from '../components/ErrorBanner';
 import { Icon } from '../components/Icon';
@@ -56,9 +57,12 @@ export function ProfileScreen() {
               <div className="pointer-events-none absolute -bottom-12 -left-12 h-40 w-40 rounded-full bg-emerald-400/15 blur-3xl" />
 
               <div className="relative flex flex-col items-center gap-3 text-center">
-                <Avatar name={profile.name} size={96} ring />
+                <Avatar name={profile.name} avatarUrl={profile.avatarUrl} size={96} ring />
                 <div>
-                  <h2 className="text-2xl font-extrabold text-slate-50">{profile.name}</h2>
+                  <div className="flex flex-wrap items-center justify-center gap-2">
+                    <h2 className="text-2xl font-extrabold text-slate-50">{profile.name}</h2>
+                    <CategoryBadge category={profile.category} />
+                  </div>
                   <p className="mt-1 text-xs text-slate-400">
                     {totalMatches} {totalMatches === 1 ? 'partida' : 'partidas'} registradas
                   </p>
@@ -122,6 +126,15 @@ export function ProfileScreen() {
                 description="Depois da primeira partida, suas vitórias, derrotas e aproveitamento aparecem aqui."
               />
             ) : null}
+
+            <Link
+              className="inline-flex min-h-[48px] items-center justify-center gap-2 rounded-xl border border-emerald-300/40 bg-emerald-400/10 px-4 font-semibold text-emerald-200 transition hover:bg-emerald-400/20 hover:text-emerald-100"
+              to="/profile/edit"
+            >
+              <Icon name="user" size={18} />
+              Editar perfil
+              <Icon name="arrowRight" size={16} />
+            </Link>
 
             <Link
               className="inline-flex min-h-[48px] items-center justify-center gap-2 rounded-xl border border-emerald-300/40 bg-emerald-400/10 px-4 font-semibold text-emerald-200 transition hover:bg-emerald-400/20 hover:text-emerald-100"

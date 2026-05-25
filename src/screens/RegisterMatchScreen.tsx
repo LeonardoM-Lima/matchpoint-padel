@@ -3,9 +3,11 @@ import { Link } from 'react-router-dom';
 import { Avatar } from '../components/Avatar';
 import { ErrorBanner } from '../components/ErrorBanner';
 import { Icon } from '../components/Icon';
+import { LeagueSelector } from '../components/LeagueSelector';
 import { PlayerSelector, type SelectablePlayer } from '../components/PlayerSelector';
 import { ScoreInput } from '../components/ScoreInput';
 import { ScreenSkeleton } from '../components/ScreenSkeleton';
+import { useEligibleLeagues } from '../hooks/useEligibleLeagues';
 import { useProfile } from '../hooks/useProfile';
 import { matchService, type RegisteredMatch } from '../services/match.service';
 import type { Team } from '../../specs/001-matchpoint-mvp/contracts/types';
@@ -33,6 +35,7 @@ export function RegisterMatchScreen() {
   const [teams, setTeams] = useState<Record<string, Team>>({});
   const [teamAScore, setTeamAScore] = useState('');
   const [teamBScore, setTeamBScore] = useState('');
+  const [selectedLeagueId, setSelectedLeagueId] = useState('');
   const [error, setError] = useState<string | null>(null);
   const [notice, setNotice] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
@@ -57,6 +60,8 @@ export function RegisterMatchScreen() {
     () => (currentPlayer ? [currentPlayer, ...selectedPlayers] : selectedPlayers),
     [currentPlayer, selectedPlayers],
   );
+  const matchPlayerIds = useMemo(() => matchPlayers.map((player) => player.id), [matchPlayers]);
+  const { leagues: eligibleLeagues, loading: eligibleLeaguesLoading } = useEligibleLeagues(matchPlayerIds);
 
   useEffect(() => {
     setTeams((current) => {
@@ -67,6 +72,13 @@ export function RegisterMatchScreen() {
       return next;
     });
   }, [matchPlayers]);
+
+  useEffect(() => {
+    if (!selectedLeagueId) return;
+    if (!eligibleLeagues.some((league) => league.id === selectedLeagueId)) {
+      setSelectedLeagueId('');
+    }
+  }, [eligibleLeagues, selectedLeagueId]);
 
   useEffect(() => {
     if (!expiresAt) return undefined;
@@ -168,6 +180,7 @@ export function RegisterMatchScreen() {
       const result = await matchService.registerMatch({
         teamAScore: Number(teamAScore),
         teamBScore: Number(teamBScore),
+        leagueId: selectedLeagueId || undefined,
         players: matchPlayers.map((player) => ({
           profileId: player.id,
           team: teams[player.id] ?? 'A',
@@ -177,11 +190,12 @@ export function RegisterMatchScreen() {
       setSuccess(result);
       setExpiresAt(Date.now() + deleteWindowSeconds * 1000);
       setSelectedPlayers([]);
+      setSelectedLeagueId('');
       setTeamAScore('');
       setTeamBScore('');
       await refresh();
-    } catch {
-      setError('Não foi possível salvar a partida. Tente novamente.');
+    } catch (nextError) {
+      setError(nextError instanceof Error ? nextError.message : 'Não foi possível salvar a partida. Tente novamente.');
     } finally {
       setSubmitting(false);
     }
@@ -423,6 +437,14 @@ export function RegisterMatchScreen() {
               </div>
             </section>
           ) : null}
+
+          <LeagueSelector
+            leagues={eligibleLeagues}
+            value={selectedLeagueId}
+            disabled={matchPlayers.length !== 4 || submitting || profileLoading}
+            loading={eligibleLeaguesLoading}
+            onChange={setSelectedLeagueId}
+          />
 
           <ScoreInput
             teamAScore={teamAScore}

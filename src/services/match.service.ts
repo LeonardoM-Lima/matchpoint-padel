@@ -1,5 +1,6 @@
 import type { RegisterMatchPayload, Team } from '../../specs/001-matchpoint-mvp/contracts/types';
-import { toRegisterMatchRPC } from '../../specs/001-matchpoint-mvp/contracts/rpc';
+import type { RegisterMatchPayloadV2 } from '../../specs/002-perfil-e-ligas/contracts/types';
+import { toRegisterMatchRPCV2 } from '../../specs/002-perfil-e-ligas/contracts/rpc';
 import { supabase } from '../lib/supabase';
 
 export interface MatchHistoryEntry {
@@ -16,6 +17,7 @@ export interface MatchHistoryEntry {
   partnerName: string;
   opponent1Name: string;
   opponent2Name: string;
+  leagueName?: string;
 }
 
 export interface RegisteredMatchPlayer {
@@ -86,6 +88,7 @@ interface MatchPlayerRow {
     team_b_score: number;
     winner_team: Team;
     match_players: { team: Team; profile_id: string; profiles: { name: string } | null }[];
+    match_leagues: { leagues: { name: string } | null }[];
   } | null;
 }
 
@@ -93,7 +96,7 @@ async function getMatchHistory(userId: string): Promise<MatchHistoryEntry[]> {
   const { data, error } = await supabase
     .from('match_players')
     .select(
-      'match_id,team,result,points_before,points_delta,points_after,profiles(name),matches(played_at,team_a_score,team_b_score,winner_team,match_players(team,profile_id,profiles(name)))',
+      'match_id,team,result,points_before,points_delta,points_after,profiles(name),matches(played_at,team_a_score,team_b_score,winner_team,match_players(team,profile_id,profiles(name)),match_leagues(leagues(name)))',
     )
     .eq('profile_id', userId)
     .order('match_id', { ascending: false });
@@ -121,15 +124,16 @@ async function getMatchHistory(userId: string): Promise<MatchHistoryEntry[]> {
         partnerName: partner?.profiles?.name ?? 'Parceiro',
         opponent1Name: opponents[0]?.profiles?.name ?? 'Adversário',
         opponent2Name: opponents[1]?.profiles?.name ?? 'Adversário',
+        leagueName: match.match_leagues?.[0]?.leagues?.name ?? undefined,
       };
     })
     .sort((a, b) => new Date(b.playedAt).getTime() - new Date(a.playedAt).getTime());
 }
 
 export const matchService = {
-  async registerMatch(payload: RegisterMatchPayload): Promise<RegisteredMatch> {
+  async registerMatch(payload: RegisterMatchPayload | RegisterMatchPayloadV2): Promise<RegisteredMatch> {
     const { data, error } = await supabase.rpc('register_match', {
-      payload: toRegisterMatchRPC(payload),
+      payload: toRegisterMatchRPCV2(payload),
     });
 
     if (error) throw error;

@@ -1,5 +1,6 @@
 import type { RankingEntry } from '../../specs/001-matchpoint-mvp/contracts/types';
 import { Avatar } from './Avatar';
+import { CategoryBadge } from './CategoryBadge';
 import { Icon } from './Icon';
 
 const levelStyles: Record<RankingEntry['level'], string> = {
@@ -95,6 +96,7 @@ export function RankingRow({ entry, isCurrentUser = false }: RankingRowProps) {
 
         <Avatar
           name={entry.name}
+          avatarUrl={entry.avatarUrl}
           size={44}
           ring={isCurrentUser}
           className={podium ? podium.ring : ''}
@@ -103,6 +105,7 @@ export function RankingRow({ entry, isCurrentUser = false }: RankingRowProps) {
         <div className="min-w-0">
           <div className="flex flex-wrap items-center gap-2">
             <h2 className="truncate font-bold text-slate-50">{entry.name}</h2>
+            <CategoryBadge category={entry.category} />
             {isCurrentUser ? (
               <span className="rounded-full bg-emerald-300 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide text-emerald-950">
                 Você

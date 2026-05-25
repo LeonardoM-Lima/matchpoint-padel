@@ -2,12 +2,15 @@ import { supabase } from '../lib/supabase';
 import { AuthApiError, type Session } from '@supabase/supabase-js';
 
 export type PlayerLevel = 'Iniciante' | 'Amador' | 'Avançado';
+export type PlayerCategory = '1a' | '2a' | '3a' | '4a' | '5a' | '6a' | 'Open' | 'Iniciante';
 
 export interface Profile {
   id: string;
   userId: string;
   name: string;
   email: string | null;
+  avatarUrl: string | null;
+  category: PlayerCategory | null;
   points: number;
   wins: number;
   losses: number;
@@ -26,6 +29,8 @@ interface ProfileRow {
   user_id: string;
   name: string;
   email: string | null;
+  avatar_url: string | null;
+  category: PlayerCategory | null;
   points: number;
   wins: number;
   losses: number;
@@ -45,6 +50,8 @@ function mapProfile(row: ProfileRow): Profile {
     userId: row.user_id,
     name: row.name,
     email: row.email,
+    avatarUrl: row.avatar_url,
+    category: row.category,
     points: row.points,
     wins: row.wins,
     losses: row.losses,
@@ -97,7 +104,7 @@ export const authService = {
   async getProfile(userId: string) {
     const { data, error } = await supabase
       .from('profiles')
-      .select('id,user_id,name,email,points,wins,losses,created_at,updated_at')
+      .select('id,user_id,name,email,avatar_url,category,points,wins,losses,created_at,updated_at')
       .eq('user_id', userId)
       .single();
 
