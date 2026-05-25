@@ -3,6 +3,7 @@ import { Icon } from './Icon';
 
 const items = [
   { to: '/', label: 'Home', icon: 'home' as const },
+  { to: '/feed', label: 'Feed', icon: 'video' as const },
   { to: '/ranking', label: 'Ranking', icon: 'trophy' as const },
   { to: '/match/new', label: 'Registrar', icon: 'plusCircle' as const, primary: true },
   { to: '/matchmaking', label: 'Jogadores', icon: 'users' as const },

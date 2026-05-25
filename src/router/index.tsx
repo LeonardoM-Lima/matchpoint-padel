@@ -5,6 +5,7 @@ import { AddLeagueMemberScreen } from '../screens/AddLeagueMemberScreen';
 import { CreateLeagueScreen } from '../screens/CreateLeagueScreen';
 import { EditProfileScreen } from '../screens/EditProfileScreen';
 import { EditLeagueScreen } from '../screens/EditLeagueScreen';
+import { FeedScreen } from '../screens/FeedScreen';
 import { HomeScreen } from '../screens/HomeScreen';
 import { LeagueDetailScreen } from '../screens/LeagueDetailScreen';
 import { LeagueHistoryScreen } from '../screens/LeagueHistoryScreen';
@@ -13,6 +14,7 @@ import { LoginScreen } from '../screens/LoginScreen';
 import { MatchHistoryScreen } from '../screens/MatchHistoryScreen';
 import { MatchmakingScreen } from '../screens/MatchmakingScreen';
 import { ProfileScreen } from '../screens/ProfileScreen';
+import { PublishVideoScreen } from '../screens/PublishVideoScreen';
 import { RankingScreen } from '../screens/RankingScreen';
 import { RegisterMatchScreen } from '../screens/RegisterMatchScreen';
 import { RegisterScreen } from '../screens/RegisterScreen';
@@ -39,6 +41,14 @@ export const router = createBrowserRouter([
           {
             path: '/match/new',
             element: <RegisterMatchScreen />,
+          },
+          {
+            path: '/feed',
+            element: <FeedScreen />,
+          },
+          {
+            path: '/feed/publish',
+            element: <PublishVideoScreen />,
           },
           {
             path: '/ranking',

@@ -36,6 +36,12 @@ type IconName =
   | 'tennisBall'
   | 'download'
   | 'smartphone'
+  | 'heart'
+  | 'heartFilled'
+  | 'moreVertical'
+  | 'upload'
+  | 'bell'
+  | 'video'
   | 'lightning';
 
 interface IconProps extends SVGProps<SVGSVGElement> {
@@ -227,6 +233,41 @@ const paths: Record<IconName, JSX.Element> = {
     <>
       <rect x="7" y="2" width="10" height="20" rx="2" />
       <path d="M11 18h2" />
+    </>
+  ),
+  heart: (
+    <path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.6l-1-1a5.5 5.5 0 0 0-7.8 7.8l1 1L12 21l7.8-7.6 1-1a5.5 5.5 0 0 0 0-7.8Z" />
+  ),
+  heartFilled: (
+    <path
+      d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.6l-1-1a5.5 5.5 0 0 0-7.8 7.8l1 1L12 21l7.8-7.6 1-1a5.5 5.5 0 0 0 0-7.8Z"
+      fill="currentColor"
+    />
+  ),
+  moreVertical: (
+    <>
+      <circle cx="12" cy="5" r="1" fill="currentColor" />
+      <circle cx="12" cy="12" r="1" fill="currentColor" />
+      <circle cx="12" cy="19" r="1" fill="currentColor" />
+    </>
+  ),
+  upload: (
+    <>
+      <path d="M12 16V4" />
+      <path d="m7 9 5-5 5 5" />
+      <path d="M5 20h14" />
+    </>
+  ),
+  bell: (
+    <>
+      <path d="M18 8a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9" />
+      <path d="M10 21h4" />
+    </>
+  ),
+  video: (
+    <>
+      <rect x="3" y="6" width="13" height="12" rx="2" />
+      <path d="m16 10 5-3v10l-5-3" />
     </>
   ),
   lightning: <path d="M13 2 4 14h7l-1 8 9-12h-7l1-8Z" />,

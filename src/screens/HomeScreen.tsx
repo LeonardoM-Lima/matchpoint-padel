@@ -180,6 +180,24 @@ export function HomeScreen() {
                 <Icon name="arrowRight" size={20} strokeWidth={2.5} />
               </Link>
 
+              <Link
+                className="group relative inline-flex min-h-[64px] items-center justify-between overflow-hidden rounded-2xl border border-emerald-300/30 bg-slate-900/70 px-5 py-3 text-left font-bold text-slate-50 shadow-soft transition hover:border-emerald-300/60"
+                to="/feed"
+              >
+                <span className="flex items-center gap-3">
+                  <span className="flex h-11 w-11 items-center justify-center rounded-xl bg-emerald-300/15 text-emerald-300 ring-1 ring-emerald-300/20">
+                    <Icon name="video" size={23} strokeWidth={2.4} />
+                  </span>
+                  <span>
+                    <span className="block text-base">Feed de jogadas</span>
+                    <span className="block text-xs font-medium text-slate-400">
+                      Videos curtos da comunidade
+                    </span>
+                  </span>
+                </span>
+                <Icon name="arrowRight" size={20} strokeWidth={2.5} className="text-emerald-300" />
+              </Link>
+
               <div className="grid grid-cols-2 gap-3">
                 <Link
                   className="group flex flex-col gap-2 rounded-2xl border border-slate-800/80 bg-slate-900/60 p-4 transition hover:border-amber-300/40"

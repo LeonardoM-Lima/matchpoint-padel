@@ -4,6 +4,7 @@ import { CategoryBadge } from '../components/CategoryBadge';
 import { EmptyState } from '../components/EmptyState';
 import { ErrorBanner } from '../components/ErrorBanner';
 import { Icon } from '../components/Icon';
+import { PushToggle } from '../components/PushToggle';
 import { ScreenSkeleton } from '../components/ScreenSkeleton';
 import { useProfile } from '../hooks/useProfile';
 import { useRanking } from '../hooks/useRanking';
@@ -118,6 +119,8 @@ export function ProfileScreen() {
                 valueColor="text-slate-50"
               />
             </section>
+
+            <PushToggle profileId={profile.id} />
 
             {totalMatches === 0 ? (
               <EmptyState

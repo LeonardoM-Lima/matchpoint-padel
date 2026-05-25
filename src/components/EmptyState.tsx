@@ -3,7 +3,7 @@ import { Icon } from './Icon';
 interface EmptyStateProps {
   title: string;
   description: string;
-  icon?: 'users' | 'trophy' | 'racket' | 'sparkles' | 'search';
+  icon?: 'users' | 'trophy' | 'racket' | 'sparkles' | 'search' | 'video';
 }
 
 export function EmptyState({ title, description, icon = 'sparkles' }: EmptyStateProps) {
