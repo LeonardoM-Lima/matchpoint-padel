@@ -8,20 +8,11 @@ import { ScreenSkeleton } from '../components/ScreenSkeleton';
 import { useLeague } from '../hooks/useLeague';
 import { useProfile } from '../hooks/useProfile';
 import { supabase } from '../lib/supabase';
-import { leagueService, type LeagueMatchHistoryEntry } from '../services/league.service';
+import { leagueService } from '../services/league.service';
 
 function coverUrl(path?: string) {
   if (!path) return null;
   return supabase.storage.from('league-covers').getPublicUrl(path).data.publicUrl;
-}
-
-function formatDate(iso: string) {
-  if (!iso) return '';
-  return new Date(iso).toLocaleDateString('pt-BR', {
-    day: '2-digit',
-    month: 'short',
-    year: 'numeric',
-  });
 }
 
 export function LeagueDetailScreen() {
@@ -29,10 +20,6 @@ export function LeagueDetailScreen() {
   const navigate = useNavigate();
   const { profile } = useProfile();
   const { detail, loading, error, refresh } = useLeague(id);
-  const [historyOpen, setHistoryOpen] = useState(false);
-  const [historyLoading, setHistoryLoading] = useState(false);
-  const [historyError, setHistoryError] = useState<string | null>(null);
-  const [history, setHistory] = useState<LeagueMatchHistoryEntry[]>([]);
   const [removeMode, setRemoveMode] = useState(false);
   const [selectedRemoveIds, setSelectedRemoveIds] = useState<Set<string>>(new Set());
   const [removingMembers, setRemovingMembers] = useState(false);
@@ -81,24 +68,6 @@ export function LeagueDetailScreen() {
       }
       return next;
     });
-  }
-
-  async function handleToggleHistory() {
-    if (!id) return;
-    const nextOpen = !historyOpen;
-    setHistoryOpen(nextOpen);
-    if (!nextOpen || history.length > 0) return;
-
-    setHistoryLoading(true);
-    setHistoryError(null);
-
-    try {
-      setHistory(await leagueService.getLeagueMatchHistory(id));
-    } catch {
-      setHistoryError('Nao foi possivel carregar o historico da liga.');
-    } finally {
-      setHistoryLoading(false);
-    }
   }
 
   const cover = coverUrl(detail?.league.coverUrl);
@@ -158,14 +127,13 @@ export function LeagueDetailScreen() {
                     </div>
                   ) : null}
 
-                  <button
+                  <Link
                     className="inline-flex min-h-[44px] items-center justify-center gap-2 rounded-xl border border-sky-300/40 bg-sky-400/10 px-4 font-bold text-sky-200"
-                    type="button"
-                    onClick={() => void handleToggleHistory()}
+                    to={`/leagues/${detail.league.id}/history`}
                   >
                     <Icon name="chartBar" size={16} />
-                    {historyOpen ? 'Ocultar histórico' : 'Ver histórico da liga'}
-                  </button>
+                    Ver histórico da liga
+                  </Link>
 
                   {detail.permissions.canLeave ? (
                     <button className="inline-flex min-h-[44px] items-center justify-center gap-2 rounded-xl border border-rose-300/40 bg-rose-400/10 px-4 font-bold text-rose-200" type="button" onClick={() => void handleLeaveOrRemove(profile!.id)}>
@@ -252,67 +220,6 @@ export function LeagueDetailScreen() {
               ))}
             </section>
 
-            {historyOpen ? (
-              <section className="grid gap-3">
-                <h2 className="flex items-center gap-2 text-sm font-bold uppercase tracking-wide text-sky-300">
-                  <Icon name="racket" size={16} />
-                  Partidas da liga
-                </h2>
-
-                {historyLoading ? <ScreenSkeleton rows={3} /> : null}
-                {historyError ? <ErrorBanner message={historyError} /> : null}
-
-                {!historyLoading && !historyError && history.length === 0 ? (
-                  <EmptyState
-                    icon="racket"
-                    title="Nenhuma partida vinculada"
-                    description="Quando uma partida for registrada nesta liga, ela aparece aqui."
-                  />
-                ) : null}
-
-                {history.map((match) => (
-                  <article
-                    key={match.matchId}
-                    className="grid gap-3 rounded-2xl border border-slate-800/80 bg-slate-900/60 p-4"
-                  >
-                    <header className="flex items-center justify-between gap-2">
-                      <span className="text-[11px] font-semibold uppercase tracking-wide text-slate-400">
-                        {formatDate(match.playedAt)}
-                      </span>
-                      <span className="rounded-full bg-emerald-300/15 px-2 py-0.5 text-[10px] font-bold text-emerald-200 ring-1 ring-emerald-300/30">
-                        Time {match.winnerTeam} venceu
-                      </span>
-                    </header>
-
-                    <div className="grid grid-cols-[1fr_auto_1fr] items-center gap-3">
-                      <div className="min-w-0 text-sm">
-                        <span className="block text-[10px] font-bold uppercase tracking-wide text-sky-300">
-                          Time A
-                        </span>
-                        <span className="block truncate text-slate-200">
-                          {match.teamAPlayers.join(' / ')}
-                        </span>
-                      </div>
-
-                      <div className="rounded-xl bg-slate-950 px-3 py-2 text-center ring-1 ring-slate-800">
-                        <strong className="text-lg font-extrabold text-slate-50">
-                          {match.teamAScore}×{match.teamBScore}
-                        </strong>
-                      </div>
-
-                      <div className="min-w-0 text-right text-sm">
-                        <span className="block text-[10px] font-bold uppercase tracking-wide text-fuchsia-300">
-                          Time B
-                        </span>
-                        <span className="block truncate text-slate-200">
-                          {match.teamBPlayers.join(' / ')}
-                        </span>
-                      </div>
-                    </div>
-                  </article>
-                ))}
-              </section>
-            ) : null}
           </>
         ) : null}
       </section>

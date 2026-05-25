@@ -7,6 +7,7 @@ import { EditProfileScreen } from '../screens/EditProfileScreen';
 import { EditLeagueScreen } from '../screens/EditLeagueScreen';
 import { HomeScreen } from '../screens/HomeScreen';
 import { LeagueDetailScreen } from '../screens/LeagueDetailScreen';
+import { LeagueHistoryScreen } from '../screens/LeagueHistoryScreen';
 import { LeaguesScreen } from '../screens/LeaguesScreen';
 import { LoginScreen } from '../screens/LoginScreen';
 import { MatchHistoryScreen } from '../screens/MatchHistoryScreen';
@@ -74,6 +75,10 @@ export const router = createBrowserRouter([
           {
             path: '/leagues/:id/edit',
             element: <EditLeagueScreen />,
+          },
+          {
+            path: '/leagues/:id/history',
+            element: <LeagueHistoryScreen />,
           },
           {
             path: '/leagues/:id/add-member',

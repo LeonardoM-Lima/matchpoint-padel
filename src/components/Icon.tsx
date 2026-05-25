@@ -34,6 +34,8 @@ type IconName =
   | 'info'
   | 'alert'
   | 'tennisBall'
+  | 'download'
+  | 'smartphone'
   | 'lightning';
 
 interface IconProps extends SVGProps<SVGSVGElement> {
@@ -212,6 +214,19 @@ const paths: Record<IconName, JSX.Element> = {
     <>
       <path d="M12 3 2 21h20Z" />
       <path d="M12 10v5M12 18h.01" />
+    </>
+  ),
+  download: (
+    <>
+      <path d="M12 3v12" />
+      <path d="m7 10 5 5 5-5" />
+      <path d="M5 21h14" />
+    </>
+  ),
+  smartphone: (
+    <>
+      <rect x="7" y="2" width="10" height="20" rx="2" />
+      <path d="M11 18h2" />
     </>
   ),
   lightning: <path d="M13 2 4 14h7l-1 8 9-12h-7l1-8Z" />,

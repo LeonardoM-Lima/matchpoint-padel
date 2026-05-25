@@ -16,7 +16,10 @@
       "Bash(npx tsc *)",
       "Bash(npx vite *)",
       "Bash(npx vitest *)",
-      "Bash(npx supabase *)"
+      "Bash(npx supabase *)",
+      "Bash(git -C \"c:\\\\Users\\\\leona\\\\matchpoint-padel\\\\matchpoint-padel\" status)",
+      "Bash(git -C \"c:\\\\Users\\\\leona\\\\matchpoint-padel\\\\matchpoint-padel\" add src/screens/ProfileScreen.tsx)",
+      "Bash(git -C 'c:\\\\Users\\\\leona\\\\matchpoint-padel\\\\matchpoint-padel' commit -m ' *)"
     ]
   }
 }
