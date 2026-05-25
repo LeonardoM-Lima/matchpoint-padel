@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { Avatar } from './Avatar';
 import { Icon } from './Icon';
 import { LikeButton } from './LikeButton';
@@ -36,8 +36,55 @@ export function VideoCard({ item, currentProfileId, onDeleted, onError }: VideoC
   const [menuOpen, setMenuOpen] = useState(false);
   const [confirming, setConfirming] = useState(false);
   const [deleting, setDeleting] = useState(false);
+  const [posterUrl, setPosterUrl] = useState<string | null>(null);
   const videoUrl = useMemo(() => getVideoPublicUrl(item.storagePath), [item.storagePath]);
   const canDelete = currentProfileId === item.authorId;
+
+  useEffect(() => {
+    let mounted = true;
+
+    async function createPoster() {
+      try {
+        const video = document.createElement('video');
+        video.crossOrigin = 'anonymous';
+        video.muted = true;
+        video.playsInline = true;
+        video.preload = 'auto';
+        video.src = videoUrl;
+
+        await new Promise<void>((resolve, reject) => {
+          const handleLoadedData = () => resolve();
+          const handleError = () => reject(new Error('poster-load-failed'));
+
+          video.addEventListener('loadeddata', handleLoadedData, { once: true });
+          video.addEventListener('error', handleError, { once: true });
+        });
+
+        const canvas = document.createElement('canvas');
+        canvas.width = video.videoWidth || 1280;
+        canvas.height = video.videoHeight || 720;
+
+        const context = canvas.getContext('2d');
+        if (!context) return;
+
+        context.drawImage(video, 0, 0, canvas.width, canvas.height);
+
+        if (mounted) {
+          setPosterUrl(canvas.toDataURL('image/jpeg', 0.82));
+        }
+      } catch {
+        if (mounted) {
+          setPosterUrl(null);
+        }
+      }
+    }
+
+    void createPoster();
+
+    return () => {
+      mounted = false;
+    };
+  }, [videoUrl]);
 
   async function handleDelete() {
     setDeleting(true);
@@ -59,7 +106,9 @@ export function VideoCard({ item, currentProfileId, onDeleted, onError }: VideoC
         className="aspect-video w-full bg-slate-950 object-cover"
         controls
         playsInline
-        preload="metadata"
+        preload="auto"
+        crossOrigin="anonymous"
+        poster={posterUrl ?? undefined}
         src={videoUrl}
       />
 

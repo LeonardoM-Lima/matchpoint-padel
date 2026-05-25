@@ -23,6 +23,49 @@ function levelBadge(level: string) {
   return 'bg-amber-400/15 text-amber-200 ring-amber-300/30';
 }
 
+const quickLinks = [
+  {
+    to: '/ranking',
+    title: 'Ranking',
+    subtitle: 'Top jogadores',
+    icon: 'trophy' as const,
+    accent: 'bg-amber-300/15 text-amber-300 ring-amber-300/20',
+    hover: 'hover:border-amber-300/40',
+  },
+  {
+    to: '/feed',
+    title: 'Feed de jogadas',
+    subtitle: 'Vídeos curtos da comunidade',
+    icon: 'video' as const,
+    accent: 'bg-emerald-300/15 text-emerald-300 ring-emerald-300/20',
+    hover: 'hover:border-emerald-300/40',
+  },
+  {
+    to: '/leagues',
+    title: 'Ligas privadas',
+    subtitle: 'Ranking do grupo',
+    icon: 'medal' as const,
+    accent: 'bg-teal-300/15 text-teal-300 ring-teal-300/20',
+    hover: 'hover:border-teal-300/40',
+  },
+  {
+    to: '/matchmaking',
+    title: 'Matchmaking',
+    subtitle: 'Por nível',
+    icon: 'users' as const,
+    accent: 'bg-sky-300/15 text-sky-300 ring-sky-300/20',
+    hover: 'hover:border-sky-300/40',
+  },
+  {
+    to: '/profile',
+    title: 'Meu perfil',
+    subtitle: 'Estatísticas',
+    icon: 'user' as const,
+    accent: 'bg-fuchsia-300/15 text-fuchsia-300 ring-fuchsia-300/20',
+    hover: 'hover:border-fuchsia-300/40',
+  },
+];
+
 export function HomeScreen() {
   const { signOut } = useAuth();
   const { profile, loading } = useProfile();
@@ -43,14 +86,14 @@ export function HomeScreen() {
 
   return (
     <main className="min-h-screen px-4 pb-32 pt-6 text-slate-50">
-      <section className="mx-auto flex min-h-[calc(100vh-3rem)] max-w-md flex-col gap-5 animate-fade-in">
+      <section className="mx-auto flex min-h-[calc(100vh-3rem)] max-w-md animate-fade-in flex-col gap-5">
         <header className="flex items-center justify-between">
           <div>
             <p className="text-xs font-bold uppercase tracking-[0.25em] text-emerald-300">
               MatchPoint
             </p>
             <h1 className="font-display text-3xl font-extrabold text-slate-50">
-              Olá{profile ? `, ${profile.name.split(' ')[0]}` : ''} 👋
+              Olá{profile ? `, ${profile.name.split(' ')[0]}` : ''}!
             </h1>
           </div>
           <button
@@ -125,7 +168,7 @@ export function HomeScreen() {
                     Aprov.
                   </span>
                   <strong className="block text-2xl font-extrabold text-slate-50">
-                    {totalMatches > 0 ? `${winRate}%` : '—'}
+                    {totalMatches > 0 ? `${winRate}%` : '-'}
                   </strong>
                 </div>
               </div>
@@ -180,76 +223,28 @@ export function HomeScreen() {
                 <Icon name="arrowRight" size={20} strokeWidth={2.5} />
               </Link>
 
-              <Link
-                className="group relative inline-flex min-h-[64px] items-center justify-between overflow-hidden rounded-2xl border border-emerald-300/30 bg-slate-900/70 px-5 py-3 text-left font-bold text-slate-50 shadow-soft transition hover:border-emerald-300/60"
-                to="/feed"
-              >
-                <span className="flex items-center gap-3">
-                  <span className="flex h-11 w-11 items-center justify-center rounded-xl bg-emerald-300/15 text-emerald-300 ring-1 ring-emerald-300/20">
-                    <Icon name="video" size={23} strokeWidth={2.4} />
-                  </span>
-                  <span>
-                    <span className="block text-base">Feed de jogadas</span>
-                    <span className="block text-xs font-medium text-slate-400">
-                      Videos curtos da comunidade
-                    </span>
-                  </span>
-                </span>
-                <Icon name="arrowRight" size={20} strokeWidth={2.5} className="text-emerald-300" />
-              </Link>
-
               <div className="grid grid-cols-2 gap-3">
-                <Link
-                  className="group flex flex-col gap-2 rounded-2xl border border-slate-800/80 bg-slate-900/60 p-4 transition hover:border-amber-300/40"
-                  to="/ranking"
-                >
-                  <span className="flex h-11 w-11 items-center justify-center rounded-xl bg-amber-300/15 text-amber-300 ring-1 ring-amber-300/20">
-                    <Icon name="trophy" size={22} />
-                  </span>
-                  <span>
-                    <span className="block font-bold text-slate-50">Ranking</span>
-                    <span className="block text-xs text-slate-400">Top jogadores</span>
-                  </span>
-                </Link>
-
-                <Link
-                  className="group flex flex-col gap-2 rounded-2xl border border-slate-800/80 bg-slate-900/60 p-4 transition hover:border-sky-300/40"
-                  to="/matchmaking"
-                >
-                  <span className="flex h-11 w-11 items-center justify-center rounded-xl bg-sky-300/15 text-sky-300 ring-1 ring-sky-300/20">
-                    <Icon name="users" size={22} />
-                  </span>
-                  <span>
-                    <span className="block font-bold text-slate-50">Matchmaking</span>
-                    <span className="block text-xs text-slate-400">Por nível</span>
-                  </span>
-                </Link>
-
-                <Link
-                  className="group flex flex-col gap-2 rounded-2xl border border-slate-800/80 bg-slate-900/60 p-4 transition hover:border-emerald-300/40"
-                  to="/leagues"
-                >
-                  <span className="flex h-11 w-11 items-center justify-center rounded-xl bg-emerald-300/15 text-emerald-300 ring-1 ring-emerald-300/20">
-                    <Icon name="medal" size={22} />
-                  </span>
-                  <span>
-                    <span className="block font-bold text-slate-50">Ligas privadas</span>
-                    <span className="block text-xs text-slate-400">Ranking do grupo</span>
-                  </span>
-                </Link>
-
-                <Link
-                  className="group flex flex-col gap-2 rounded-2xl border border-slate-800/80 bg-slate-900/60 p-4 transition hover:border-fuchsia-300/40"
-                  to="/profile"
-                >
-                  <span className="flex h-11 w-11 items-center justify-center rounded-xl bg-fuchsia-300/15 text-fuchsia-300 ring-1 ring-fuchsia-300/20">
-                    <Icon name="user" size={22} />
-                  </span>
-                  <span>
-                    <span className="block font-bold text-slate-50">Meu perfil</span>
-                    <span className="block text-xs text-slate-400">Estatísticas</span>
-                  </span>
-                </Link>
+                {quickLinks.map((link) => (
+                  <Link
+                    key={link.to}
+                    className={`group flex min-h-[112px] flex-col gap-2 rounded-2xl border border-slate-800/80 bg-slate-900/60 p-4 transition ${link.hover}`}
+                    to={link.to}
+                  >
+                    <span
+                      className={`flex h-11 w-11 items-center justify-center rounded-xl ring-1 ${link.accent}`}
+                    >
+                      <Icon name={link.icon} size={22} />
+                    </span>
+                    <span className="grid gap-1">
+                      <span className="block text-sm font-bold leading-tight text-slate-50">
+                        {link.title}
+                      </span>
+                      <span className="block text-xs leading-snug text-slate-400">
+                        {link.subtitle}
+                      </span>
+                    </span>
+                  </Link>
+                ))}
               </div>
             </nav>
           </>

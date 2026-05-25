@@ -92,57 +92,57 @@ export function PwaInstallPrompt() {
   const isNativePromptAvailable = Boolean(installPrompt);
 
   return (
-    <section className="fixed inset-x-4 bottom-20 z-50 mx-auto max-w-md rounded-2xl border border-emerald-300/30 bg-slate-950 p-4 text-slate-50 shadow-glow animate-slide-up">
-      <div className="flex items-start gap-3">
-        <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-emerald-300/15 text-emerald-300 ring-1 ring-emerald-300/25">
-          <Icon name="smartphone" size={22} />
-        </span>
+    <section className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/70 px-4 py-6 backdrop-blur-sm animate-fade-in">
+      <div className="w-full max-w-sm rounded-3xl border border-emerald-300/30 bg-slate-950 p-5 text-slate-50 shadow-glow">
+        <div className="flex items-start justify-between gap-4">
+          <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-emerald-300/15 text-emerald-300 ring-1 ring-emerald-300/25">
+            <Icon name="smartphone" size={23} />
+          </span>
 
-        <div className="min-w-0 flex-1">
-          <div className="flex items-start justify-between gap-3">
-            <div>
-              <h2 className="text-sm font-extrabold text-slate-50">Adicionar a tela inicial</h2>
-              <p className="mt-1 text-xs leading-5 text-slate-300">
-                Abra o MatchPoint como app, com icone proprio e tela cheia.
-              </p>
-            </div>
+          <button
+            type="button"
+            className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full border border-slate-800 text-slate-400 transition hover:border-slate-600 hover:text-slate-200"
+            aria-label="Fechar aviso de instalação"
+            onClick={handleDismiss}
+          >
+            <Icon name="x" size={16} />
+          </button>
+        </div>
 
+        <div className="mt-4">
+          <h2 className="text-lg font-extrabold leading-tight text-slate-50">
+            Adicionar à tela inicial
+          </h2>
+          <p className="mt-2 text-sm leading-6 text-slate-300">
+            Abra o MatchPoint como app, com ícone próprio e tela cheia.
+          </p>
+        </div>
+
+        {isNativePromptAvailable ? (
+          <div className="mt-5 grid grid-cols-[1fr_auto] gap-2">
             <button
               type="button"
-              className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full border border-slate-800 text-slate-400 transition hover:border-slate-600 hover:text-slate-200"
-              aria-label="Fechar aviso de instalacao"
+              className="btn-primary inline-flex min-h-[46px] items-center justify-center gap-2 rounded-xl px-4 text-sm"
+              onClick={() => {
+                void handleInstall();
+              }}
+            >
+              <Icon name="download" size={17} />
+              Adicionar app
+            </button>
+            <button
+              type="button"
+              className="inline-flex min-h-[46px] items-center justify-center rounded-xl border border-slate-800 px-3 text-xs font-bold text-slate-300"
               onClick={handleDismiss}
             >
-              <Icon name="x" size={16} />
+              Agora não
             </button>
           </div>
-
-          {isNativePromptAvailable ? (
-            <div className="mt-3 grid grid-cols-[1fr_auto] gap-2">
-              <button
-                type="button"
-                className="btn-primary inline-flex min-h-[44px] items-center justify-center gap-2 rounded-xl px-4 text-sm"
-                onClick={() => {
-                  void handleInstall();
-                }}
-              >
-                <Icon name="download" size={17} />
-                Adicionar app
-              </button>
-              <button
-                type="button"
-                className="inline-flex min-h-[44px] items-center justify-center rounded-xl border border-slate-800 px-3 text-xs font-bold text-slate-300"
-                onClick={handleDismiss}
-              >
-                Agora nao
-              </button>
-            </div>
-          ) : (
-            <p className="mt-3 rounded-xl border border-slate-800 bg-slate-900/70 px-3 py-2 text-xs leading-5 text-slate-300">
-              No iPhone, toque em Compartilhar e escolha Adicionar a Tela de Inicio.
-            </p>
-          )}
-        </div>
+        ) : (
+          <p className="mt-5 rounded-xl border border-slate-800 bg-slate-900/70 px-3 py-2 text-xs leading-5 text-slate-300">
+            No iPhone, toque em Compartilhar e escolha Adicionar à Tela de Início.
+          </p>
+        )}
       </div>
     </section>
   );
