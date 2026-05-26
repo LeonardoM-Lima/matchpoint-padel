@@ -1,9 +1,9 @@
-# Feature Specification: MVP PadelUP
+# Feature Specification: MVP EvoPadel
 
 **Feature Branch**: `001-matchpoint-mvp`
 **Created**: 2026-05-04
 **Status**: Draft
-**Input**: User description: "Construir o MVP do PadelUP"
+**Input**: User description: "Construir o MVP do EvoPadel"
 
 ## Clarifications
 
@@ -114,7 +114,7 @@ convite via WhatsApp.
    "Nunca jogaram".
 8. **Given** um card exibido, **When** o usuário toca em "Desafiar no WhatsApp",
    **Then** abre o WhatsApp com mensagem: "Oi [nome]! Te desafio para uma
-   partida de padel pelo PadelUP. Topa?"
+   partida de padel pelo EvoPadel. Topa?"
 
 ---
 
@@ -249,7 +249,7 @@ parceiro, adversários, placar, resultado e variação de pontos.
   "Nunca jogaram" quando não há partidas em comum.
 - **FR-011e**: Cada card MUST exibir botão "Desafiar no WhatsApp" que abre o
   WhatsApp com mensagem pré-preenchida: "Oi [nome]! Te desafio para uma partida
-  de padel pelo PadelUP. Topa?" — [nome] é o nickname do jogador sugerido.
+  de padel pelo EvoPadel. Topa?" — [nome] é o nickname do jogador sugerido.
 - **FR-011f**: Cards de matchmaking MUST NOT exibir aproveitamento geral
   (win rate) do jogador sugerido — esse dado não é relevante para a decisão de
   quem desafiar.

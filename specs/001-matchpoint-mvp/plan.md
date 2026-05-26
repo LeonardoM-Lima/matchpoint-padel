@@ -1,11 +1,11 @@
-# Implementation Plan: MVP PadelUP
+# Implementation Plan: MVP EvoPadel
 
 **Branch**: `001-matchpoint-mvp` | **Date**: 2026-05-04 | **Spec**: [spec.md](spec.md)
 **Input**: Feature specification from `/specs/001-matchpoint-mvp/spec.md`
 
 ## Summary
 
-MVP do PadelUP: plataforma web mobile-first para registro de partidas
+MVP do EvoPadel: plataforma web mobile-first para registro de partidas
 2x2 de padel com sistema de rating dinâmico inspirado no Elo. No MVP, cada
 partida consiste em exatamente **1 set** — campos de set 2 não existem no
 schema. Backend serverless via Supabase (Auth + PostgreSQL + RLS + RPC).
@@ -182,7 +182,7 @@ function getMatchLabel(pointsDiff: number, isFavorite: boolean): string {
 
 ```ts
 const message = encodeURIComponent(
-  `Oi ${name}! Te desafio para uma partida de padel pelo PadelUP. Topa?`
+  `Oi ${name}! Te desafio para uma partida de padel pelo EvoPadel. Topa?`
 );
 const url = `https://wa.me/?text=${message}`;
 ```

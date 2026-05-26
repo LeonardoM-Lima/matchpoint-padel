@@ -110,7 +110,7 @@ export function HomeScreen() {
         <header className="flex items-center justify-between">
           <div>
             <p className="text-xs font-bold uppercase tracking-[0.25em] text-emerald-300">
-              PadelUP
+              EvoPadel
             </p>
             <h1 className="font-display text-3xl font-extrabold text-slate-50">
               Olá{profile ? `, ${profile.name.split(' ')[0]}` : ''}!

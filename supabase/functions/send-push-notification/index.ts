@@ -5,7 +5,7 @@ const serviceRoleKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? '';
 const supabaseUrl = Deno.env.get('SUPABASE_URL') ?? '';
 
 webpush.setVapidDetails(
-  Deno.env.get('VAPID_SUBJECT') ?? 'mailto:contato@padelup.app',
+  Deno.env.get('VAPID_SUBJECT') ?? 'mailto:contato@evopadel.app',
   Deno.env.get('VAPID_PUBLIC_KEY') ?? '',
   Deno.env.get('VAPID_PRIVATE_KEY') ?? '',
 );
@@ -65,10 +65,10 @@ Deno.serve(async (req) => {
             },
           },
           JSON.stringify({
-            title: payload.title ?? 'PadelUP',
+            title: payload.title ?? 'EvoPadel',
             body: payload.body ?? '',
             icon: '/icons/pwa-192x192.png',
-            tag: payload.tag ?? 'padelup',
+            tag: payload.tag ?? 'evopadel',
             url: payload.url ?? '/',
           }),
         );

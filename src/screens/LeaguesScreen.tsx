@@ -23,7 +23,7 @@ export function LeaguesScreen() {
                 <Icon name="trophy" size={24} />
               </div>
               <div>
-                <p className="text-xs font-bold uppercase tracking-[0.25em] text-emerald-300">PadelUP</p>
+                <p className="text-xs font-bold uppercase tracking-[0.25em] text-emerald-300">EvoPadel</p>
                 <h1 className="font-display text-3xl font-extrabold text-slate-50">Minhas ligas</h1>
               </div>
             </div>

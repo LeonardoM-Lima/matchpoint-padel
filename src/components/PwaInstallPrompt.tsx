@@ -7,7 +7,7 @@ interface BeforeInstallPromptEvent extends Event {
   userChoice: Promise<{ outcome: 'accepted' | 'dismissed'; platform: string }>;
 }
 
-const DISMISSED_KEY = 'padelup-pwa-install-dismissed';
+const DISMISSED_KEY = 'evopadel-pwa-install-dismissed';
 
 function isStandalone() {
   return (
@@ -114,7 +114,7 @@ export function PwaInstallPrompt() {
             Adicionar à tela inicial
           </h2>
           <p className="mt-2 text-sm leading-6 text-slate-300">
-            Abra o PadelUP como app, com ícone próprio e tela cheia.
+            Abra o EvoPadel como app, com ícone próprio e tela cheia.
           </p>
         </div>
 

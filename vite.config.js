@@ -9,8 +9,8 @@ export default defineConfig({
             includeAssets: ['favicon.svg', 'icons/favicon.png', 'icons/apple-touch-icon.png'],
             manifest: {
                 id: '/',
-                name: 'PadelUP',
-                short_name: 'PadelUP',
+                name: 'EvoPadel',
+                short_name: 'EvoPadel',
                 description: 'Ranking da suas partidas de padel',
                 lang: 'pt-BR',
                 start_url: '/',

@@ -36,7 +36,7 @@ export function MatchmakingCard({ suggestion, currentUserPoints }: MatchmakingCa
   const colors = colorClasses[color];
 
   const whatsappMessage = encodeURIComponent(
-    `Oi ${suggestion.name}! Te desafio para uma partida de padel pelo PadelUP. Topa?`,
+    `Oi ${suggestion.name}! Te desafio para uma partida de padel pelo EvoPadel. Topa?`,
   );
   const whatsappUrl = `https://wa.me/?text=${whatsappMessage}`;
 

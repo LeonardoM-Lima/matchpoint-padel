@@ -1,4 +1,4 @@
-# PadelUP Security Notes
+# EvoPadel Security Notes
 
 ## VAPID keys
 
@@ -13,7 +13,7 @@ Store the private key only in Supabase secrets:
 ```bash
 supabase secrets set VAPID_PRIVATE_KEY=<private-key>
 supabase secrets set VAPID_PUBLIC_KEY=<public-key>
-supabase secrets set VAPID_SUBJECT=mailto:contato@padelup.app
+supabase secrets set VAPID_SUBJECT=mailto:contato@evopadel.app
 ```
 
 Expose only the public key to the web client:

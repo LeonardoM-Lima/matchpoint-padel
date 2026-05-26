@@ -44,7 +44,7 @@ VITE_VAPID_PUBLIC_KEY=BJxC...
 ```bash
 supabase secrets set VAPID_PUBLIC_KEY=BJxC...
 supabase secrets set VAPID_PRIVATE_KEY=K7n...
-supabase secrets set VAPID_SUBJECT=mailto:contato@padelup.app
+supabase secrets set VAPID_SUBJECT=mailto:contato@evopadel.app
 ```
 
 ### Database (variáveis Postgres usadas pelos triggers)
@@ -252,7 +252,7 @@ supabase functions deploy send-push-notification --project-ref <project-ref>
 supabase secrets set --project-ref <project-ref> \
   VAPID_PUBLIC_KEY=BJxC... \
   VAPID_PRIVATE_KEY=K7n... \
-  VAPID_SUBJECT=mailto:contato@padelup.app
+  VAPID_SUBJECT=mailto:contato@evopadel.app
 
 # Configurar variáveis de database (via SQL no painel)
 ALTER DATABASE postgres SET app.edge_function_url = 'https://<project-ref>.supabase.co/functions/v1';

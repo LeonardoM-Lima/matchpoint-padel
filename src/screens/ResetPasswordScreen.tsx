@@ -93,7 +93,7 @@ export function ResetPasswordScreen() {
           </div>
           <div>
             <p className="text-xs font-bold uppercase tracking-[0.25em] text-emerald-300">
-              PadelUP
+              EvoPadel
             </p>
             <h1 className="mt-2 font-display text-3xl font-extrabold text-slate-50">
               Nova senha

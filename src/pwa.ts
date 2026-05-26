@@ -75,6 +75,6 @@ const updateSW = registerSW({
     });
   },
   onOfflineReady() {
-    console.info('PadelUP pronto para uso offline.');
+    console.info('EvoPadel pronto para uso offline.');
   },
 });

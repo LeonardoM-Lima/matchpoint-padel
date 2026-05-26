@@ -62,7 +62,7 @@ function sqlString(value: string) {
 }
 
 export function runSql(sql: string) {
-  const dir = mkdtempSync(join(tmpdir(), 'matchpoint-sql-'));
+  const dir = mkdtempSync(join(tmpdir(), 'evopadel-sql-'));
   const file = join(dir, 'query.sql');
 
   try {
@@ -77,7 +77,7 @@ export function runSql(sql: string) {
 }
 
 export function queryRows<T>(sql: string) {
-  const dir = mkdtempSync(join(tmpdir(), 'matchpoint-sql-'));
+  const dir = mkdtempSync(join(tmpdir(), 'evopadel-sql-'));
   const file = join(dir, 'query.sql');
 
   try {
@@ -98,7 +98,7 @@ export function makePlayers(points: number[], label = 'player'): TestPlayer[] {
 
   return points.map((pointValue, index) => ({
     id: randomUUID(),
-    email: `${label}-${index}-${suffix}@matchpoint.test`,
+    email: `${label}-${index}-${suffix}@evopadel.test`,
     name: `${label}-${index}`,
     points: pointValue,
   }));

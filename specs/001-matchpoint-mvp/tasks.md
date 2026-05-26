@@ -1,4 +1,4 @@
-# Tasks: MVP PadelUP
+# Tasks: MVP EvoPadel
 
 **Input**: Design documents from `specs/001-matchpoint-mvp/`
 **Prerequisites**: [plan.md](plan.md) · [spec.md](spec.md) · [data-model.md](data-model.md) · [research.md](research.md) · [contracts/](contracts/)

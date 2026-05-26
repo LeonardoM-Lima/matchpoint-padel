@@ -38,7 +38,7 @@ export function RankingScreen() {
             </div>
             <div>
               <p className="text-xs font-bold uppercase tracking-[0.25em] text-emerald-300">
-                PadelUP
+                EvoPadel
               </p>
               <h1 className="font-display text-3xl font-extrabold text-gradient-gold">Ranking</h1>
             </div>

@@ -5,7 +5,7 @@
 
 ## Summary
 
-Estende o MVP do PadelUP com:
+Estende o MVP do EvoPadel com:
 
 1. **Perfil personalizável**: foto (Supabase Storage) e categoria informativa
    (auto-declarada, coexistindo com o nível calculado por pontos).

@@ -238,7 +238,7 @@ export function RegisterMatchScreen() {
             </div>
             <div>
               <p className="text-[10px] font-bold uppercase tracking-[0.25em] text-emerald-300">
-                PadelUP
+                EvoPadel
               </p>
               <h1 className="font-display text-2xl font-extrabold text-slate-50">
                 Registrar partida

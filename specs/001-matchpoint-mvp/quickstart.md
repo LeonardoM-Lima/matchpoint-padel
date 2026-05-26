@@ -1,4 +1,4 @@
-# Quickstart: MVP PadelUP
+# Quickstart: MVP EvoPadel
 
 ## Pré-requisitos
 
@@ -15,7 +15,7 @@
 
 ```bash
 git clone <repo-url>
-cd matchpoint-padel
+cd evopadel
 pnpm install
 ```
 

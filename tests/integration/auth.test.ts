@@ -11,7 +11,7 @@ import {
 const createdSignupEmails: string[] = [];
 
 function makeEmail(label: string) {
-  return `${label}-${crypto.randomUUID()}@matchpoint.dev`;
+  return `${label}-${crypto.randomUUID()}@evopadel.dev`;
 }
 
 function insertSignupFixture(label: string) {
@@ -50,7 +50,7 @@ describe('auth and RLS integration', () => {
 
     expect(profile).toBeDefined();
     expect(() => updateProfilePointsAsAuthenticatedUser(userId, profile!.id, 9999)).toThrow(
-      /Profile sensitive fields can only be changed by PadelUP RPCs/,
+      /Profile sensitive fields can only be changed by EvoPadel RPCs/,
     );
   });
 
