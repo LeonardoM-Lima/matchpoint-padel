@@ -66,9 +66,9 @@ export function LoginScreen() {
       <section className="mx-auto flex min-h-[calc(100vh-4rem)] max-w-md flex-col justify-center gap-8 animate-fade-in">
         <header className="flex flex-col items-center gap-4 text-center">
           <img
-            src="/brand/evopadel-logo-full.png"
+            src="/brand/evopadel-login-logo.png"
             alt="EvoPadel"
-            className="w-full max-w-[18rem] drop-shadow-[0_18px_40px_rgba(0,201,128,0.18)] sm:max-w-[21rem]"
+            className="w-full max-w-[15.5rem] drop-shadow-[0_18px_40px_rgba(0,201,128,0.18)] sm:max-w-[18rem]"
             loading="eager"
           />
           <div>
