@@ -19,6 +19,7 @@ interface AuthContextValue {
   signIn: (email: string, password: string) => Promise<void>;
   signUp: (email: string, password: string, nickname: string) => Promise<SignUpResult>;
   signOut: () => Promise<void>;
+  deleteAccount: () => Promise<void>;
   refreshProfile: () => Promise<void>;
 }
 
@@ -99,6 +100,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     setProfile(null);
   }, []);
 
+  const deleteAccount = useCallback(async () => {
+    await authService.deleteAccount();
+    await supabase.auth.signOut().catch(() => null);
+    setSession(null);
+    setProfile(null);
+  }, []);
+
   const value = useMemo<AuthContextValue>(
     () => ({
       session,
@@ -108,9 +116,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       signIn,
       signUp,
       signOut,
+      deleteAccount,
       refreshProfile,
     }),
-    [loading, profile, refreshProfile, session, signIn, signOut, signUp],
+    [deleteAccount, loading, profile, refreshProfile, session, signIn, signOut, signUp],
   );
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

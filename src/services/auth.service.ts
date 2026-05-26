@@ -212,6 +212,14 @@ export const authService = {
     if (error) throw error;
   },
 
+  async deleteAccount() {
+    const { error } = await supabase.functions.invoke('delete-account', {
+      method: 'POST',
+    });
+
+    if (error) throw error;
+  },
+
   async signOut() {
     const { error } = await supabase.auth.signOut();
     if (error) throw error;

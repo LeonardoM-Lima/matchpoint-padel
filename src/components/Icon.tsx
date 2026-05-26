@@ -44,7 +44,8 @@ type IconName =
   | 'video'
   | 'lightning'
   | 'edit'
-  | 'history';
+  | 'history'
+  | 'trash';
 
 interface IconProps extends SVGProps<SVGSVGElement> {
   name: IconName;
@@ -284,6 +285,14 @@ const paths: Record<IconName, JSX.Element> = {
       <path d="M3 12a9 9 0 1 0 3-6.7" />
       <path d="M3 4v5h5" />
       <path d="M12 7v5l3 2" />
+    </>
+  ),
+  trash: (
+    <>
+      <path d="M3 6h18" />
+      <path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" />
+      <path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6" />
+      <path d="M10 11v6M14 11v6" />
     </>
   ),
 };
