@@ -38,6 +38,15 @@ interface ProfileRow {
   updated_at: string;
 }
 
+const PRODUCTION_APP_URL = 'https://matchpoint-padel.vercel.app';
+
+function getAppRedirectUrl(path: string) {
+  const configuredUrl = import.meta.env.VITE_APP_URL?.trim();
+  const baseUrl = (configuredUrl || PRODUCTION_APP_URL).replace(/\/+$/, '');
+  const normalizedPath = path.startsWith('/') ? path : `/${path}`;
+  return `${baseUrl}${normalizedPath}`;
+}
+
 function getLevel(points: number): PlayerLevel {
   if (points < 800) return 'Iniciante';
   if (points < 1300) return 'Amador';
@@ -107,8 +116,7 @@ export const authService = {
   async signUp(email: string, password: string, nickname: string): Promise<SignUpResult> {
     const normalizedEmail = email.trim().toLowerCase();
     const trimmedNickname = nickname.trim();
-    const emailRedirectTo =
-      typeof window !== 'undefined' ? `${window.location.origin}/login` : undefined;
+    const emailRedirectTo = getAppRedirectUrl('/login');
 
     const { data, error } = await supabase.auth.signUp({
       email: normalizedEmail,
@@ -139,8 +147,7 @@ export const authService = {
   },
 
   async requestPasswordReset(email: string) {
-    const redirectTo =
-      typeof window !== 'undefined' ? `${window.location.origin}/reset-password` : undefined;
+    const redirectTo = getAppRedirectUrl('/reset-password');
     const { error } = await supabase.auth.resetPasswordForEmail(email.trim().toLowerCase(), {
       redirectTo,
     });
