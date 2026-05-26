@@ -38,7 +38,7 @@ interface ProfileRow {
   updated_at: string;
 }
 
-const PRODUCTION_APP_URL = 'https://matchpoint-padel.vercel.app';
+const PRODUCTION_APP_URL = 'https://padelup.vercel.app';
 
 function getAppRedirectUrl(path: string) {
   const configuredUrl = import.meta.env.VITE_APP_URL?.trim();
