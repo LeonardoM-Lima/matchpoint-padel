@@ -12,7 +12,7 @@ export function ProtectedRoute() {
         <section className="mx-auto grid max-w-md gap-6">
           <header className="space-y-2">
             <p className="text-sm font-semibold uppercase tracking-wide text-emerald-300">
-              MatchPoint Padel
+              PadelUP
             </p>
             <h1 className="text-3xl font-bold">Carregando</h1>
           </header>

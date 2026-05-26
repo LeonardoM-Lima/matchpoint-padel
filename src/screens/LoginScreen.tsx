@@ -70,7 +70,7 @@ export function LoginScreen() {
           </div>
           <div>
             <p className="text-xs font-bold uppercase tracking-[0.3em] text-emerald-300">
-              MatchPoint Padel
+              PadelUP
             </p>
             <h1 className="mt-2 font-display text-4xl font-extrabold text-gradient-emerald">
               Bem-vindo

@@ -5,14 +5,14 @@ self.addEventListener('push', (event) => {
   } catch {
     data = {};
   }
-  const title = data.title || 'MatchPoint Padel';
+  const title = data.title || 'PadelUP';
 
   event.waitUntil(
     self.registration.showNotification(title, {
       body: data.body || '',
       icon: data.icon || '/icons/pwa-192x192.png',
       badge: '/icons/pwa-192x192.png',
-      tag: data.tag || 'matchpoint',
+      tag: data.tag || 'padelup',
       data: {
         url: data.url || data.data?.url || '/',
       },

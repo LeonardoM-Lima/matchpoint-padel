@@ -50,7 +50,7 @@ describe('auth and RLS integration', () => {
 
     expect(profile).toBeDefined();
     expect(() => updateProfilePointsAsAuthenticatedUser(userId, profile!.id, 9999)).toThrow(
-      /Profile sensitive fields can only be changed by MatchPoint RPCs/,
+      /Profile sensitive fields can only be changed by PadelUP RPCs/,
     );
   });
 

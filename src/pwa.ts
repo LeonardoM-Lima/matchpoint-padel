@@ -75,6 +75,6 @@ const updateSW = registerSW({
     });
   },
   onOfflineReady() {
-    console.info('MatchPoint Padel pronto para uso offline.');
+    console.info('PadelUP pronto para uso offline.');
   },
 });

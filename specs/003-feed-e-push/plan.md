@@ -5,7 +5,7 @@
 
 ## Summary
 
-Extensão do MatchPoint Padel com dois eixos de engajamento:
+Extensão do PadelUP com dois eixos de engajamento:
 
 1. **Feed de Jogadas**: vídeos curtos (até 30s/30MB) categorizados (Smash,
    Bandeja, Víbora, Saque, Tombo, Furada, Engraçado, Outras), com curtidas

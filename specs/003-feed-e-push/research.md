@@ -319,7 +319,7 @@ npx web-push generate-vapid-keys
 ```
 
 **Distribuição**:
-- `VAPID_PRIVATE_KEY` e `VAPID_SUBJECT` (mailto:contato@matchpoint.app) →
+- `VAPID_PRIVATE_KEY` e `VAPID_SUBJECT` (mailto:contato@padelup.app) →
   secrets da Edge Function (`supabase secrets set`).
 - `VAPID_PUBLIC_KEY` → variável pública do client
   (`VITE_VAPID_PUBLIC_KEY` no `.env`). Pública por definição (browser usa
@@ -491,7 +491,7 @@ self.addEventListener('push', (event) => {
       body: data.body,
       icon: '/icon-192.png',
       badge: '/badge-72.png',
-      tag: data.tag ?? 'matchpoint',
+      tag: data.tag ?? 'padelup',
       data: { url: data.url ?? '/' },
     })
   );

@@ -6,6 +6,7 @@ import { ScreenSkeleton } from '../components/ScreenSkeleton';
 import { useAuth } from '../contexts/AuthContext';
 import { useProfile } from '../hooks/useProfile';
 import { useRanking } from '../hooks/useRanking';
+import type { PlayerCategory } from '../../specs/002-perfil-e-ligas/contracts/types';
 
 function getProgressPercent(points: number, abovePoints?: number, belowPoints?: number) {
   if (!abovePoints) return 100;
@@ -21,6 +22,25 @@ function levelBadge(level: string) {
   if (level === 'Iniciante') return 'bg-sky-400/15 text-sky-200 ring-sky-300/30';
   if (level === 'Amador') return 'bg-emerald-400/15 text-emerald-200 ring-emerald-300/30';
   return 'bg-amber-400/15 text-amber-200 ring-amber-300/30';
+}
+
+function categoryBadge(category?: PlayerCategory | null) {
+  if (!category) return '';
+  if (category === '1a') return 'bg-amber-300/15 text-amber-200 ring-amber-300/30';
+  if (category === '2a') return 'bg-orange-300/15 text-orange-200 ring-orange-300/30';
+  if (category === '3a') return 'bg-fuchsia-300/15 text-fuchsia-200 ring-fuchsia-300/30';
+  if (category === '4a') return 'bg-sky-300/15 text-sky-200 ring-sky-300/30';
+  if (category === '5a') return 'bg-cyan-300/15 text-cyan-200 ring-cyan-300/30';
+  if (category === '6a') return 'bg-teal-300/15 text-teal-200 ring-teal-300/30';
+  if (category === 'Open') return 'bg-emerald-300/15 text-emerald-200 ring-emerald-300/30';
+  return 'bg-slate-300/15 text-slate-200 ring-slate-300/30';
+}
+
+function categoryLabel(category?: PlayerCategory | null) {
+  if (!category) return null;
+  if (category === 'Open') return 'Categoria Open';
+  if (category === 'Iniciante') return 'Categoria Iniciante';
+  return `${category} categoria`;
 }
 
 const quickLinks = [
@@ -90,7 +110,7 @@ export function HomeScreen() {
         <header className="flex items-center justify-between">
           <div>
             <p className="text-xs font-bold uppercase tracking-[0.25em] text-emerald-300">
-              MatchPoint
+              PadelUP
             </p>
             <h1 className="font-display text-3xl font-extrabold text-slate-50">
               Olá{profile ? `, ${profile.name.split(' ')[0]}` : ''}!
@@ -124,11 +144,20 @@ export function HomeScreen() {
                 <Avatar name={profile.name} avatarUrl={profile.avatarUrl} size={56} ring />
                 <div className="min-w-0 flex-1">
                   <h2 className="truncate text-lg font-bold text-slate-50">{profile.name}</h2>
-                  <span
-                    className={`mt-1 inline-flex items-center rounded-full px-2 py-0.5 text-[11px] font-semibold ring-1 ${levelBadge(profile.level)}`}
-                  >
-                    {profile.level}
-                  </span>
+                  <div className="mt-1 flex flex-wrap items-center gap-1.5">
+                    <span
+                      className={`inline-flex items-center rounded-full px-2 py-0.5 text-[11px] font-semibold ring-1 ${levelBadge(profile.level)}`}
+                    >
+                      {profile.level}
+                    </span>
+                    {profile.category ? (
+                      <span
+                        className={`inline-flex items-center rounded-full px-2 py-0.5 text-[11px] font-semibold ring-1 ${categoryBadge(profile.category)}`}
+                      >
+                        {categoryLabel(profile.category)}
+                      </span>
+                    ) : null}
+                  </div>
                 </div>
                 {currentEntry ? (
                   <div className="flex flex-col items-center rounded-2xl bg-slate-950/60 px-3 py-2 ring-1 ring-emerald-300/20">

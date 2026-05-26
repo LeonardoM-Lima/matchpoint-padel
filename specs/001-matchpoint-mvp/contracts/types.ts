@@ -1,5 +1,5 @@
 // contracts/types.ts
-// Domain DTOs and payloads for MatchPoint Padel MVP.
+// Domain DTOs and payloads for PadelUP MVP.
 // These types are shared between frontend (React) and tests,
 // and serve as the source of truth for data shape across layers.
 

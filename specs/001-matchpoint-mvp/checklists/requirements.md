@@ -1,4 +1,4 @@
-# Specification Quality Checklist: MVP MatchPoint Padel
+# Specification Quality Checklist: MVP PadelUP
 
 **Purpose**: Validate specification completeness and quality before proceeding to planning
 **Created**: 2026-05-04

@@ -1,4 +1,4 @@
-# Data Model: MVP MatchPoint Padel
+# Data Model: MVP PadelUP
 
 **Branch**: `001-matchpoint-mvp` | **Date**: 2026-05-04
 

@@ -1,4 +1,4 @@
-# Research: MVP MatchPoint Padel
+# Research: MVP PadelUP
 
 **Branch**: `001-matchpoint-mvp` | **Date**: 2026-05-04
 

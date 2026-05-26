@@ -9,8 +9,8 @@ export default defineConfig({
             includeAssets: ['favicon.svg', 'icons/favicon.png', 'icons/apple-touch-icon.png'],
             manifest: {
                 id: '/',
-                name: 'MatchPoint Padel',
-                short_name: 'MatchPoint',
+                name: 'PadelUP',
+                short_name: 'PadelUP',
                 description: 'Ranking da suas partidas de padel',
                 lang: 'pt-BR',
                 start_url: '/',

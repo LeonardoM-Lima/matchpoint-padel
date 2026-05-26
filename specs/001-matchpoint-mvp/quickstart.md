@@ -1,4 +1,4 @@
-# Quickstart: MVP MatchPoint Padel
+# Quickstart: MVP PadelUP
 
 ## Pré-requisitos
 

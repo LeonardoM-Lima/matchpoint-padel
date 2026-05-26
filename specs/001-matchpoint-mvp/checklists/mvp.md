@@ -1,4 +1,4 @@
-# Full-Spectrum Requirements Checklist: MVP MatchPoint Padel
+# Full-Spectrum Requirements Checklist: MVP PadelUP
 
 **Purpose**: Revisão completa da qualidade dos requisitos antes de /speckit-tasks.
 Valida completude, clareza, consistência e mensurabilidade dos requisitos escritos —
