@@ -3,6 +3,7 @@ import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { ErrorBanner } from '../components/ErrorBanner';
 import { Icon } from '../components/Icon';
 import { useAuth } from '../contexts/AuthContext';
+import { authService } from '../services/auth.service';
 
 interface LocationState {
   from?: {
@@ -19,12 +20,15 @@ export function LoginScreen() {
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [notice, setNotice] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
+  const [resetSubmitting, setResetSubmitting] = useState(false);
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     setSubmitting(true);
     setError(null);
+    setNotice(null);
 
     try {
       await signIn(email, password);
@@ -33,6 +37,27 @@ export function LoginScreen() {
       setError('Email ou senha invalidos.');
     } finally {
       setSubmitting(false);
+    }
+  }
+
+  async function handleForgotPassword() {
+    const trimmedEmail = email.trim();
+    setError(null);
+    setNotice(null);
+
+    if (!trimmedEmail) {
+      setError('Informe seu email para receber o link de recuperação.');
+      return;
+    }
+
+    setResetSubmitting(true);
+    try {
+      await authService.requestPasswordReset(trimmedEmail);
+      setNotice('Se este email estiver cadastrado, você receberá um link para redefinir a senha.');
+    } catch {
+      setError('Não foi possível enviar o email de recuperação agora.');
+    } finally {
+      setResetSubmitting(false);
     }
   }
 
@@ -100,6 +125,24 @@ export function LoginScreen() {
               </button>
             </div>
           </label>
+
+          <button
+            type="button"
+            className="w-fit text-left text-sm font-bold text-emerald-300 transition hover:text-emerald-200"
+            disabled={resetSubmitting}
+            onClick={() => {
+              void handleForgotPassword();
+            }}
+          >
+            {resetSubmitting ? 'Enviando link...' : 'Esqueci minha senha'}
+          </button>
+
+          {notice ? (
+            <p className="flex items-start gap-2 rounded-xl border border-emerald-300/40 bg-emerald-950/40 px-3 py-3 text-sm text-emerald-100">
+              <Icon name="checkCircle" size={18} className="mt-0.5 shrink-0 text-emerald-300" />
+              {notice}
+            </p>
+          ) : null}
 
           {error ? <ErrorBanner message={error} /> : null}
 

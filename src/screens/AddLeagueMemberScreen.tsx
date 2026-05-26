@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import { Avatar } from '../components/Avatar';
 import { CategoryBadge } from '../components/CategoryBadge';
@@ -14,16 +14,19 @@ export function AddLeagueMemberScreen() {
   const [query, setQuery] = useState('');
   const [results, setResults] = useState<ProfileSearchResult[]>([]);
   const [loading, setLoading] = useState(false);
-  const [addingId, setAddingId] = useState<string | null>(null);
-  const [addedIds, setAddedIds] = useState<Set<string>>(new Set());
+  const [saving, setSaving] = useState(false);
+  const [selectedAddIds, setSelectedAddIds] = useState<Set<string>>(new Set());
+  const [selectedRemoveIds, setSelectedRemoveIds] = useState<Set<string>>(new Set());
   const [notice, setNotice] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const { detail, refresh } = useLeague(id);
 
-  const memberIds = new Set([
-    ...(detail?.ranking.map((entry) => entry.profileId) ?? []),
-    ...Array.from(addedIds),
-  ]);
+  const memberIds = useMemo(
+    () => new Set(detail?.ranking.map((entry) => entry.profileId) ?? []),
+    [detail?.ranking],
+  );
+  const ownerId = detail?.league.ownerId;
+  const hasChanges = selectedAddIds.size > 0 || selectedRemoveIds.size > 0;
 
   useEffect(() => {
     let active = true;
@@ -37,7 +40,7 @@ export function AddLeagueMemberScreen() {
         if (active) setResults(nextResults);
       })
       .catch(() => {
-        if (active) setError('Nao foi possivel buscar jogadores.');
+        if (active) setError('Não foi possível buscar jogadores.');
       })
       .finally(() => {
         if (active) setLoading(false);
@@ -48,46 +51,112 @@ export function AddLeagueMemberScreen() {
     };
   }, [query]);
 
-  async function handleAdd(profileId: string) {
-    if (!id) return;
-    setAddingId(profileId);
+  function togglePlayer(profileId: string) {
+    setNotice(null);
+    setError(null);
+
+    if (memberIds.has(profileId)) {
+      if (profileId === ownerId) return;
+
+      setSelectedRemoveIds((current) => {
+        const next = new Set(current);
+        if (next.has(profileId)) {
+          next.delete(profileId);
+        } else {
+          next.add(profileId);
+        }
+        return next;
+      });
+      return;
+    }
+
+    setSelectedAddIds((current) => {
+      const next = new Set(current);
+      if (next.has(profileId)) {
+        next.delete(profileId);
+      } else {
+        next.add(profileId);
+      }
+      return next;
+    });
+  }
+
+  async function handleSave() {
+    if (!id || !hasChanges) return;
+
+    setSaving(true);
     setError(null);
     setNotice(null);
 
     try {
-      await leagueService.addMember(id, profileId);
-      setAddedIds((current) => new Set(current).add(profileId));
-      setNotice('Jogador adicionado.');
+      for (const profileId of selectedRemoveIds) {
+        await leagueService.removeMember(id, profileId);
+      }
+      for (const profileId of selectedAddIds) {
+        await leagueService.addMember(id, profileId);
+      }
+
+      setSelectedAddIds(new Set());
+      setSelectedRemoveIds(new Set());
+      setNotice('Membros atualizados.');
       await refresh();
     } catch (nextError) {
-      setError(nextError instanceof Error ? nextError.message : 'Nao foi possivel adicionar o jogador.');
+      setError(nextError instanceof Error ? nextError.message : 'Não foi possível salvar os membros.');
     } finally {
-      setAddingId(null);
+      setSaving(false);
     }
   }
 
   return (
     <main className="min-h-screen px-4 pb-32 pt-6 text-slate-50">
-      <section className="mx-auto grid max-w-md gap-5 animate-fade-in">
+      <section className="mx-auto grid max-w-md animate-fade-in gap-5">
         <header className="grid gap-3">
-          <Link className="inline-flex items-center gap-1.5 text-sm font-semibold text-emerald-300" to={id ? `/leagues/${id}` : '/leagues'}>
+          <Link
+            className="inline-flex items-center gap-1.5 text-sm font-semibold text-emerald-300"
+            to={id ? `/leagues/${id}` : '/leagues'}
+          >
             <Icon name="arrowLeft" size={16} />
             Voltar
           </Link>
           <div>
-            <p className="text-xs font-bold uppercase tracking-[0.25em] text-emerald-300">Liga privada</p>
+            <p className="text-xs font-bold uppercase tracking-[0.25em] text-emerald-300">
+              Liga privada
+            </p>
             <h1 className="font-display text-3xl font-extrabold text-slate-50">Adicionar membros</h1>
           </div>
         </header>
 
-        <div className="relative">
-          <Icon name="search" size={18} className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-slate-500" />
-          <input
-            className="min-h-[48px] w-full rounded-xl border border-slate-700 bg-slate-950 pl-10 pr-3 text-slate-50 outline-none transition focus:border-emerald-300"
-            placeholder="Buscar por nickname"
-            value={query}
-            onChange={(event) => setQuery(event.target.value)}
-          />
+        <div className="grid gap-3 rounded-2xl border border-slate-800/80 bg-slate-900/60 p-3">
+          <div className="relative">
+            <Icon
+              name="search"
+              size={18}
+              className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-slate-500"
+            />
+            <input
+              className="min-h-[48px] w-full rounded-xl border border-slate-700 bg-slate-950 pl-10 pr-3 text-slate-50 outline-none transition focus:border-emerald-300"
+              placeholder="Buscar por nickname"
+              value={query}
+              onChange={(event) => setQuery(event.target.value)}
+            />
+          </div>
+
+          <div className="flex flex-wrap items-center justify-between gap-2">
+            <span className="text-xs font-semibold text-slate-400">
+              {selectedAddIds.size} para adicionar · {selectedRemoveIds.size} para remover
+            </span>
+            <button
+              type="button"
+              className="btn-primary inline-flex min-h-10 items-center justify-center gap-2 rounded-xl px-4 text-sm disabled:opacity-60"
+              disabled={!hasChanges || saving}
+              onClick={() => {
+                void handleSave();
+              }}
+            >
+              <Icon name="checkCircle" size={16} />
+              {saving ? 'Salvando...' : 'Salvar'}
+            </button>
+          </div>
         </div>
 
         {notice ? (
@@ -106,17 +175,28 @@ export function AddLeagueMemberScreen() {
 
         <div className="grid gap-2">
           {results.map((player) => {
-            const alreadyMember = memberIds.has(player.id);
+            const isMember = memberIds.has(player.id);
+            const selectedAdd = selectedAddIds.has(player.id);
+            const selectedRemove = selectedRemoveIds.has(player.id);
+            const isOwner = player.id === ownerId;
 
             return (
-              <article
+              <button
                 key={player.id}
+                type="button"
+                disabled={isOwner}
                 className={[
-                  'flex items-center gap-3 rounded-2xl border p-3',
-                  alreadyMember
-                    ? 'border-emerald-300/30 bg-emerald-400/10'
-                    : 'border-slate-800/80 bg-slate-900/60',
+                  'flex w-full items-center gap-3 rounded-2xl border p-3 text-left transition disabled:cursor-not-allowed',
+                  selectedAdd
+                    ? 'border-emerald-300/60 bg-emerald-400/15'
+                    : selectedRemove
+                      ? 'border-rose-300/60 bg-rose-400/15'
+                      : isMember
+                        ? 'border-emerald-300/30 bg-emerald-400/10'
+                        : 'border-slate-800/80 bg-slate-900/60 hover:border-emerald-300/30',
                 ].join(' ')}
+                onClick={() => togglePlayer(player.id)}
+                aria-pressed={selectedAdd || selectedRemove}
               >
                 <Avatar name={player.name} avatarUrl={player.avatarUrl} size={42} />
                 <div className="min-w-0 flex-1">
@@ -124,30 +204,44 @@ export function AddLeagueMemberScreen() {
                     <h2 className="truncate text-sm font-bold text-slate-50">{player.name}</h2>
                     <CategoryBadge category={player.category} />
                   </div>
-                  <p className="text-[11px] text-slate-400">{player.points} pts · {player.wins}V / {player.losses}D</p>
+                  <p className="text-[11px] text-slate-400">
+                    {player.points} pts · {player.wins}V / {player.losses}D
+                  </p>
                 </div>
-                <button
+                <span
                   className={[
-                    'inline-flex h-10 min-w-10 items-center justify-center rounded-xl px-3 text-sm font-bold disabled:opacity-70',
-                    alreadyMember
-                      ? 'bg-slate-800 text-slate-300'
-                      : 'bg-emerald-400 text-emerald-950',
+                    'inline-flex min-h-10 items-center justify-center gap-1 rounded-xl px-3 text-xs font-bold',
+                    selectedAdd
+                      ? 'bg-emerald-400 text-emerald-950'
+                      : selectedRemove
+                        ? 'bg-rose-400 text-rose-950'
+                        : isMember
+                          ? 'bg-slate-800 text-slate-300'
+                          : 'bg-emerald-400 text-emerald-950',
                   ].join(' ')}
-                  type="button"
-                  disabled={alreadyMember || addingId === player.id}
-                  onClick={() => void handleAdd(player.id)}
-                  aria-label={alreadyMember ? `${player.name} ja esta na liga` : `Adicionar ${player.name}`}
                 >
-                  {alreadyMember ? (
-                    <span className="flex items-center gap-1">
+                  {isOwner ? (
+                    'Dono'
+                  ) : selectedAdd ? (
+                    <>
                       <Icon name="check" size={14} />
-                      Na liga
-                    </span>
+                      Adicionar
+                    </>
+                  ) : selectedRemove ? (
+                    <>
+                      <Icon name="x" size={14} />
+                      Remover
+                    </>
+                  ) : isMember ? (
+                    'Na liga'
                   ) : (
-                    <Icon name="plus" size={18} />
+                    <>
+                      <Icon name="plus" size={14} />
+                      Adicionar
+                    </>
                   )}
-                </button>
-              </article>
+                </span>
+              </button>
             );
           })}
         </div>

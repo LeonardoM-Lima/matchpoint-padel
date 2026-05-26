@@ -61,6 +61,48 @@ function mapProfile(row: ProfileRow): Profile {
   };
 }
 
+function getHashParams() {
+  if (typeof window === 'undefined') return new URLSearchParams();
+  return new URLSearchParams(window.location.hash.replace(/^#/, ''));
+}
+
+function decodeJwtPayload(token: string): { iat?: number } | null {
+  try {
+    const payload = token.split('.')[1];
+    if (!payload) return null;
+    const normalized = payload.replace(/-/g, '+').replace(/_/g, '/');
+    const padded = normalized.padEnd(normalized.length + ((4 - (normalized.length % 4)) % 4), '=');
+    return JSON.parse(window.atob(padded)) as { iat?: number };
+  } catch {
+    return null;
+  }
+}
+
+export function getSessionIssuedInFutureDelayMs(session: Session | null) {
+  if (!session?.access_token || typeof window === 'undefined') return 0;
+
+  const payload = decodeJwtPayload(session.access_token);
+  if (!payload?.iat) return 0;
+
+  return Math.max(0, payload.iat * 1000 - Date.now() + 1500);
+}
+
+function isIssuedInFutureError(error: unknown) {
+  if (!(error instanceof AuthApiError)) return false;
+  const message = `${error.message} ${error.code ?? ''}`.toLowerCase();
+  return error.status === 422 && (message.includes('future') || message.includes('jwt'));
+}
+
+function getCodeParam() {
+  if (typeof window === 'undefined') return null;
+  return new URLSearchParams(window.location.search).get('code');
+}
+
+function cleanAuthParamsFromUrl() {
+  if (typeof window === 'undefined') return;
+  window.history.replaceState({}, document.title, window.location.pathname);
+}
+
 export const authService = {
   async signUp(email: string, password: string, nickname: string): Promise<SignUpResult> {
     const normalizedEmail = email.trim().toLowerCase();
@@ -96,6 +138,73 @@ export const authService = {
     return data;
   },
 
+  async requestPasswordReset(email: string) {
+    const redirectTo =
+      typeof window !== 'undefined' ? `${window.location.origin}/reset-password` : undefined;
+    const { error } = await supabase.auth.resetPasswordForEmail(email.trim().toLowerCase(), {
+      redirectTo,
+    });
+
+    if (error) throw error;
+  },
+
+  async preparePasswordRecoverySession() {
+    const code = getCodeParam();
+    if (code) {
+      const { data, error } = await supabase.auth.exchangeCodeForSession(code);
+      if (error) throw error;
+
+      cleanAuthParamsFromUrl();
+      return data.session;
+    }
+
+    const params = getHashParams();
+    const refreshToken = params.get('refresh_token');
+
+    if (refreshToken) {
+      const refreshed = await supabase.auth.refreshSession({
+        refresh_token: refreshToken,
+      });
+      if (refreshed.error) throw refreshed.error;
+
+      cleanAuthParamsFromUrl();
+      return refreshed.data.session;
+    }
+
+    const { data, error } = await supabase.auth.getSession();
+    if (error) throw error;
+    return data.session;
+  },
+
+  async updatePassword(password: string) {
+    const { data } = await supabase.auth.getSession();
+    const delayMs = getSessionIssuedInFutureDelayMs(data.session);
+
+    if (delayMs > 0 && data.session?.refresh_token) {
+      const refreshed = await supabase.auth.refreshSession({
+        refresh_token: data.session.refresh_token,
+      });
+      if (refreshed.error) throw refreshed.error;
+    }
+
+    const { error } = await supabase.auth.updateUser({ password });
+    if (isIssuedInFutureError(error)) {
+      const current = await supabase.auth.getSession();
+      if (current.data.session?.refresh_token) {
+        const refreshed = await supabase.auth.refreshSession({
+          refresh_token: current.data.session.refresh_token,
+        });
+        if (refreshed.error) throw refreshed.error;
+      }
+
+      const retry = await supabase.auth.updateUser({ password });
+      if (retry.error) throw retry.error;
+      return;
+    }
+
+    if (error) throw error;
+  },
+
   async signOut() {
     const { error } = await supabase.auth.signOut();
     if (error) throw error;
@@ -116,11 +225,11 @@ export const authService = {
 export function getAuthErrorMessage(error: unknown) {
   if (error instanceof AuthApiError) {
     if (error.code === 'email_address_invalid') {
-      return 'Use um email real. O Supabase nao aceita alguns dominios de teste, como example.com.';
+      return 'Use um email real. O Supabase não aceita alguns domínios de teste, como example.com.';
     }
 
     if (error.code === 'user_already_exists') {
-      return 'Ja existe uma conta com este email.';
+      return 'Já existe uma conta com este email.';
     }
 
     if (error.code === 'weak_password') {
@@ -128,9 +237,9 @@ export function getAuthErrorMessage(error: unknown) {
     }
 
     if (error.status === 429) {
-      return 'O Supabase bloqueou novos emails de cadastro neste projeto. No provedor nativo deles, o limite padrao e 2 emails por hora por projeto. Se isso continuar, revise Auth > Rate Limits e configure SMTP proprio ou desative a confirmacao de email para o MVP.';
+      return 'O Supabase bloqueou novos emails de cadastro neste projeto. No provedor nativo deles, o limite padrão é 2 emails por hora por projeto. Se isso continuar, revise Auth > Rate Limits e configure SMTP próprio ou desative a confirmação de email para o MVP.';
     }
   }
 
-  return 'Nao foi possivel criar sua conta.';
+  return 'Não foi possível criar sua conta.';
 }

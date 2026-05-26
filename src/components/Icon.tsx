@@ -42,7 +42,9 @@ type IconName =
   | 'upload'
   | 'bell'
   | 'video'
-  | 'lightning';
+  | 'lightning'
+  | 'edit'
+  | 'history';
 
 interface IconProps extends SVGProps<SVGSVGElement> {
   name: IconName;
@@ -271,6 +273,19 @@ const paths: Record<IconName, JSX.Element> = {
     </>
   ),
   lightning: <path d="M13 2 4 14h7l-1 8 9-12h-7l1-8Z" />,
+  edit: (
+    <>
+      <path d="M12 20h9" />
+      <path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L8 18l-4 1 1-4Z" />
+    </>
+  ),
+  history: (
+    <>
+      <path d="M3 12a9 9 0 1 0 3-6.7" />
+      <path d="M3 4v5h5" />
+      <path d="M12 7v5l3 2" />
+    </>
+  ),
 };
 
 export function Icon({ name, size = 20, strokeWidth = 2, ...rest }: IconProps) {

@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
+import { Link } from 'react-router-dom';
 import { Avatar } from './Avatar';
 import { Icon } from './Icon';
 import { LikeButton } from './LikeButton';
@@ -114,10 +115,17 @@ export function VideoCard({ item, currentProfileId, onDeleted, onError }: VideoC
 
       <div className="grid gap-4 p-4">
         <header className="flex items-start gap-3">
-          <Avatar name={item.authorName} avatarUrl={item.authorAvatar} size={42} ring />
+          <Link to={`/players/${item.authorId}`} className="shrink-0">
+            <Avatar name={item.authorName} avatarUrl={item.authorAvatar} size={42} ring />
+          </Link>
           <div className="min-w-0 flex-1">
             <div className="flex items-center gap-2">
-              <h2 className="truncate text-sm font-bold text-slate-50">{item.authorName}</h2>
+              <Link
+                to={`/players/${item.authorId}`}
+                className="truncate text-sm font-bold text-slate-50 transition hover:text-emerald-200"
+              >
+                {item.authorName}
+              </Link>
               <span className="rounded-full bg-emerald-300/15 px-2 py-0.5 text-[10px] font-bold text-emerald-200 ring-1 ring-emerald-300/20">
                 {VIDEO_CATEGORY_LABEL[item.category]}
               </span>

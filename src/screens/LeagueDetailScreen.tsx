@@ -114,14 +114,14 @@ export function LeagueDetailScreen() {
                   {detail.permissions.canAddMember ? (
                     <div className="grid grid-cols-2 gap-2">
                       <Link className="btn-primary inline-flex min-h-[44px] items-center justify-center gap-2 rounded-xl px-4" to={`/leagues/${detail.league.id}/add-member`}>
-                        <Icon name="plus" size={16} />
+                        <Icon name="users" size={16} />
                         Membros
                       </Link>
                       <Link
                         className="inline-flex min-h-[44px] items-center justify-center gap-2 rounded-xl border border-emerald-300/40 bg-emerald-400/10 px-4 font-bold text-emerald-200"
                         to={`/leagues/${detail.league.id}/edit`}
                       >
-                        <Icon name="user" size={16} />
+                        <Icon name="edit" size={16} />
                         Editar
                       </Link>
                     </div>
@@ -131,7 +131,7 @@ export function LeagueDetailScreen() {
                     className="inline-flex min-h-[44px] items-center justify-center gap-2 rounded-xl border border-sky-300/40 bg-sky-400/10 px-4 font-bold text-sky-200"
                     to={`/leagues/${detail.league.id}/history`}
                   >
-                    <Icon name="chartBar" size={16} />
+                    <Icon name="history" size={16} />
                     Ver histórico da liga
                   </Link>
 
@@ -197,16 +197,11 @@ export function LeagueDetailScreen() {
                 />
               ) : null}
 
-              {detail.ranking.map((entry) => (
-                <label
-                  key={entry.profileId}
-                  className={[
-                    'grid gap-2',
-                    removeMode && entry.profileId !== detail.league.ownerId ? 'cursor-pointer' : '',
-                  ].join(' ')}
-                >
+              {detail.ranking.map((entry) => {
+                const canSelect = removeMode && entry.profileId !== detail.league.ownerId;
+                const row = (
                   <div className="relative">
-                    {removeMode && entry.profileId !== detail.league.ownerId ? (
+                    {canSelect ? (
                       <input
                         className="absolute right-3 top-1/2 z-10 h-5 w-5 -translate-y-1/2 accent-rose-400"
                         type="checkbox"
@@ -216,8 +211,22 @@ export function LeagueDetailScreen() {
                     ) : null}
                     <LeagueRankingRow entry={entry} />
                   </div>
-                </label>
-              ))}
+                );
+
+                if (canSelect) {
+                  return (
+                    <label key={entry.profileId} className="grid cursor-pointer gap-2">
+                      {row}
+                    </label>
+                  );
+                }
+
+                return (
+                  <Link key={entry.profileId} className="grid gap-2" to={`/players/${entry.profileId}`}>
+                    {row}
+                  </Link>
+                );
+              })}
             </section>
 
           </>

@@ -13,11 +13,13 @@ import { LeaguesScreen } from '../screens/LeaguesScreen';
 import { LoginScreen } from '../screens/LoginScreen';
 import { MatchHistoryScreen } from '../screens/MatchHistoryScreen';
 import { MatchmakingScreen } from '../screens/MatchmakingScreen';
+import { PlayerProfileScreen } from '../screens/PlayerProfileScreen';
 import { ProfileScreen } from '../screens/ProfileScreen';
 import { PublishVideoScreen } from '../screens/PublishVideoScreen';
 import { RankingScreen } from '../screens/RankingScreen';
 import { RegisterMatchScreen } from '../screens/RegisterMatchScreen';
 import { RegisterScreen } from '../screens/RegisterScreen';
+import { ResetPasswordScreen } from '../screens/ResetPasswordScreen';
 
 export const router = createBrowserRouter([
   {
@@ -27,6 +29,10 @@ export const router = createBrowserRouter([
   {
     path: '/register',
     element: <RegisterScreen />,
+  },
+  {
+    path: '/reset-password',
+    element: <ResetPasswordScreen />,
   },
   {
     element: <ProtectedRoute />,
@@ -69,6 +75,10 @@ export const router = createBrowserRouter([
           {
             path: '/profile/history',
             element: <MatchHistoryScreen />,
+          },
+          {
+            path: '/players/:id',
+            element: <PlayerProfileScreen />,
           },
           {
             path: '/leagues',

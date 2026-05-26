@@ -7,6 +7,52 @@ import { supabase } from '../lib/supabase';
 
 const invalidPhotoMessage = 'Foto deve ser JPG, PNG ou WebP com ate 2MB';
 
+export interface PublicProfile {
+  id: string;
+  name: string;
+  avatarUrl: string | null;
+  category: PlayerCategory | null;
+  points: number;
+  wins: number;
+  losses: number;
+  level: 'Iniciante' | 'Amador' | 'Avançado';
+  createdAt: string;
+  updatedAt: string;
+}
+
+interface PublicProfileRow {
+  id: string;
+  name: string;
+  avatar_url: string | null;
+  category: PlayerCategory | null;
+  points: number;
+  wins: number;
+  losses: number;
+  created_at: string;
+  updated_at: string;
+}
+
+function getLevel(points: number): PublicProfile['level'] {
+  if (points < 800) return 'Iniciante';
+  if (points < 1300) return 'Amador';
+  return 'Avançado';
+}
+
+function mapPublicProfile(row: PublicProfileRow): PublicProfile {
+  return {
+    id: row.id,
+    name: row.name,
+    avatarUrl: row.avatar_url,
+    category: row.category,
+    points: row.points,
+    wins: row.wins,
+    losses: row.losses,
+    level: getLevel(row.points),
+    createdAt: row.created_at,
+    updatedAt: row.updated_at,
+  };
+}
+
 function validateImage(file: File) {
   if (
     file.size > IMAGE_UPLOAD_LIMITS.maxBytes ||
@@ -68,5 +114,16 @@ export const profileService = {
 
     if (updateError) throw updateError;
     return path;
+  },
+
+  async getPublicProfile(profileId: string) {
+    const { data, error } = await supabase
+      .from('profiles')
+      .select('id,name,avatar_url,category,points,wins,losses,created_at,updated_at')
+      .eq('id', profileId)
+      .single();
+
+    if (error) throw error;
+    return mapPublicProfile(data as PublicProfileRow);
   },
 };

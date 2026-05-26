@@ -81,10 +81,12 @@ export function RankingScreen() {
                       <div className="h-px flex-1 bg-slate-800" />
                     </div>
                   ) : null}
-                  <RankingRow
-                    entry={entry}
-                    isCurrentUser={entry.id === currentEntry?.id}
-                  />
+                  <Link to={entry.id === currentEntry?.id ? '/profile' : `/players/${entry.id}`}>
+                    <RankingRow
+                      entry={entry}
+                      isCurrentUser={entry.id === currentEntry?.id}
+                    />
+                  </Link>
                 </div>
               );
             })}
