@@ -8,8 +8,48 @@ export interface PushStatus {
   reason?: string;
 }
 
+function isAppleMobile() {
+  if (typeof navigator === 'undefined') return false;
+  return /iphone|ipad|ipod/i.test(navigator.userAgent);
+}
+
+function getAppleMobileVersion() {
+  if (!isAppleMobile()) return null;
+
+  const match = navigator.userAgent.match(/OS (\d+)[._](\d+)/i);
+  if (!match) return null;
+
+  return {
+    major: Number(match[1]),
+    minor: Number(match[2]),
+  };
+}
+
+function isStandalonePwa() {
+  if (typeof window === 'undefined') return false;
+
+  const standaloneNavigator = navigator as Navigator & { standalone?: boolean };
+  return window.matchMedia('(display-mode: standalone)').matches || standaloneNavigator.standalone === true;
+}
+
 function isPushSupported() {
   return 'serviceWorker' in navigator && 'PushManager' in window && 'Notification' in window;
+}
+
+function getUnsupportedReason() {
+  if (isAppleMobile()) {
+    const version = getAppleMobileVersion();
+
+    if (version && (version.major < 16 || (version.major === 16 && version.minor < 4))) {
+      return 'No iPhone e iPad, notificacoes push para PWA exigem iOS ou iPadOS 16.4 ou superior.';
+    }
+
+    if (!isStandalonePwa()) {
+      return 'No iPhone e iPad, abra o app instalado pela Tela de Inicio para ativar notificacoes push.';
+    }
+  }
+
+  return 'Seu navegador nao suporta notificacoes push.';
 }
 
 async function getCurrentSubscription() {
@@ -24,7 +64,7 @@ export async function getPushStatus(profileId: string): Promise<PushStatus> {
       supported: false,
       permission: 'default',
       active: false,
-      reason: 'Seu navegador não suporta notificações push',
+      reason: getUnsupportedReason(),
     };
   }
 
@@ -45,17 +85,17 @@ export async function getPushStatus(profileId: string): Promise<PushStatus> {
 
 export async function subscribePush(profileId: string) {
   if (!isPushSupported()) {
-    throw new Error('Seu navegador não suporta notificações push');
+    throw new Error(getUnsupportedReason());
   }
 
   const vapidKey = import.meta.env.VITE_VAPID_PUBLIC_KEY;
   if (!vapidKey) {
-    throw new Error('Chave pública VAPID não configurada.');
+    throw new Error('Chave publica VAPID nao configurada.');
   }
 
   const permission = await Notification.requestPermission();
   if (permission !== 'granted') {
-    throw new Error('Permissão negada nas configurações do navegador. Habilite para receber notificações.');
+    throw new Error('Permissao negada nas configuracoes do navegador. Habilite para receber notificacoes.');
   }
 
   const registration = await navigator.serviceWorker.ready;
@@ -71,7 +111,7 @@ export async function subscribePush(profileId: string) {
   const auth = subscription.getKey('auth');
 
   if (!p256dh || !auth) {
-    throw new Error('Não foi possível registrar notificações neste navegador.');
+    throw new Error('Nao foi possivel registrar notificacoes neste navegador.');
   }
 
   const { error } = await supabase.from('push_subscriptions').insert({

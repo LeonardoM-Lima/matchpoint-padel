@@ -9,6 +9,7 @@ export default defineConfig({
       registerType: 'prompt',
       includeAssets: ['favicon.svg', 'icons/favicon.png', 'icons/apple-touch-icon.png'],
       manifest: {
+        id: '/',
         name: 'MatchPoint Padel',
         short_name: 'MatchPoint',
         description: 'Ranking da suas partidas de padel',
