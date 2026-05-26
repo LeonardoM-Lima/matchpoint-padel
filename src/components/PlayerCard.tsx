@@ -28,9 +28,8 @@ export function PlayerCard({ player }: PlayerCardProps) {
         </div>
 
         <span
-          className={`inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-xs font-semibold ring-1 ${getLevelClass(player.level)}`}
+          className={`inline-flex items-center rounded-full px-2.5 py-1 text-xs font-semibold ring-1 ${getLevelClass(player.level)}`}
         >
-          <Icon name="star" size={12} strokeWidth={2.5} />
           {player.level}
         </span>
       </div>

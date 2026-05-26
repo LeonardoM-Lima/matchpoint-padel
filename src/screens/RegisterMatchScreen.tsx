@@ -345,7 +345,7 @@ export function RegisterMatchScreen() {
           />
 
           {matchPlayers.length > 0 ? (
-            <section className="grid gap-2 rounded-xl border border-slate-800/80 bg-slate-900/40 p-3">
+            <section className="grid gap-2.5 rounded-xl border border-slate-800/80 bg-slate-900/40 p-3.5">
               <div className="flex items-center justify-between">
                 <h2 className="flex items-center gap-1.5 text-xs font-bold uppercase tracking-wide text-emerald-300">
                   <Icon name="users" size={14} />
@@ -373,7 +373,7 @@ export function RegisterMatchScreen() {
                 </div>
               </div>
 
-              <div className="grid gap-1.5">
+              <div className="grid gap-2">
                 {matchPlayers.map((player, index) => {
                   const activeTeam = teams[player.id] ?? defaultTeamForIndex(index);
                   const isCurrentPlayer = currentPlayer?.id === player.id;
@@ -381,11 +381,11 @@ export function RegisterMatchScreen() {
                   return (
                     <div
                       key={player.id}
-                      className="flex items-center gap-2 rounded-lg bg-slate-950 p-2 ring-1 ring-slate-800/60"
+                      className="flex items-center gap-3 rounded-lg bg-slate-950 p-2.5 ring-1 ring-slate-800/60"
                     >
-                      <Avatar name={player.name} size={30} />
+                      <Avatar name={player.name} size={36} />
                       <span className="min-w-0 flex-1">
-                        <span className="block truncate text-xs font-semibold text-slate-50">
+                        <span className="block truncate text-sm font-semibold text-slate-50">
                           {player.name}
                           {isCurrentPlayer ? (
                             <span className="ml-1 rounded bg-emerald-300/20 px-1 py-0.5 text-[9px] font-bold uppercase text-emerald-200">
@@ -393,15 +393,15 @@ export function RegisterMatchScreen() {
                             </span>
                           ) : null}
                         </span>
-                        <span className="text-[10px] text-slate-400">{player.points} pts</span>
+                        <span className="text-[11px] text-slate-400">{player.points} pts</span>
                       </span>
 
-                      <span className="grid grid-cols-2 gap-1 rounded-lg bg-slate-900 p-0.5 ring-1 ring-slate-800/60">
+                      <span className="grid grid-cols-2 gap-1.5 rounded-lg bg-slate-900 p-1 ring-1 ring-slate-800/60">
                         {(['A', 'B'] as Team[]).map((team) => (
                           <button
                             key={team}
                             className={[
-                              'min-h-[28px] rounded-md px-2.5 text-xs font-bold transition',
+                              'min-h-[36px] min-w-[40px] rounded-md px-3 text-sm font-bold transition',
                               activeTeam === team
                                 ? team === 'A'
                                   ? 'bg-sky-300 text-sky-950'

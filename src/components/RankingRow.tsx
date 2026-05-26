@@ -143,9 +143,8 @@ export function RankingRow({ entry, isCurrentUser = false }: RankingRowProps) {
 
       <div className="relative flex flex-wrap items-center justify-between gap-2 text-xs">
         <span
-          className={`inline-flex items-center gap-1 rounded-full px-2.5 py-1 font-semibold ring-1 ${levelStyles[entry.level]}`}
+          className={`inline-flex items-center rounded-full px-2.5 py-1 font-semibold ring-1 ${levelStyles[entry.level]}`}
         >
-          <Icon name="star" size={12} strokeWidth={2.5} />
           {entry.level}
         </span>
         <span className="flex items-center gap-3 text-slate-400">

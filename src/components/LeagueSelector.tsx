@@ -11,7 +11,7 @@ interface LeagueSelectorProps {
 
 export function LeagueSelector({ leagues, value, disabled = false, loading = false, onChange }: LeagueSelectorProps) {
   return (
-    <section className="grid gap-2 rounded-xl border border-slate-800/80 bg-slate-900/40 p-3">
+    <section className="grid gap-2.5 rounded-xl border border-slate-800/80 bg-slate-900/40 p-3.5">
       <label
         className="flex items-center gap-1.5 text-xs font-bold uppercase tracking-wide text-emerald-300"
         htmlFor="league-selector"
@@ -21,7 +21,7 @@ export function LeagueSelector({ leagues, value, disabled = false, loading = fal
       </label>
       <select
         id="league-selector"
-        className="min-h-[44px] w-full rounded-xl border border-slate-700 bg-slate-950 px-3 text-sm font-semibold text-slate-50 outline-none transition focus:border-emerald-300 disabled:opacity-60"
+        className="min-h-[50px] w-full rounded-xl border border-slate-700 bg-slate-950 px-3.5 text-[15px] font-semibold text-slate-50 outline-none transition focus:border-emerald-300 disabled:opacity-60"
         value={value}
         disabled={disabled || loading}
         onChange={(event) => onChange(event.target.value)}
@@ -33,9 +33,9 @@ export function LeagueSelector({ leagues, value, disabled = false, loading = fal
           </option>
         ))}
       </select>
-      <p className="text-[11px] text-slate-400">
+      <p className="text-xs text-slate-400">
         {disabled
-          ? 'Disponivel apos selecionar os 4 jogadores.'
+          ? 'Disponivel apos selecionar 4 jogadores participantes da liga.'
           : loading
             ? 'Buscando ligas elegiveis...'
             : leagues.length === 0

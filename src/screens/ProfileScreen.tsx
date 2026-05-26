@@ -69,9 +69,8 @@ export function ProfileScreen() {
                   </p>
                 </div>
                 <span
-                  className={`inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-sm font-semibold ring-1 ${getLevelClass(profile.level)}`}
+                  className={`inline-flex items-center rounded-full px-3 py-1 text-sm font-semibold ring-1 ${getLevelClass(profile.level)}`}
                 >
-                  <Icon name="star" size={14} strokeWidth={2.5} />
                   {profile.level}
                 </span>
               </div>

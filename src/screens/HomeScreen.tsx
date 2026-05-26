@@ -125,9 +125,8 @@ export function HomeScreen() {
                 <div className="min-w-0 flex-1">
                   <h2 className="truncate text-lg font-bold text-slate-50">{profile.name}</h2>
                   <span
-                    className={`mt-1 inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[11px] font-semibold ring-1 ${levelBadge(profile.level)}`}
+                    className={`mt-1 inline-flex items-center rounded-full px-2 py-0.5 text-[11px] font-semibold ring-1 ${levelBadge(profile.level)}`}
                   >
-                    <Icon name="star" size={11} strokeWidth={2.5} />
                     {profile.level}
                   </span>
                 </div>
