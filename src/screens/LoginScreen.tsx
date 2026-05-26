@@ -65,13 +65,13 @@ export function LoginScreen() {
     <main className="min-h-screen px-4 py-8 text-slate-50">
       <section className="mx-auto flex min-h-[calc(100vh-4rem)] max-w-md flex-col justify-center gap-8 animate-fade-in">
         <header className="flex flex-col items-center gap-4 text-center">
-          <div className="flex h-20 w-20 items-center justify-center rounded-3xl bg-gradient-emerald shadow-glow">
-            <Icon name="racket" size={40} strokeWidth={2} className="text-emerald-950" />
-          </div>
+          <img
+            src="/brand/evopadel-logo-full.png"
+            alt="EvoPadel"
+            className="w-full max-w-[18rem] drop-shadow-[0_18px_40px_rgba(0,201,128,0.18)] sm:max-w-[21rem]"
+            loading="eager"
+          />
           <div>
-            <p className="text-xs font-bold uppercase tracking-[0.3em] text-emerald-300">
-              EvoPadel
-            </p>
             <h1 className="mt-2 font-display text-4xl font-extrabold text-gradient-emerald">
               Bem-vindo
             </h1>
