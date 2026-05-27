@@ -43,7 +43,6 @@ export function useMatchmaking() {
   const activateAvailability = useCallback(
     async (whatsappNumber: string) => {
       if (!profile) throw new Error('Nao foi possivel carregar seu perfil.');
-      if (!profile.category) throw new Error('Defina sua categoria no perfil antes de procurar jogo.');
 
       setSavingAvailability(true);
       setError(null);

@@ -24,6 +24,17 @@ interface MatchmakingAvailabilityRow {
   available_until: string;
 }
 
+const categoryOrder: Array<RankingEntry['category']> = [
+  '1a',
+  '2a',
+  '3a',
+  '4a',
+  '5a',
+  '6a',
+  'Open',
+  'Iniciante',
+];
+
 function getLevel(points: number): PlayerLevel {
   if (points < 800) return 'Iniciante';
   if (points < 1300) return 'Amador';
@@ -39,6 +50,11 @@ function compareRankingRows(a: ProfileRankingRow, b: ProfileRankingRow) {
 
 function hasSameRank(a: ProfileRankingRow, b: ProfileRankingRow) {
   return a.points === b.points && a.wins === b.wins && a.losses === b.losses;
+}
+
+function getCategorySortValue(category?: RankingEntry['category'] | null) {
+  const index = categoryOrder.indexOf(category as RankingEntry['category']);
+  return index === -1 ? categoryOrder.length : index;
 }
 
 export function buildRankingEntries(rows: ProfileRankingRow[]): RankingEntry[] {
@@ -78,17 +94,13 @@ export function buildMatchmakingSuggestions(
   rows: ProfileRankingRow[],
   currentProfileId: string,
   currentUserPoints: number,
-  currentCategory?: RankingEntry['category'] | null,
   availabilityByProfileId: Map<string, MatchmakingAvailabilityRow> = new Map(),
   myMatchIds: Set<string> = new Set(),
   candidateMatchIds: Map<string, Set<string>> = new Map(),
 ): MatchmakingSuggestion[] {
-  if (!currentCategory) return [];
-
   return buildRankingEntries(rows)
     .filter((entry) => {
       if (entry.id === currentProfileId) return false;
-      if (entry.category !== currentCategory) return false;
       return availabilityByProfileId.has(entry.id);
     })
     .map((entry) => {
@@ -113,8 +125,9 @@ export function buildMatchmakingSuggestions(
       };
     })
     .sort((a, b) => {
-      if (a.pointDiff !== b.pointDiff) return a.pointDiff - b.pointDiff;
-      if (b.points !== a.points) return b.points - a.points;
+      const categoryDiff = getCategorySortValue(a.category) - getCategorySortValue(b.category);
+      if (categoryDiff !== 0) return categoryDiff;
+      if (a.position !== b.position) return a.position - b.position;
       return a.name.localeCompare(b.name);
     });
 }
@@ -154,7 +167,6 @@ export const rankingService = {
     const currentProfile = rows.find((row) => row.user_id === user.id);
 
     if (!currentProfile) return [];
-    if (!currentProfile.category) return [];
 
     const { data: availabilityData, error: availabilityError } = await supabase
       .from('matchmaking_availability')
@@ -195,7 +207,6 @@ export const rankingService = {
       rows,
       currentProfile.id,
       currentUserPoints,
-      currentProfile.category,
       availabilityByProfileId,
       myMatchIds,
       candidateMatchIds,

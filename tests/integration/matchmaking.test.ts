@@ -19,7 +19,7 @@ afterEach(() => {
 });
 
 describe('matchmaking integration', () => {
-  it('shows only available players from the same category and orders by points delta', () => {
+  it('shows available players from every category ordered by category and ranking', () => {
     const players = makePlayers([1000, 1000, 1000, 1000], 'matchmaking');
     createdPlayers.push(players);
     insertTestPlayers(players);
@@ -39,7 +39,7 @@ describe('matchmaking integration', () => {
 
     const rows = fetchRankingProfilesByEmails(players.map((player) => player.email)).map((row) => ({
       ...row,
-      category: row.name === 'matchmaking-3' ? '5a' as const : '4a' as const,
+      category: row.name === 'matchmaking-2' ? '3a' as const : row.name === 'matchmaking-3' ? '5a' as const : '4a' as const,
     }));
     const availableUntil = new Date(Date.now() + 60 * 60 * 1000).toISOString();
     const availabilityByProfileId = new Map([
@@ -48,6 +48,14 @@ describe('matchmaking integration', () => {
         {
           profile_id: byName.get('matchmaking-1')!.id,
           whatsapp_number: '5511999999999',
+          available_until: availableUntil,
+        },
+      ],
+      [
+        byName.get('matchmaking-2')!.id,
+        {
+          profile_id: byName.get('matchmaking-2')!.id,
+          whatsapp_number: '5511777777777',
           available_until: availableUntil,
         },
       ],
@@ -64,17 +72,18 @@ describe('matchmaking integration', () => {
       rows,
       currentUser.id,
       1000,
-      '4a',
       availabilityByProfileId,
     );
 
     expect(suggestions.map((suggestion) => suggestion.name)).toEqual([
+      'matchmaking-2',
       'matchmaking-1',
+      'matchmaking-3',
     ]);
     expect(suggestions).not.toEqual(
       expect.arrayContaining([expect.objectContaining({ id: currentUser.id })]),
     );
-    expect(suggestions[0]).toEqual(
+    expect(suggestions[1]).toEqual(
       expect.objectContaining({
         name: 'matchmaking-1',
         level: 'Amador',
