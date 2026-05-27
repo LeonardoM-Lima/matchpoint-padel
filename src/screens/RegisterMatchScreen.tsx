@@ -50,6 +50,7 @@ export function RegisterMatchScreen() {
     return {
       id: profile.id,
       name: profile.name,
+      avatarUrl: profile.avatarUrl,
       points: profile.points,
       wins: profile.wins,
       losses: profile.losses,
@@ -268,7 +269,7 @@ export function RegisterMatchScreen() {
                   key={player.profileId}
                   className="flex items-center gap-3 rounded-xl bg-slate-950/60 p-3 ring-1 ring-emerald-300/10"
                 >
-                  <Avatar name={player.name} size={36} />
+                  <Avatar name={player.name} avatarUrl={player.avatarUrl} size={36} />
                   <div className="min-w-0 flex-1">
                     <span className="block truncate text-sm font-semibold text-slate-50">
                       {player.name}
@@ -383,7 +384,7 @@ export function RegisterMatchScreen() {
                       key={player.id}
                       className="flex items-center gap-3 rounded-lg bg-slate-950 p-2.5 ring-1 ring-slate-800/60"
                     >
-                      <Avatar name={player.name} size={36} />
+                      <Avatar name={player.name} avatarUrl={player.avatarUrl} size={36} />
                       <span className="min-w-0 flex-1">
                         <span className="block truncate text-sm font-semibold text-slate-50">
                           {player.name}

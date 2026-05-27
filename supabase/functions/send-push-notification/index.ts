@@ -2,6 +2,7 @@ import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
 import webpush from 'https://esm.sh/web-push@3.6.7';
 
 const serviceRoleKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? '';
+const edgeFunctionKey = Deno.env.get('EDGE_FUNCTION_KEY') ?? serviceRoleKey;
 const supabaseUrl = Deno.env.get('SUPABASE_URL') ?? '';
 
 webpush.setVapidDetails(
@@ -29,7 +30,7 @@ interface PushSubscriptionRow {
 
 Deno.serve(async (req) => {
   const auth = req.headers.get('authorization');
-  if (!serviceRoleKey || auth !== `Bearer ${serviceRoleKey}`) {
+  if (!edgeFunctionKey || auth !== `Bearer ${edgeFunctionKey}`) {
     return new Response('Unauthorized', { status: 401 });
   }
 

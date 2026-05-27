@@ -23,6 +23,7 @@ export interface MatchHistoryEntry {
 export interface RegisteredMatchPlayer {
   profileId: string;
   name: string;
+  avatarUrl?: string | null;
   team: Team;
   result: 'W' | 'L';
   pointsBefore: number;
@@ -44,6 +45,7 @@ interface MatchPlayerSummaryRow {
   points_after: number;
   profiles: {
     name: string;
+    avatar_url: string | null;
   } | null;
 }
 
@@ -51,6 +53,7 @@ function mapMatchPlayer(row: MatchPlayerSummaryRow): RegisteredMatchPlayer {
   return {
     profileId: row.profile_id,
     name: row.profiles?.name ?? 'Jogador',
+    avatarUrl: row.profiles?.avatar_url,
     team: row.team,
     result: row.result,
     pointsBefore: row.points_before,
@@ -62,7 +65,7 @@ function mapMatchPlayer(row: MatchPlayerSummaryRow): RegisteredMatchPlayer {
 async function getMatchSummary(matchId: string): Promise<RegisteredMatch> {
   const { data, error } = await supabase
     .from('match_players')
-    .select('profile_id,team,result,points_before,points_delta,points_after,profiles(name)')
+    .select('profile_id,team,result,points_before,points_delta,points_after,profiles(name,avatar_url)')
     .eq('match_id', matchId)
     .order('team', { ascending: true });
 

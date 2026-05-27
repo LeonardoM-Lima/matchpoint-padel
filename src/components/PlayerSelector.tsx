@@ -9,6 +9,7 @@ import { supabase } from '../lib/supabase';
 export interface SelectablePlayer {
   id: string;
   name: string;
+  avatarUrl?: string | null;
   points: number;
   wins: number;
   losses: number;
@@ -17,6 +18,7 @@ export interface SelectablePlayer {
 interface PlayerRow {
   id: string;
   name: string;
+  avatar_url: string | null;
   points: number;
   wins: number;
   losses: number;
@@ -34,6 +36,7 @@ function mapPlayer(row: PlayerRow): SelectablePlayer {
   return {
     id: row.id,
     name: row.name,
+    avatarUrl: row.avatar_url,
     points: row.points,
     wins: row.wins,
     losses: row.losses,
@@ -66,7 +69,7 @@ export function PlayerSelector({
 
       let query = supabase
         .from('profiles')
-        .select('id,name,points,wins,losses')
+        .select('id,name,avatar_url,points,wins,losses')
         .order('name', { ascending: true })
         .limit(20);
 
@@ -171,7 +174,7 @@ export function PlayerSelector({
               disabled={disabled || blocked}
               onClick={() => togglePlayer(player)}
             >
-              <Avatar name={player.name} size={34} />
+              <Avatar name={player.name} avatarUrl={player.avatarUrl} size={34} />
               <span className="min-w-0 flex-1">
                 <span className="block truncate text-sm font-semibold text-slate-50">{player.name}</span>
                 <span className="text-[11px] text-slate-400">
