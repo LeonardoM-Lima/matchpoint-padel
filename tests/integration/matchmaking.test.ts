@@ -19,7 +19,7 @@ afterEach(() => {
 });
 
 describe('matchmaking integration', () => {
-  it('excludes the current user and orders suggestions by points delta', () => {
+  it('shows only available players from the same category and orders by points delta', () => {
     const players = makePlayers([1000, 1000, 1000, 1000], 'matchmaking');
     createdPlayers.push(players);
     insertTestPlayers(players);
@@ -37,13 +37,39 @@ describe('matchmaking integration', () => {
       { id: byName.get('matchmaking-3')!.id, points: 1320, wins: 4, losses: 1 },
     ]);
 
-    const rows = fetchRankingProfilesByEmails(players.map((player) => player.email));
-    const suggestions = buildMatchmakingSuggestions(rows, currentUser.id, 1000);
+    const rows = fetchRankingProfilesByEmails(players.map((player) => player.email)).map((row) => ({
+      ...row,
+      category: row.name === 'matchmaking-3' ? '5a' as const : '4a' as const,
+    }));
+    const availableUntil = new Date(Date.now() + 60 * 60 * 1000).toISOString();
+    const availabilityByProfileId = new Map([
+      [
+        byName.get('matchmaking-1')!.id,
+        {
+          profile_id: byName.get('matchmaking-1')!.id,
+          whatsapp_number: '5511999999999',
+          available_until: availableUntil,
+        },
+      ],
+      [
+        byName.get('matchmaking-3')!.id,
+        {
+          profile_id: byName.get('matchmaking-3')!.id,
+          whatsapp_number: '5511888888888',
+          available_until: availableUntil,
+        },
+      ],
+    ]);
+    const suggestions = buildMatchmakingSuggestions(
+      rows,
+      currentUser.id,
+      1000,
+      '4a',
+      availabilityByProfileId,
+    );
 
     expect(suggestions.map((suggestion) => suggestion.name)).toEqual([
       'matchmaking-1',
-      'matchmaking-2',
-      'matchmaking-3',
     ]);
     expect(suggestions).not.toEqual(
       expect.arrayContaining([expect.objectContaining({ id: currentUser.id })]),
@@ -53,6 +79,9 @@ describe('matchmaking integration', () => {
         name: 'matchmaking-1',
         level: 'Amador',
         position: expect.any(Number),
+        category: '4a',
+        whatsappNumber: '5511999999999',
+        availableUntil,
         points: 1040,
         pointDiff: 40,
       }),

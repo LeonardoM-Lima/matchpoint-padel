@@ -46,6 +46,8 @@ export interface MatchmakingSuggestion {
   name: string;
   avatarUrl?: string | null;
   category?: PlayerCategory | null;
+  whatsappNumber: string;
+  availableUntil: string;
   points: number;
   level: PlayerLevel;
   position: number;

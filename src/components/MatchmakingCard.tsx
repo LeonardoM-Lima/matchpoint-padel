@@ -38,7 +38,11 @@ export function MatchmakingCard({ suggestion, currentUserPoints }: MatchmakingCa
   const whatsappMessage = encodeURIComponent(
     `Oi ${suggestion.name}! Te desafio para uma partida de padel pelo EvoPadel. Topa?`,
   );
-  const whatsappUrl = `https://wa.me/?text=${whatsappMessage}`;
+  const whatsappUrl = `https://wa.me/${suggestion.whatsappNumber}?text=${whatsappMessage}`;
+  const availableUntil = new Intl.DateTimeFormat('pt-BR', {
+    hour: '2-digit',
+    minute: '2-digit',
+  }).format(new Date(suggestion.availableUntil));
 
   const gamesSuffix =
     suggestion.gamesTogether === 0
@@ -65,7 +69,8 @@ export function MatchmakingCard({ suggestion, currentUserPoints }: MatchmakingCa
 
         <div className="shrink-0 text-right">
           <span className="block text-sm font-extrabold text-slate-50">{suggestion.points}</span>
-          <span className="text-[11px] text-slate-400">pts</span>
+          <span className="block text-[11px] text-slate-400">pts</span>
+          <span className="block text-[10px] font-semibold text-emerald-300">ate {availableUntil}</span>
         </div>
       </div>
 
@@ -100,8 +105,8 @@ export function MatchmakingCard({ suggestion, currentUserPoints }: MatchmakingCa
         rel="noopener noreferrer"
         className="inline-flex min-h-[44px] items-center justify-center gap-2 rounded-xl bg-emerald-500 px-4 text-sm font-bold text-white transition hover:bg-emerald-400 active:scale-95"
       >
-        <Icon name="users" size={16} />
-        Desafiar no WhatsApp
+        <Icon name="smartphone" size={16} />
+        Chamar no WhatsApp
       </a>
     </article>
   );

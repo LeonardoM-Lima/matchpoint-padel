@@ -71,7 +71,7 @@ const quickLinks = [
   {
     to: '/matchmaking',
     title: 'Matchmaking',
-    subtitle: 'Por nível',
+    subtitle: 'Por categoria',
     icon: 'users' as const,
     accent: 'bg-sky-300/15 text-sky-300 ring-sky-300/20',
     hover: 'hover:border-sky-300/40',

@@ -41,6 +41,7 @@ export interface TestProfile {
 export interface RankingProfileRow {
   id: string;
   name: string;
+  category?: string | null;
   points: number;
   wins: number;
   losses: number;
@@ -284,7 +285,7 @@ export function updateTestProfileStats(
 
 export function fetchRankingProfilesByEmails(emails: string[]) {
   return queryRows<RankingProfileRow>(`
-    select id, name, points, wins, losses, created_at, updated_at
+    select id, name, category, points, wins, losses, created_at, updated_at
     from public.profiles
     where email in (${emails.map(sqlString).join(',')});
   `);

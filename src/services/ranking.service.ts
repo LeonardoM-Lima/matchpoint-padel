@@ -18,6 +18,12 @@ interface ProfileRankingRow {
   updated_at: string;
 }
 
+interface MatchmakingAvailabilityRow {
+  profile_id: string;
+  whatsapp_number: string;
+  available_until: string;
+}
+
 function getLevel(points: number): PlayerLevel {
   if (points < 800) return 'Iniciante';
   if (points < 1300) return 'Amador';
@@ -72,12 +78,21 @@ export function buildMatchmakingSuggestions(
   rows: ProfileRankingRow[],
   currentProfileId: string,
   currentUserPoints: number,
+  currentCategory?: RankingEntry['category'] | null,
+  availabilityByProfileId: Map<string, MatchmakingAvailabilityRow> = new Map(),
   myMatchIds: Set<string> = new Set(),
   candidateMatchIds: Map<string, Set<string>> = new Map(),
 ): MatchmakingSuggestion[] {
+  if (!currentCategory) return [];
+
   return buildRankingEntries(rows)
-    .filter((entry) => entry.id !== currentProfileId)
+    .filter((entry) => {
+      if (entry.id === currentProfileId) return false;
+      if (entry.category !== currentCategory) return false;
+      return availabilityByProfileId.has(entry.id);
+    })
     .map((entry) => {
+      const availability = availabilityByProfileId.get(entry.id)!;
       const theirMatchIds = candidateMatchIds.get(entry.id) ?? new Set<string>();
       let gamesTogether = 0;
       for (const id of theirMatchIds) {
@@ -88,6 +103,8 @@ export function buildMatchmakingSuggestions(
         name: entry.name,
         avatarUrl: entry.avatarUrl,
         category: entry.category,
+        whatsappNumber: availability.whatsapp_number,
+        availableUntil: availability.available_until,
         points: entry.points,
         level: entry.level,
         position: entry.position,
@@ -137,6 +154,19 @@ export const rankingService = {
     const currentProfile = rows.find((row) => row.user_id === user.id);
 
     if (!currentProfile) return [];
+    if (!currentProfile.category) return [];
+
+    const { data: availabilityData, error: availabilityError } = await supabase
+      .from('matchmaking_availability')
+      .select('profile_id,whatsapp_number,available_until')
+      .gt('available_until', new Date().toISOString());
+
+    if (availabilityError) throw availabilityError;
+
+    const availabilityRows = (availabilityData ?? []) as MatchmakingAvailabilityRow[];
+    const availabilityByProfileId = new Map(
+      availabilityRows.map((row) => [row.profile_id, row]),
+    );
 
     // Buscar todos os match_ids do usuário atual para calcular games_together
     const { data: myMatchData, error: myMatchError } = await supabase
@@ -165,6 +195,8 @@ export const rankingService = {
       rows,
       currentProfile.id,
       currentUserPoints,
+      currentProfile.category,
+      availabilityByProfileId,
       myMatchIds,
       candidateMatchIds,
     );
