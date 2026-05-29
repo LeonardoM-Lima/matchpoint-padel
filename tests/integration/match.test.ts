@@ -90,17 +90,18 @@ describe('register_match integration', () => {
     [6, 5],
     [8, 2],
     [6, 6],
-  ])('rejects invalid score %i-%i', async (teamAScore, teamBScore) => {
+  ])('allows non-standard test score %i-%i', async (teamAScore, teamBScore) => {
     const { profileList } = await setupMatchPlayers();
 
-    expect(() =>
-      registerMatchWithSql(profileList[0]!.user_id, teamAScore, teamBScore, [
-        { profileId: profileList[0]!.id, team: 'A' },
-        { profileId: profileList[1]!.id, team: 'A' },
-        { profileId: profileList[2]!.id, team: 'B' },
-        { profileId: profileList[3]!.id, team: 'B' },
-      ]),
-    ).toThrow(/Placar invalido/);
+    const matchId = registerMatchWithSql(profileList[0]!.user_id, teamAScore, teamBScore, [
+      { profileId: profileList[0]!.id, team: 'A' },
+      { profileId: profileList[1]!.id, team: 'A' },
+      { profileId: profileList[2]!.id, team: 'B' },
+      { profileId: profileList[3]!.id, team: 'B' },
+    ]);
+
+    expect(matchId).toEqual(expect.any(String));
+    expect(fetchMatchPlayers(matchId)).toHaveLength(4);
   });
 
   it('rolls back matches, match_players and profile stats when registration fails mid-transaction', async () => {

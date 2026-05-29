@@ -18,12 +18,14 @@ function defaultTeamForIndex(index: number): Team {
   return index < 2 ? 'A' : 'B';
 }
 
-function isValidScore(teamAScore: number, teamBScore: number) {
-  const winner = Math.max(teamAScore, teamBScore);
-  const loser = Math.min(teamAScore, teamBScore);
-
-  return (winner === 6 && loser >= 0 && loser <= 4) || (winner === 7 && (loser === 5 || loser === 6));
-}
+// Regra oficial do padel. Mantida comentada durante o primeiro teste para aceitar
+// qualquer placar inteiro e não bloquear o fluxo dos usuários.
+// function isValidScore(teamAScore: number, teamBScore: number) {
+//   const winner = Math.max(teamAScore, teamBScore);
+//   const loser = Math.min(teamAScore, teamBScore);
+//
+//   return (winner === 6 && loser >= 0 && loser <= 4) || (winner === 7 && (loser === 5 || loser === 6));
+// }
 
 function formatDelta(delta: number) {
   return delta > 0 ? `+${delta}` : String(delta);
@@ -155,10 +157,13 @@ export function RegisterMatchScreen() {
       !Number.isInteger(parsedTeamAScore) ||
       !Number.isInteger(parsedTeamBScore) ||
       parsedTeamAScore < 0 ||
-      parsedTeamBScore < 0 ||
-      !isValidScore(parsedTeamAScore, parsedTeamBScore)
+      parsedTeamBScore < 0
+      // Reativar depois do primeiro teste:
+      // || !isValidScore(parsedTeamAScore, parsedTeamBScore)
     ) {
-      return 'Placar inválido — um time deve atingir 6 games';
+      return 'Informe um placar com números inteiros e positivos';
+      // Mensagem oficial quando a regra voltar:
+      // return 'Placar inválido — um time deve atingir 6 games';
     }
 
     return null;
