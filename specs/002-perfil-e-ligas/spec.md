@@ -346,6 +346,130 @@ de pontos aplicadas, com posições e desempates corretos.
 - Múltiplos donos / co-administradores: apenas 1 dono.
 - Transferência de propriedade da liga.
 - Filtro de matchmaking por liga (só sugerir jogadores da mesma liga).
-- Histórico de partidas filtrável por liga (será adicionado em iteração futura).
 - Estatísticas avançadas por liga (médias, sequências, etc).
 - Limite de participantes / planos pagos por liga.
+
+---
+
+## Adendo pós-MVP — Implementado fora do plano original
+
+> Esta seção documenta funcionalidades que foram implementadas após o release
+> da feature 002 sem terem sido planejadas nas user stories acima. Mantidas
+> aqui para preservar a fonte única de verdade do escopo de Perfil e Ligas.
+
+### User Story 6 - Perfil Público de Outro Jogador (Priority: P3)
+
+Como jogador autenticado, quero abrir o perfil de qualquer outro jogador para
+ver seus pontos, vitórias, derrotas e categoria sem precisar entrar numa liga
+em comum.
+
+**Independent Test**: Tocar no nome/avatar de um jogador no Ranking, na lista
+de membros de uma liga ou em um card do Feed abre a tela do perfil dele com
+estatísticas atuais; tocar no próprio nome redireciona para `/profile`.
+
+**Acceptance Scenarios**:
+
+1. **Given** um jogador autenticado vendo o ranking global, **When** toca em
+   outra entrada, **Then** é navegado para `/players/{id}` com avatar,
+   nickname, categoria, nível (Iniciante/Amador/Avançado), posição global
+   e contagem de vitórias/derrotas.
+2. **Given** um jogador toca no próprio nome, **When** a tela carrega,
+   **Then** o sistema redireciona para `/profile` (replace) ao invés de
+   exibir o perfil público.
+
+**Requirements**:
+
+- **FR-030**: Sistema MUST expor uma rota `/players/:id` que carrega dados
+  públicos do perfil (nome, avatar, categoria, pontos, vitórias, derrotas)
+  via `profileService.getPublicProfile`. Acesso restrito a usuários
+  autenticados.
+- **FR-031**: Cards de Ranking, lista de membros da liga e Feed MUST linkar
+  para `/players/:id` quando o ID não é o do usuário atual.
+
+---
+
+### User Story 7 - Histórico de Partidas da Liga (Priority: P3)
+
+Como participante de uma liga, quero ver o histórico completo de partidas
+vinculadas à liga (placar, times, data) para acompanhar o desempenho ao
+longo do tempo.
+
+> **Nota**: Anteriormente listado em "Out of Scope" — implementado em
+> iteração subsequente e movido para o escopo.
+
+**Independent Test**: Após registrar 2+ partidas vinculadas, abrir
+`/leagues/:id/history` lista todas com placar, jogadores por time, vencedor
+e data, ordenadas da mais recente para a mais antiga.
+
+**Acceptance Scenarios**:
+
+1. **Given** uma liga com partidas vinculadas, **When** o usuário acessa
+   `/leagues/:id/history`, **Then** vê uma lista ordenada por data DESC
+   com placar (`team_a_score x team_b_score`), nomes dos 4 jogadores
+   agrupados por time e indicador do time vencedor.
+2. **Given** uma liga sem partidas vinculadas, **When** o usuário abre o
+   histórico, **Then** o EmptyState informa "Nenhuma partida vinculada
+   ainda" com CTA para registrar partida.
+
+**Requirements**:
+
+- **FR-032**: Sistema MUST expor uma rota `/leagues/:id/history` que lista
+  todas as partidas vinculadas à liga via
+  `leagueService.getLeagueMatchHistory(leagueId)`.
+- **FR-033**: Apenas membros da liga (RLS) MUST conseguir ver o histórico.
+- **FR-034**: Histórico MUST ser ordenado por `match_id` DESC (proxy de data
+  de registro). Sem paginação no MVP.
+
+---
+
+### User Story 8 - Excluir Própria Conta (Priority: P3)
+
+Como jogador autenticado, quero conseguir excluir minha conta a qualquer
+momento, removendo perfil, ligas que eu criei, vídeos publicados, avatares
+e partidas em que sou criador/participante.
+
+**Why this priority**: Requisito de LGPD/GDPR e controle do usuário sobre
+seus dados. Sem isso, o app não cumpre regras básicas de privacidade.
+
+**Independent Test**: Em `/profile/edit`, clicar em "Excluir minha conta"
+abre confirmação; ao confirmar, a sessão termina, o usuário é redirecionado
+para `/login` e seus dados (auth.user, profile, avatares no Storage,
+vídeos no Storage, league-covers das ligas que possui, matches criadas
+por ele) são removidos.
+
+**Acceptance Scenarios**:
+
+1. **Given** um jogador autenticado em `/profile/edit`, **When** toca em
+   "Excluir minha conta", **Then** o sistema pede confirmação antes de
+   executar.
+2. **Given** o usuário confirma a exclusão, **When** a Edge Function
+   `delete-account` completa com sucesso, **Then** o usuário é redirecionado
+   para `/login`; a tabela `profiles` perde a linha (CASCADE limpa
+   `match_players`, `league_players`, `videos`, `video_likes`,
+   `push_subscriptions`); arquivos em `avatars/{user_id}/`,
+   `videos/{user_id}/` e `league-covers/` das ligas que ele possui são
+   removidos.
+3. **Given** o usuário tem matches em que é criador ou participante,
+   **When** a exclusão executa, **Then** essas matches são deletadas via
+   `DELETE FROM matches WHERE id IN (...)` antes da remoção do auth.user
+   (preserva integridade do histórico de outros jogadores apenas para
+   matches em que ele NÃO participava).
+
+**Requirements**:
+
+- **FR-035**: Sistema MUST oferecer um botão "Excluir minha conta" na tela
+  `/profile/edit` com confirmação modal antes de executar.
+- **FR-036**: A exclusão MUST ser executada por uma Supabase Edge Function
+  `delete-account` que roda com `service_role` e valida o JWT do
+  solicitante (apenas o próprio usuário pode se excluir).
+- **FR-037**: A Edge Function MUST remover, nesta ordem:
+  1. Arquivos do Storage em `avatars/{user_id}/`, `videos/{user_id}/` e
+     covers das ligas que o user possui (bucket `league-covers`).
+  2. Linhas em `matches` onde o user é `created_by` ou aparece em
+     `match_players` (CASCADE de FK remove `match_players` e
+     `match_league_players`).
+  3. O usuário em `auth.users` via `supabase.auth.admin.deleteUser`
+     (CASCADE remove `profiles`, `league_players`, `videos`, `video_likes`,
+     `push_subscriptions` via FKs ON DELETE CASCADE).
+- **FR-038**: Após sucesso, o client MUST navegar para `/login` com
+  `replace: true` (sem possibilidade de voltar para a sessão extinta).

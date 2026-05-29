@@ -26,7 +26,10 @@ explícito no `register_match` v3, cron de retenção, Storage bucket,
 Edge Functions.
 **⚠️ CRITICAL**: Nenhuma user story pode começar até esta fase estar completa.
 
-> **Ordem das migrations**: 020 → 028 (sequencial — atenção a T202a).
+> **Ordem das migrations**: 021 → 031 + 032 (sequencial). A numeração real
+> começou em 021 porque `020_storage_policy_upsert_fix.sql` foi reservado para
+> um patch da feature 002 (fix de policies de Storage). T214 virou a migration
+> 032 (`app_settings_for_edge_functions.sql`) — ver nota lá embaixo.
 
 ### VAPID e segredos
 
@@ -129,10 +132,20 @@ Edge Functions.
   `storage.remove(paths[])`; DELETE em lote via `videos WHERE id IN
   (...)` (CASCADE limpa likes). Sem chunking (até 1000 itens) (depende
   de T201)
-- [ ] T214 Configurar database settings: `ALTER DATABASE postgres SET
-  app.edge_function_url = '...'` e `app.edge_function_key = '...'`.
-  Documentar no quickstart como passo manual pós-deploy (depende de T212,
-  T213)
+- [ ] T214 Configurar settings da Edge Function via tabela `app_settings`
+  (migration `032_app_settings_for_edge_functions.sql`): criar tabela
+  `app_settings(key text PK, value text, updated_at)` com RLS escopada
+  para `service_role` + RPC `upsert_app_setting(p_key, p_value)`
+  `SECURITY DEFINER` que só `service_role` pode executar. Inserir
+  `edge_function_url` e `edge_function_key` via `service_role` no Studio
+  ou via deploy script. **Mudança vs. plano original**: substituímos
+  `ALTER DATABASE postgres SET app.edge_function_url = ...` por uma tabela
+  porque (1) settings de banco não são gerenciáveis via migration sem
+  acesso ao Postgres role superuser, (2) tabela permite rotacionar a key
+  via UI/scripts sem precisar de superuser, (3) `enqueue_push_notification`
+  e `cleanup_expired_videos` foram reescritos em `032_*.sql` para ler de
+  `app_settings` ao invés de `current_setting('app.edge_function_url')`.
+  (depende de T212, T213)
 
 ### Service Worker do client
 
