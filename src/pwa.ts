@@ -70,9 +70,7 @@ const showUpdatePrompt = (refresh: () => void) => {
 const updateSW = registerSW({
   immediate: true,
   onNeedRefresh() {
-    showUpdatePrompt(() => {
-      void updateSW(true);
-    });
+    void updateSW(true);
   },
   onOfflineReady() {
     console.info('EvoPadel pronto para uso offline.');
