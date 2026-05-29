@@ -1,13 +1,8 @@
 import type { RankingEntry } from '../../specs/001-matchpoint-mvp/contracts/types';
 import { Avatar } from './Avatar';
 import { CategoryBadge } from './CategoryBadge';
+import { DivisionBadge } from './DivisionBadge';
 import { Icon } from './Icon';
-
-const levelStyles: Record<RankingEntry['level'], string> = {
-  Iniciante: 'bg-sky-400/15 text-sky-200 ring-sky-300/30',
-  Amador: 'bg-emerald-400/15 text-emerald-200 ring-emerald-300/30',
-  'Avançado': 'bg-amber-400/15 text-amber-200 ring-amber-300/30',
-};
 
 interface PodiumStyle {
   badge: string;
@@ -142,11 +137,7 @@ export function RankingRow({ entry, isCurrentUser = false }: RankingRowProps) {
       </div>
 
       <div className="relative flex flex-wrap items-center justify-between gap-2 text-xs">
-        <span
-          className={`inline-flex items-center rounded-full px-2.5 py-1 font-semibold ring-1 ${levelStyles[entry.level]}`}
-        >
-          {entry.level}
-        </span>
+        <DivisionBadge division={entry.division} />
         <span className="flex items-center gap-3 text-slate-400">
           {entry.pointDiffToAbove !== undefined ? (
             <span className="flex items-center gap-1">

@@ -1,12 +1,7 @@
 import type { MatchmakingSuggestion } from '../../specs/001-matchpoint-mvp/contracts/types';
 import { Avatar } from './Avatar';
+import { DivisionBadge } from './DivisionBadge';
 import { Icon } from './Icon';
-
-function getLevelClass(level: MatchmakingSuggestion['level']) {
-  if (level === 'Iniciante') return 'bg-sky-400/15 text-sky-200 ring-sky-300/30';
-  if (level === 'Amador') return 'bg-emerald-400/15 text-emerald-200 ring-emerald-300/30';
-  return 'bg-amber-400/15 text-amber-200 ring-amber-300/30';
-}
 
 interface PlayerCardProps {
   player: MatchmakingSuggestion;
@@ -27,11 +22,7 @@ export function PlayerCard({ player }: PlayerCardProps) {
           </p>
         </div>
 
-        <span
-          className={`inline-flex items-center rounded-full px-2.5 py-1 text-xs font-semibold ring-1 ${getLevelClass(player.level)}`}
-        >
-          {player.level}
-        </span>
+        <DivisionBadge division={player.division} />
       </div>
 
       <div className="relative mt-4 grid grid-cols-2 gap-2 text-sm">

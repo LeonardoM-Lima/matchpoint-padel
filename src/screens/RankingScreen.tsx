@@ -68,15 +68,15 @@ export function RankingScreen() {
         {!loading && !error && ranking.length > 0 ? (
           <div className="grid gap-3">
             {ranking.map((entry, index) => {
-              const prevLevel = index > 0 ? ranking[index - 1]!.level : null;
-              const showDivider = prevLevel !== null && prevLevel !== entry.level;
+              const prevDivision = index > 0 ? ranking[index - 1]!.division : null;
+              const showDivider = entry.division !== null && prevDivision !== entry.division;
 
               return (
                 <div key={entry.id} className="grid gap-3">
                   {showDivider ? (
                     <div className="flex items-center gap-3 px-1">
                       <span className="text-[10px] font-semibold uppercase tracking-widest text-slate-600">
-                        {entry.level}
+                        {entry.division}
                       </span>
                       <div className="h-px flex-1 bg-slate-800" />
                     </div>

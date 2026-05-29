@@ -1,5 +1,6 @@
 import { Link } from 'react-router-dom';
 import { Avatar } from '../components/Avatar';
+import { DivisionBadge } from '../components/DivisionBadge';
 import { ErrorBanner } from '../components/ErrorBanner';
 import { Icon } from '../components/Icon';
 import { ScreenSkeleton } from '../components/ScreenSkeleton';
@@ -16,12 +17,6 @@ function getProgressPercent(points: number, abovePoints?: number, belowPoints?: 
   if (range <= 0) return 0;
 
   return Math.max(0, Math.min(100, Math.round(((points - floor) / range) * 100)));
-}
-
-function levelBadge(level: string) {
-  if (level === 'Iniciante') return 'bg-sky-400/15 text-sky-200 ring-sky-300/30';
-  if (level === 'Amador') return 'bg-emerald-400/15 text-emerald-200 ring-emerald-300/30';
-  return 'bg-amber-400/15 text-amber-200 ring-amber-300/30';
 }
 
 function categoryBadge(category?: PlayerCategory | null) {
@@ -145,11 +140,10 @@ export function HomeScreen() {
                 <div className="min-w-0 flex-1">
                   <h2 className="truncate text-lg font-bold text-slate-50">{profile.name}</h2>
                   <div className="mt-1 flex flex-wrap items-center gap-1.5">
-                    <span
-                      className={`inline-flex items-center rounded-full px-2 py-0.5 text-[11px] font-semibold ring-1 ${levelBadge(profile.level)}`}
-                    >
-                      {profile.level}
-                    </span>
+                    <DivisionBadge
+                      division={currentEntry?.division ?? null}
+                      className="px-2 py-0.5 text-[11px]"
+                    />
                     {profile.category ? (
                       <span
                         className={`inline-flex items-center rounded-full px-2 py-0.5 text-[11px] font-semibold ring-1 ${categoryBadge(profile.category)}`}

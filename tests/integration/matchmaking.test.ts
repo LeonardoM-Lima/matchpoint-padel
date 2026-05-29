@@ -86,7 +86,7 @@ describe('matchmaking integration', () => {
     expect(suggestions[1]).toEqual(
       expect.objectContaining({
         name: 'matchmaking-1',
-        level: 'Amador',
+        division: null,
         position: expect.any(Number),
         category: '4a',
         whatsappNumber: '5511999999999',

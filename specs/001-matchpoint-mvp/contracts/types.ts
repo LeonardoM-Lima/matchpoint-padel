@@ -3,8 +3,30 @@
 // These types are shared between frontend (React) and tests,
 // and serve as the source of truth for data shape across layers.
 
+/** @deprecated Use Division for global ranking. Kept for legacy league DTOs. */
 export type PlayerLevel = 'Iniciante' | 'Amador' | 'Avançado';
+export type Division = 'Divisão 1' | 'Divisão 2' | 'Divisão 3';
+export type DivisionOrNone = Division | null;
 export type PlayerCategory = '1a' | '2a' | '3a' | '4a' | '5a' | '6a' | 'Open' | 'Iniciante';
+
+export const MIN_ACTIVE_FOR_DIVISIONS = 9;
+export const INITIAL_GLOBAL_POINTS = 0;
+
+export interface DivisionSizes {
+  div1: number;
+  div2: number;
+  div3: number;
+}
+
+export function computeDivisionSizes(activePlayerCount: number): DivisionSizes | null {
+  if (activePlayerCount < MIN_ACTIVE_FOR_DIVISIONS) return null;
+  const third = Math.floor(activePlayerCount / 3);
+  return {
+    div1: third,
+    div2: activePlayerCount - third - third,
+    div3: third,
+  };
+}
 
 export type Team = 'A' | 'B';
 
@@ -23,7 +45,6 @@ export interface ProfileDTO {
   points: number;    // pontuação atual (≥ 0)
   wins: number;
   losses: number;
-  level: PlayerLevel; // derivado de points, não armazenado
   createdAt: string;
   updatedAt: string;
 }
@@ -34,6 +55,7 @@ export interface ProfileDTO {
 export interface RankingEntry extends Omit<ProfileDTO, 'userId' | 'email'> {
   position: number;
   totalMatches: number;
+  division: DivisionOrNone;
   pointDiffToAbove?: number; // diferença para o jogador imediatamente acima
   pointDiffToBelow?: number; // diferença para o jogador imediatamente abaixo
 }
@@ -49,7 +71,7 @@ export interface MatchmakingSuggestion {
   whatsappNumber: string;
   availableUntil: string;
   points: number;
-  level: PlayerLevel;
+  division: DivisionOrNone;
   position: number;
   pointDiff: number;    // |current_user_points − suggestion_points|
   gamesTogether: number; // partidas jogadas juntos (0 = nunca jogaram)

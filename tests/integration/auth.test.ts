@@ -20,7 +20,7 @@ function insertSignupFixture(label: string) {
   const nickname = `${label}-${crypto.randomUUID().slice(0, 8)}`;
   createdSignupEmails.push(email);
   insertAuthUserWithNickname(userId, email, nickname);
-  const profile = getProfiles([{ id: userId, email, name: nickname, points: 1000 }]).get(email);
+  const profile = getProfiles([{ id: userId, email, name: nickname, points: 0 }]).get(email);
 
   return {
     userId,
@@ -60,11 +60,10 @@ describe('auth and RLS integration', () => {
     expect(profile).toEqual(
       expect.objectContaining({
         name: nickname,
-        points: 1000,
+        points: 0,
         wins: 0,
         losses: 0,
       }),
     );
-    expect(profile!.points >= 800 && profile!.points < 1300 ? 'Amador' : 'Outro').toBe('Amador');
   });
 });

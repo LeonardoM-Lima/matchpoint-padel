@@ -1,7 +1,6 @@
 import { supabase } from '../lib/supabase';
 import { AuthApiError, type Session } from '@supabase/supabase-js';
 
-export type PlayerLevel = 'Iniciante' | 'Amador' | 'Avançado';
 export type PlayerCategory = '1a' | '2a' | '3a' | '4a' | '5a' | '6a' | 'Open' | 'Iniciante';
 
 export interface Profile {
@@ -14,7 +13,6 @@ export interface Profile {
   points: number;
   wins: number;
   losses: number;
-  level: PlayerLevel;
   createdAt: string;
   updatedAt: string;
 }
@@ -47,12 +45,6 @@ function getAppRedirectUrl(path: string) {
   return `${baseUrl}${normalizedPath}`;
 }
 
-function getLevel(points: number): PlayerLevel {
-  if (points < 800) return 'Iniciante';
-  if (points < 1300) return 'Amador';
-  return 'Avançado';
-}
-
 function mapProfile(row: ProfileRow): Profile {
   return {
     id: row.id,
@@ -64,7 +56,6 @@ function mapProfile(row: ProfileRow): Profile {
     points: row.points,
     wins: row.wins,
     losses: row.losses,
-    level: getLevel(row.points),
     createdAt: row.created_at,
     updatedAt: row.updated_at,
   };

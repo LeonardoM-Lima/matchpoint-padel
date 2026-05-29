@@ -1,6 +1,7 @@
 import { Link } from 'react-router-dom';
 import { Avatar } from '../components/Avatar';
 import { CategoryBadge } from '../components/CategoryBadge';
+import { DivisionBadge } from '../components/DivisionBadge';
 import { EmptyState } from '../components/EmptyState';
 import { ErrorBanner } from '../components/ErrorBanner';
 import { Icon } from '../components/Icon';
@@ -8,12 +9,6 @@ import { PushToggle } from '../components/PushToggle';
 import { ScreenSkeleton } from '../components/ScreenSkeleton';
 import { useProfile } from '../hooks/useProfile';
 import { useRanking } from '../hooks/useRanking';
-
-function getLevelClass(level: string) {
-  if (level === 'Iniciante') return 'bg-sky-400/15 text-sky-200 ring-sky-300/30';
-  if (level === 'Amador') return 'bg-emerald-400/15 text-emerald-200 ring-emerald-300/30';
-  return 'bg-amber-400/15 text-amber-200 ring-amber-300/30';
-}
 
 export function ProfileScreen() {
   const { profile, loading } = useProfile();
@@ -68,11 +63,7 @@ export function ProfileScreen() {
                     {totalMatches} {totalMatches === 1 ? 'partida' : 'partidas'} registradas
                   </p>
                 </div>
-                <span
-                  className={`inline-flex items-center rounded-full px-3 py-1 text-sm font-semibold ring-1 ${getLevelClass(profile.level)}`}
-                >
-                  {profile.level}
-                </span>
+                <DivisionBadge division={currentEntry?.division ?? null} className="px-3 py-1 text-sm" />
               </div>
 
               <div className="relative mt-6 flex flex-col items-center gap-1 rounded-2xl bg-slate-950/70 p-5 ring-1 ring-emerald-300/20">

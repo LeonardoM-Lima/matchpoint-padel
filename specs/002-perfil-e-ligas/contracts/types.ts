@@ -3,7 +3,7 @@
 // These types are shared between frontend (React) and tests.
 // Re-exports relevant MVP types where applicable.
 
-import type { PlayerLevel } from '../../001-matchpoint-mvp/contracts/types';
+import type { DivisionOrNone } from '../../001-matchpoint-mvp/contracts/types';
 
 // ─── Profile (estendido) ────────────────────────────────────────────────────
 
@@ -23,7 +23,7 @@ export interface ProfileDTO {
   points: number;
   wins: number;
   losses: number;
-  level: PlayerLevel;
+  division?: DivisionOrNone;
   createdAt: string;
   updatedAt: string;
 }
@@ -73,7 +73,6 @@ export interface LeagueRankingEntry {
   points: number;        // pontos NA LIGA (não global)
   wins: number;
   losses: number;
-  level: PlayerLevel;    // derivado dos pontos da liga
   position: number;
   isCurrentUser: boolean;
 }

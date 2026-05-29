@@ -86,7 +86,7 @@ export function LeagueRankingRow({ entry }: LeagueRankingRowProps) {
             ) : null}
           </div>
           <p className="text-[11px] text-slate-400">
-            {entry.wins}V / {entry.losses}D · {entry.level}
+            {entry.wins}V / {entry.losses}D
           </p>
         </div>
       </div>

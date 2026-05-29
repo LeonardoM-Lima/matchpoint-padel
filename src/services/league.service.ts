@@ -55,12 +55,6 @@ export interface LeagueMatchHistoryEntry {
   teamBPlayers: string[];
 }
 
-function getLevel(points: number) {
-  if (points < 800) return 'Iniciante' as const;
-  if (points < 1300) return 'Amador' as const;
-  return 'Avançado' as const;
-}
-
 async function getCurrentProfileId() {
   const {
     data: { user },
@@ -218,7 +212,6 @@ export const leagueService = {
         points: row.points,
         wins: row.wins,
         losses: row.losses,
-        level: getLevel(row.points),
         position,
         isCurrentUser: row.profile_id === currentProfileId,
       };

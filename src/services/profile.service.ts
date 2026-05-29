@@ -15,7 +15,6 @@ export interface PublicProfile {
   points: number;
   wins: number;
   losses: number;
-  level: 'Iniciante' | 'Amador' | 'Avançado';
   createdAt: string;
   updatedAt: string;
 }
@@ -32,12 +31,6 @@ interface PublicProfileRow {
   updated_at: string;
 }
 
-function getLevel(points: number): PublicProfile['level'] {
-  if (points < 800) return 'Iniciante';
-  if (points < 1300) return 'Amador';
-  return 'Avançado';
-}
-
 function mapPublicProfile(row: PublicProfileRow): PublicProfile {
   return {
     id: row.id,
@@ -47,7 +40,6 @@ function mapPublicProfile(row: PublicProfileRow): PublicProfile {
     points: row.points,
     wins: row.wins,
     losses: row.losses,
-    level: getLevel(row.points),
     createdAt: row.created_at,
     updatedAt: row.updated_at,
   };

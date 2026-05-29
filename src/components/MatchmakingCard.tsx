@@ -2,6 +2,7 @@ import type { MatchmakingSuggestion } from '../../specs/001-matchpoint-mvp/contr
 import { getMatchLabel } from '../utils/matchmaking';
 import { Avatar } from './Avatar';
 import { CategoryBadge } from './CategoryBadge';
+import { DivisionBadge } from './DivisionBadge';
 import { Icon } from './Icon';
 
 interface MatchmakingCardProps {
@@ -22,12 +23,6 @@ const colorClasses = {
     badge: 'bg-rose-400/15 text-rose-300 ring-rose-300/30',
     dot: 'bg-rose-400',
   },
-};
-
-const levelBadge: Record<string, string> = {
-  Iniciante: 'bg-sky-400/15 text-sky-200 ring-sky-300/30',
-  Amador: 'bg-emerald-400/15 text-emerald-200 ring-emerald-300/30',
-  Avançado: 'bg-amber-400/15 text-amber-200 ring-amber-300/30',
 };
 
 export function MatchmakingCard({ suggestion, currentUserPoints }: MatchmakingCardProps) {
@@ -58,11 +53,7 @@ export function MatchmakingCard({ suggestion, currentUserPoints }: MatchmakingCa
           <div className="flex items-center gap-2">
             <span className="truncate text-sm font-bold text-slate-50">{suggestion.name}</span>
             <CategoryBadge category={suggestion.category} />
-            <span
-              className={`shrink-0 rounded-full px-2 py-0.5 text-[10px] font-bold ring-1 ${levelBadge[suggestion.level] ?? ''}`}
-            >
-              {suggestion.level}
-            </span>
+            <DivisionBadge division={suggestion.division} className="shrink-0 px-2 py-0.5 text-[10px] font-bold" />
           </div>
           <span className="text-[11px] text-slate-400">#{suggestion.position} no ranking</span>
         </div>

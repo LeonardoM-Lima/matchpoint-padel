@@ -22,12 +22,18 @@ on conflict (id) do nothing;
 
 select set_config('matchpoint.bypass_profile_stats_guard', 'on', true);
 
-update public.profiles set points = 750 where user_id = '00000000-0000-0000-0000-000000000101';
-update public.profiles set points = 920 where user_id = '00000000-0000-0000-0000-000000000102';
-update public.profiles set points = 1000 where user_id = '00000000-0000-0000-0000-000000000103';
-update public.profiles set points = 1080 where user_id = '00000000-0000-0000-0000-000000000104';
-update public.profiles set points = 1250 where user_id = '00000000-0000-0000-0000-000000000105';
-update public.profiles set points = 1420 where user_id = '00000000-0000-0000-0000-000000000106';
+update public.profiles
+set points = 0,
+    wins = 0,
+    losses = 0
+where user_id in (
+  '00000000-0000-0000-0000-000000000101',
+  '00000000-0000-0000-0000-000000000102',
+  '00000000-0000-0000-0000-000000000103',
+  '00000000-0000-0000-0000-000000000104',
+  '00000000-0000-0000-0000-000000000105',
+  '00000000-0000-0000-0000-000000000106'
+);
 
 insert into auth.identities (
   id,

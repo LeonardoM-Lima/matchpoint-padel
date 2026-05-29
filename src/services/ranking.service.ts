@@ -1,8 +1,9 @@
 import type {
   MatchmakingSuggestion,
-  PlayerLevel,
+  DivisionOrNone,
   RankingEntry,
 } from '../../specs/001-matchpoint-mvp/contracts/types';
+import { computeDivisionSizes } from '../../specs/001-matchpoint-mvp/contracts/types';
 import { supabase } from '../lib/supabase';
 
 interface ProfileRankingRow {
@@ -35,12 +36,6 @@ const categoryOrder: Array<RankingEntry['category']> = [
   'Iniciante',
 ];
 
-function getLevel(points: number): PlayerLevel {
-  if (points < 800) return 'Iniciante';
-  if (points < 1300) return 'Amador';
-  return 'Avançado';
-}
-
 function compareRankingRows(a: ProfileRankingRow, b: ProfileRankingRow) {
   if (b.points !== a.points) return b.points - a.points;
   if (b.wins !== a.wins) return b.wins - a.wins;
@@ -57,8 +52,41 @@ function getCategorySortValue(category?: RankingEntry['category'] | null) {
   return index === -1 ? categoryOrder.length : index;
 }
 
+function isActive(row: ProfileRankingRow) {
+  return row.wins + row.losses >= 1;
+}
+
+export function assignDivisions(sortedRows: ProfileRankingRow[]): Map<string, DivisionOrNone> {
+  const divisions = new Map<string, DivisionOrNone>();
+  const activeRows = sortedRows.filter(isActive);
+  const sizes = computeDivisionSizes(activeRows.length);
+
+  for (const row of sortedRows) {
+    divisions.set(row.id, null);
+  }
+
+  if (!sizes) return divisions;
+
+  activeRows.forEach((row, index) => {
+    if (index < sizes.div1) {
+      divisions.set(row.id, 'Divisão 1');
+      return;
+    }
+
+    if (index < sizes.div1 + sizes.div2) {
+      divisions.set(row.id, 'Divisão 2');
+      return;
+    }
+
+    divisions.set(row.id, 'Divisão 3');
+  });
+
+  return divisions;
+}
+
 export function buildRankingEntries(rows: ProfileRankingRow[]): RankingEntry[] {
   const sortedRows = [...rows].sort(compareRankingRows);
+  const divisions = assignDivisions(sortedRows);
   let lastRankedRow: ProfileRankingRow | null = null;
   let currentPosition = 0;
 
@@ -79,11 +107,11 @@ export function buildRankingEntries(rows: ProfileRankingRow[]): RankingEntry[] {
       points: row.points,
       wins: row.wins,
       losses: row.losses,
-      level: getLevel(row.points),
       createdAt: row.created_at,
       updatedAt: row.updated_at,
       totalMatches: row.wins + row.losses,
       position: currentPosition,
+      division: divisions.get(row.id) ?? null,
       pointDiffToAbove: above ? above.points - row.points : undefined,
       pointDiffToBelow: below ? row.points - below.points : undefined,
     };
@@ -118,7 +146,7 @@ export function buildMatchmakingSuggestions(
         whatsappNumber: availability.whatsapp_number,
         availableUntil: availability.available_until,
         points: entry.points,
-        level: entry.level,
+        division: entry.division,
         position: entry.position,
         pointDiff: Math.abs(entry.points - currentUserPoints),
         gamesTogether,
