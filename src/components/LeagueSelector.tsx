@@ -35,11 +35,11 @@ export function LeagueSelector({ leagues, value, disabled = false, loading = fal
       </select>
       <p className="text-xs text-slate-400">
         {disabled
-          ? 'Disponivel apos selecionar 4 jogadores participantes da liga.'
+          ? 'Disponivel apos selecionar os 4 jogadores.'
           : loading
             ? 'Buscando ligas elegiveis...'
             : leagues.length === 0
-              ? 'Nenhuma liga com todos estes jogadores.'
+              ? 'Nenhuma liga com pelo menos 3 destes jogadores.'
               : `${leagues.length} liga(s) elegivel(is).`}
       </p>
     </section>

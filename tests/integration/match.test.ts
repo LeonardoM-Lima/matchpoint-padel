@@ -2,9 +2,12 @@ import { afterEach, describe, expect, it } from 'vitest';
 import {
   countMatchesForProfiles,
   countMatchPlayersForProfiles,
+  createLeagueWithSql,
   deleteMatchWithSql,
   deleteTestPlayers,
   expireMatchWithSql,
+  fetchLeaguePlayers,
+  fetchMatchLeaguePlayers,
   fetchMatchPlayers,
   fetchProfilesByIds,
   getProfiles,
@@ -135,6 +138,51 @@ describe('register_match integration', () => {
         ),
       ),
     );
+  });
+
+  it('links a private league match when at least three players are league members', async () => {
+    const { profileList } = await setupMatchPlayers();
+    const leagueId = createLeagueWithSql(
+      profileList[0]!.id,
+      profileList.slice(0, 3).map((profile) => profile.id),
+    );
+
+    const matchId = registerMatchWithSql(profileList[0]!.user_id, 5, 4, [
+      { profileId: profileList[0]!.id, team: 'A' },
+      { profileId: profileList[1]!.id, team: 'A' },
+      { profileId: profileList[2]!.id, team: 'B' },
+      { profileId: profileList[3]!.id, team: 'B' },
+    ], leagueId);
+
+    expect(fetchMatchPlayers(matchId)).toHaveLength(4);
+    expect(fetchMatchLeaguePlayers(matchId).map((row) => row.profile_id)).toEqual(
+      expect.arrayContaining(profileList.slice(0, 3).map((profile) => profile.id)),
+    );
+    expect(fetchMatchLeaguePlayers(matchId)).toHaveLength(3);
+    expect(fetchLeaguePlayers(leagueId)).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({ profile_id: profileList[0]!.id, wins: 1, losses: 0 }),
+        expect.objectContaining({ profile_id: profileList[1]!.id, wins: 1, losses: 0 }),
+        expect.objectContaining({ profile_id: profileList[2]!.id, wins: 0, losses: 1 }),
+      ]),
+    );
+  });
+
+  it('rejects a private league match with fewer than three league members', async () => {
+    const { profileList } = await setupMatchPlayers();
+    const leagueId = createLeagueWithSql(
+      profileList[0]!.id,
+      profileList.slice(0, 2).map((profile) => profile.id),
+    );
+
+    expect(() =>
+      registerMatchWithSql(profileList[0]!.user_id, 5, 4, [
+        { profileId: profileList[0]!.id, team: 'A' },
+        { profileId: profileList[1]!.id, team: 'A' },
+        { profileId: profileList[2]!.id, team: 'B' },
+        { profileId: profileList[3]!.id, team: 'B' },
+      ], leagueId),
+    ).toThrow(/Ao menos 3 jogadores devem participar da liga/);
   });
 });
 

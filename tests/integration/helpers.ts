@@ -58,6 +58,20 @@ export interface MatchPlayerRow {
   points_after: number;
 }
 
+export interface LeaguePlayerStatsRow {
+  profile_id: string;
+  points: number;
+  wins: number;
+  losses: number;
+}
+
+export interface MatchLeaguePlayerRow {
+  profile_id: string;
+  league_points_before: number;
+  league_points_delta: number;
+  league_points_after: number;
+}
+
 function sqlString(value: string) {
   return `'${value.replaceAll("'", "''")}'`;
 }
@@ -291,11 +305,42 @@ export function fetchRankingProfilesByEmails(emails: string[]) {
   `);
 }
 
+export function createLeagueWithSql(ownerProfileId: string, memberProfileIds: string[]) {
+  const rows = queryRows<{ id: string }>(`
+    insert into public.leagues (owner_id, name)
+    values (${sqlString(ownerProfileId)}::uuid, 'Liga teste')
+    returning id;
+  `);
+  const leagueId = rows[0]!.id;
+  const uniqueMemberIds = [...new Set([ownerProfileId, ...memberProfileIds])];
+  const memberRows = uniqueMemberIds
+    .map((profileId) => `(${sqlString(leagueId)}::uuid, ${sqlString(profileId)}::uuid)`)
+    .join(',');
+
+  runSql(`
+    insert into public.league_players (league_id, profile_id)
+    values ${memberRows}
+    on conflict (league_id, profile_id) do nothing;
+  `);
+
+  return leagueId;
+}
+
+export function fetchLeaguePlayers(leagueId: string) {
+  return queryRows<LeaguePlayerStatsRow>(`
+    select profile_id, points, wins, losses
+    from public.league_players
+    where league_id = ${sqlString(leagueId)}::uuid
+    order by profile_id;
+  `);
+}
+
 export function registerMatchWithSql(
   creatorUserId: string,
   teamAScore: number,
   teamBScore: number,
   players: Array<{ profileId: string; team: 'A' | 'B' }>,
+  leagueId?: string,
 ) {
   const playerJson = players
     .map(
@@ -308,11 +353,12 @@ export function registerMatchWithSql(
     select set_config('request.jwt.claim.sub', ${sqlString(creatorUserId)}, false);
 
     select public.register_match(
-      jsonb_build_object(
+      jsonb_strip_nulls(jsonb_build_object(
         'team_a_score', ${teamAScore},
         'team_b_score', ${teamBScore},
-        'players', jsonb_build_array(${playerJson})
-      )
+        'players', jsonb_build_array(${playerJson}),
+        'league_id', ${leagueId ? sqlString(leagueId) : 'null'}
+      ))
     ) as match_id;
   `);
 
@@ -325,6 +371,15 @@ export function fetchMatchPlayers(matchId: string) {
     from public.match_players
     where match_id = ${sqlString(matchId)}
     order by team, profile_id;
+  `);
+}
+
+export function fetchMatchLeaguePlayers(matchId: string) {
+  return queryRows<MatchLeaguePlayerRow>(`
+    select profile_id, league_points_before, league_points_delta, league_points_after
+    from public.match_league_players
+    where match_id = ${sqlString(matchId)}
+    order by profile_id;
   `);
 }
 

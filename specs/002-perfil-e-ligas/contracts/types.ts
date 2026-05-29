@@ -107,7 +107,7 @@ export interface LeagueDetailDTO {
 // ─── Match-League integration ───────────────────────────────────────────────
 
 /** Liga elegível para vincular a uma partida em registro
- *  (todos os 4 jogadores selecionados são participantes). */
+ *  (pelo menos 3 dos 4 jogadores selecionados são participantes). */
 export interface EligibleLeague {
   id: string;
   name: string;
