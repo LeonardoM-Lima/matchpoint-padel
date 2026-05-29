@@ -1,13 +1,24 @@
+import { useEffect, useRef } from 'react';
 import { usePushSubscription } from '../hooks/usePushSubscription';
 import { Icon } from './Icon';
 
 interface PushToggleProps {
   profileId?: string;
+  autoEnable?: boolean;
 }
 
-export function PushToggle({ profileId }: PushToggleProps) {
+export function PushToggle({ profileId, autoEnable = false }: PushToggleProps) {
   const { status, loading, saving, error, enable, disable } = usePushSubscription(profileId);
   const disabled = loading || saving || !status.supported;
+  const autoEnableAttempted = useRef(false);
+
+  useEffect(() => {
+    if (!autoEnable || autoEnableAttempted.current || loading || saving) return;
+    if (!profileId || !status.supported || status.active || status.permission !== 'default') return;
+
+    autoEnableAttempted.current = true;
+    void enable({ silent: true });
+  }, [autoEnable, enable, loading, profileId, saving, status.active, status.permission, status.supported]);
 
   return (
     <section className="rounded-2xl border border-slate-800/80 bg-slate-900/60 p-4">
@@ -20,7 +31,7 @@ export function PushToggle({ profileId }: PushToggleProps) {
             <div>
               <h2 className="text-sm font-extrabold text-slate-50">Notificacoes push</h2>
               <p className="mt-1 text-xs leading-5 text-slate-400">
-                Receba avisos de partidas, ranking e ligas.
+                Ativas por padrão para avisos de partidas, ranking e ligas.
               </p>
             </div>
 

@@ -110,7 +110,7 @@ export function ProfileScreen() {
               />
             </section>
 
-            <PushToggle profileId={profile.id} />
+            <PushToggle profileId={profile.id} autoEnable />
 
             {totalMatches === 0 ? (
               <EmptyState

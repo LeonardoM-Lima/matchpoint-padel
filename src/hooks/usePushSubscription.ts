@@ -12,6 +12,10 @@ const defaultStatus: PushStatus = {
   active: false,
 };
 
+interface EnableOptions {
+  silent?: boolean;
+}
+
 export function usePushSubscription(profileId?: string) {
   const [status, setStatus] = useState<PushStatus>(defaultStatus);
   const [loading, setLoading] = useState(true);
@@ -36,10 +40,10 @@ export function usePushSubscription(profileId?: string) {
     }
   }, [profileId]);
 
-  const enable = useCallback(async () => {
+  const enable = useCallback(async (options: EnableOptions = {}) => {
     if (!profileId) return;
     setSaving(true);
-    setError(null);
+    if (!options.silent) setError(null);
 
     try {
       await subscribePush(profileId);
@@ -48,7 +52,7 @@ export function usePushSubscription(profileId?: string) {
       const message = nextError instanceof Error
         ? nextError.message
         : 'Não foi possível ativar notificações push.';
-      setError(message);
+      if (!options.silent) setError(message);
       await refresh();
     } finally {
       setSaving(false);
